@@ -10,7 +10,7 @@ VIRTUAL_ENV=voice/experiments/.venv uv pip install --index-strategy unsafe-best-
   --extra-index-url https://download.pytorch.org/whl/cpu \
   torch==2.5.1+cpu transformers==4.46.3 faster-whisper==1.1.0 piper-tts==1.3.0 onnxruntime==1.20.1 \
   soundfile jiwer "numpy<2.1" scipy librosa "huggingface_hub<1"
-voice/experiments/download_models.sh       # ~4.9 GB into voice/models/ (gitignored), resumable
+voice/scripts/download_models.sh          # ~4.9 GB into voice/models/ (gitignored), resumable
 ```
 Then run everything offline from `voice/experiments/`:
 ```bash
@@ -18,7 +18,9 @@ Then run everything offline from `voice/experiments/`:
 .venv/bin/python make_stt_inputs.py           # 16 kHz STT test sets (+ phone-line copies, + espeak-ng)
 .venv/bin/python stt_bench.py whisper --size base
 .venv/bin/python stt_bench.py whisper --size small
-.venv/bin/python stt_bench.py mms             # Kirundi, MMS-1b-all + run adapter (~4 GB RAM)
+.venv/bin/python ../scripts/quantize_mms.py   # once: int8 Kirundi MMS -> models/mms-1b-all/run-int8.pt (peak ~6 GB RAM, 70 s)
+.venv/bin/python stt_bench.py mms --dtype int8   # Kirundi, MMS-1b-all + run adapter, int8 (~2.6 GB RAM)
+# --dtype fp32 needs ~4 GB free RAM (swaps on a busy machine); bf16 is far too slow on this CPU
 .venv/bin/python gemma_audio_test.py out/gemma/fr16.wav out/gemma/en16.wav   # needs ollama + gemma4:e4b
 ```
 
@@ -36,8 +38,9 @@ The Kirundi sentences in `sentences.py` also need review by a native speaker.
 | File | What |
 |---|---|
 | `sentences.py` | 10 synthetic banking sentences per language |
-| `download_models.sh` | model download (build-time only) |
+| `../scripts/download_models.sh` | model download (build-time only) |
 | `tts_bench.py` | TTS load time, time to first audio, real-time factor |
 | `make_stt_inputs.py` | builds STT test sets |
 | `stt_bench.py` | WER, language-ID, latency per 5 s of audio |
 | `gemma_audio_test.py` | Gemma 4 audio input via Ollama |
+| `../scripts/quantize_mms.py` | int8 copy of MMS-1b-all + `run` adapter |

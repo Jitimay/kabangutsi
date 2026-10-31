@@ -1,0 +1,160 @@
+{
+  "peak_rss_gb": 2.64,
+  "dtype": "int8",
+  "threads": 4,
+  "load_s": 4.68,
+  "machine_before": {
+    "loadavg_1m": 1.92,
+    "mem_available_gb": 7.2
+  },
+  "results": [
+    {
+      "model": "mms-1b-all+run-int8",
+      "lang": "rn",
+      "source": "mms-tts-run",
+      "n": 10,
+      "wer": 0.597,
+      "word_acc": 0.403,
+      "latency_per_5s_audio_s": 3.739,
+      "rtf": 0.748,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "amahoro ndashaka kumenya amasara y'ibiro vyanyu bikimburiraho",
+          "audio_s": 3.296,
+          "proc_s": 2.2796225999991293
+        },
+        {
+          "file": "02.wav",
+          "text": "ikarata yanje ryafunzwe kuva muri iki gitono",
+          "audio_s": 2.528,
+          "proc_s": 1.959174786999938
+        },
+        {
+          "file": "03.wav",
+          "text": "ndashaka kugururako yakuzigana",
+          "audio_s": 2.224,
+          "proc_s": 1.9731437250011368
+        },
+        {
+          "file": "04.wav",
+          "text": "n'ibinte vya ngombwa nkeneye kugira ngo usaba imvurana",
+          "audio_s": 2.464,
+          "proc_s": 1.953451227000187
+        },
+        {
+          "file": "05.wav",
+          "text": "murakoze cane ku bufasha bwanyu",
+          "audio_s": 2.608,
+          "proc_s": 1.8590248399996199
+        },
+        {
+          "file": "06.wav",
+          "text": "ndashaka kuvuga aro n'umukozi mbabingime",
+          "audio_s": 3.152,
+          "proc_s": 2.2207325609997497
+        },
+        {
+          "file": "07.wav",
+          "text": "ishami rya ngo zirikingura kuri yesuaha kuwa gatandatu",
+          "audio_s": 4.24,
+          "proc_s": 3.0857884470024146
+        },
+        {
+          "file": "08.wav",
+          "text": "yibagiye ko di yibangayo i karata yanje",
+          "audio_s": 2.48,
+          "proc_s": 1.9078295920007804
+        },
+        {
+          "file": "09.wav",
+          "text": "nashaka gutangikiyego ku mapfaranga ntarose",
+          "audio_s": 2.752,
+          "proc_s": 2.279040866997093
+        },
+        {
+          "file": "10.wav",
+          "text": "amafarano anarungitse ejo ntarashika kuri koro ntiyaje",
+          "audio_s": 3.92,
+          "proc_s": 2.6625509499972395
+        }
+      ]
+    },
+    {
+      "model": "mms-1b-all+run-int8",
+      "lang": "rn",
+      "source": "mms-tts-run_phone",
+      "n": 10,
+      "wer": 0.582,
+      "word_acc": 0.418,
+      "latency_per_5s_audio_s": 3.552,
+      "rtf": 0.71,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "amahoro ndashaka kumenya amasara y'ibiro vyanyu bikinguriraho",
+          "audio_s": 3.296,
+          "proc_s": 2.299620824000158
+        },
+        {
+          "file": "02.wav",
+          "text": "ikarata yanjeryafunzwe kuva muri iki gitono",
+          "audio_s": 2.528,
+          "proc_s": 1.7969927649974125
+        },
+        {
+          "file": "03.wav",
+          "text": "ndashaka kugururako yakuze igana",
+          "audio_s": 2.224,
+          "proc_s": 1.5093811400001869
+        },
+        {
+          "file": "04.wav",
+          "text": "n'ibihe vya ngombwe nkeneye kugira ngo nsaba imvurana",
+          "audio_s": 2.464,
+          "proc_s": 2.0444890150029096
+        },
+        {
+          "file": "05.wav",
+          "text": "murakoze cane ku bufasha bwanyu",
+          "audio_s": 2.608,
+          "proc_s": 1.7752178060000006
+        },
+        {
+          "file": "06.wav",
+          "text": "ndashaka kuvuga aro n'umukozi ndabingimze",
+          "audio_s": 3.152,
+          "proc_s": 2.1135502850011108
+        },
+        {
+          "file": "07.wav",
+          "text": "ishami rya ngo ziricingura kuri yesu aha kuba gatandatu",
+          "audio_s": 4.24,
+          "proc_s": 2.9697535849991255
+        },
+        {
+          "file": "08.wav",
+          "text": "yibagiye ko di yibangayo i karata yanje",
+          "audio_s": 2.48,
+          "proc_s": 1.702736120998452
+        },
+        {
+          "file": "09.wav",
+          "text": "nashaka gutangikiyego ku mafaranga ntarose",
+          "audio_s": 2.752,
+          "proc_s": 2.226701370000228
+        },
+        {
+          "file": "10.wav",
+          "text": "amaparano anarungitse evyo ntarashika kuri koro ntiyaja",
+          "audio_s": 3.92,
+          "proc_s": 2.6361068000005616
+        }
+      ]
+    }
+  ],
+  "machine_after": {
+    "loadavg_1m": 3.45,
+    "mem_available_gb": 4.9
+  }
+}

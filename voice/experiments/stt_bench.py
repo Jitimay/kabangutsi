@@ -78,7 +78,7 @@ def run_whisper(size, threads, langs):
                                            "beam_size": 1, "machine_before": before, "results": results})
 
 
-def run_mms(threads, langs):
+def run_mms(threads, langs, dtype="fp32"):
     import torch
     from transformers import AutoProcessor, Wav2Vec2ForCTC
 
@@ -87,8 +87,13 @@ def run_mms(threads, langs):
     path = MODELS / "mms-1b-all"
     t0 = time.perf_counter()
     processor = AutoProcessor.from_pretrained(path)
-    model = Wav2Vec2ForCTC.from_pretrained(path, target_lang="run", ignore_mismatched_sizes=True,
-                                           use_safetensors=True).eval()
+    # bf16 halves RAM (3.9 GB -> ~2 GB): this machine is shared with Ollama + builds
+    if dtype == "int8":  # int8 model built by voice/scripts/quantize_mms.py (peak RAM ~2 GB, ~1.3 GB loaded)
+        model = torch.load(path / "run-int8.pt", weights_only=False).eval()
+    else:
+        model = Wav2Vec2ForCTC.from_pretrained(path, target_lang="run", ignore_mismatched_sizes=True,
+                                               use_safetensors=True,
+                                               torch_dtype=torch.bfloat16 if dtype == "bf16" else torch.float32).eval()
     processor.tokenizer.set_target_lang("run")
     load_s = time.perf_counter() - t0
     results = []
@@ -96,16 +101,21 @@ def run_mms(threads, langs):
         rows = []
         for f in files:
             y, sr = sf.read(f, dtype="float32")
+            print(" ", f.name, flush=True)
             t0 = time.perf_counter()
             inputs = processor(y, sampling_rate=sr, return_tensors="pt")
             with torch.inference_mode():
-                ids = model(**inputs).logits.argmax(-1)[0]
+                ids = model(inputs.input_values.to(model.dtype)).logits.argmax(-1)[0]
             text = processor.decode(ids)
             rows.append({"file": f.name, "text": text, "audio_s": len(y) / sr,
                          "proc_s": time.perf_counter() - t0})
-        results.append(score(lang, source, rows, "mms-1b-all+run"))
-    save_json("stt_mms_run.json", {"threads": threads, "load_s": round(load_s, 2), "machine_before": before,
-                                     "results": results})
+        results.append(score(lang, source, rows, f"mms-1b-all+run-{dtype}"))
+    import resource
+    peak_gb = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 2)
+    print("peak RSS GB:", peak_gb)
+    save_json(f"stt_mms_run_{dtype}.json", {"peak_rss_gb": peak_gb, "dtype": dtype, "threads": threads,
+                                            "load_s": round(load_s, 2), "machine_before": before,
+                                            "results": results})
 
 
 def main():
@@ -113,12 +123,13 @@ def main():
     ap.add_argument("engine", choices=["whisper", "mms"])
     ap.add_argument("--size", default="small")
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--dtype", choices=["fp32", "bf16", "int8"], default="fp32")
     a = ap.parse_args()
     print("machine before:", machine_state())
     if a.engine == "whisper":
         run_whisper(a.size, a.threads, ["fr", "en", "rn"])
     else:
-        run_mms(a.threads, ["rn"])
+        run_mms(a.threads, ["rn"], a.dtype)
 
 
 if __name__ == "__main__":

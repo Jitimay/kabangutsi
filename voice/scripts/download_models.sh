@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Download every model used by the Step 1 voice experiments into voice/models/ (gitignored).
+# Download every voice model (build time only, never at runtime). ~4.9 GB.
+#   scripts/download_models.sh [dest]     default dest: voice/models (gitignored); Docker build: /models
 # Resumable (curl -C -): just re-run if the connection drops. Small models first.
 set -euo pipefail
-M="$(cd "$(dirname "$0")/.." && pwd)/models"
+M="${1:-$(cd "$(dirname "$0")/.." && pwd)/models}"
 HF=https://huggingface.co
 
 get() {  # repo file dest_dir
