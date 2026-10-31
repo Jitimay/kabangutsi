@@ -1,17 +1,16 @@
 /// Build-time configuration. Values come from `--dart-define`, never hard-coded
 /// per environment.
 ///
-///   flutter build web -t lib/main_customer.dart --dart-define=API_URL=http://host:8000
+///   flutter build web -t lib/main_customer.dart --dart-define=API_URL=http://host:8000 --dart-define=USE_MOCK=false
 class Env {
-  const Env({
-    required this.apiUrl,
-    required this.useMock,
-  });
+  const Env({required this.apiUrl, required this.useMock});
 
-  factory Env.fromDefines() => const Env(
-        apiUrl: String.fromEnvironment('API_URL', defaultValue: 'http://localhost:8000'),
-        useMock: bool.fromEnvironment('USE_MOCK', defaultValue: true),
-      );
+  factory Env.fromDefines() => const Env(apiUrl: kApiUrl, useMock: kUseMock);
+
+  static const kApiUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:8000');
+
+  /// Compile-time constant so the mock backend is tree-shaken out of real builds.
+  static const kUseMock = bool.fromEnvironment('USE_MOCK', defaultValue: true);
 
   /// Backend base URL, without trailing slash (REST lives under `/v1`).
   final String apiUrl;
@@ -21,6 +20,5 @@ class Env {
 
   String get restBaseUrl => '$apiUrl/v1';
 
-  String get wsBaseUrl =>
-      '${apiUrl.replaceFirst(RegExp('^http'), 'ws')}/v1/ws';
+  String get wsBaseUrl => '${apiUrl.replaceFirst(RegExp('^http'), 'ws')}/v1/ws';
 }

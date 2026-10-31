@@ -1,0 +1,30 @@
+{
+  "callStatusIdle": "Appuyez sur appeler pour parler à Kabangutsi",
+  "callStatusConnecting": "Connexion…",
+  "callStatusReady": "Touchez le micro et parlez",
+  "callStatusListening": "Je vous écoute…",
+  "callStatusThinking": "Je réfléchis…",
+  "callStatusSpeaking": "Kabangutsi parle",
+  "callStatusHandedOff": "En attente d'un conseiller",
+  "callStatusEnded": "Appel terminé",
+  "callStatusError": "L'appel n'a pas pu être établi",
+  "callAgentJoined": "{name} a rejoint l'appel",
+  "callTapToTalk": "Touchez pour parler",
+  "callTapToSend": "Touchez pour envoyer",
+  "callCancelRecording": "Annuler",
+  "callNewCall": "Nouvel appel",
+  "callRetry": "Réessayer",
+  "callMicDenied": "L'accès au micro est nécessaire pour l'appel",
+  "callTurnFailed": "Votre message n'a pas été envoyé. Réessayez.",
+  "callTranscriptEmpty": "La conversation s'affichera ici",
+  "callSpeakerYou": "Vous",
+  "callSpeakerAgent": "Conseiller",
+  "callSpeakerSystem": "Info",
+  "@callAgentJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}
