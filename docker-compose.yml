@@ -1,0 +1,168 @@
+# Kabangutsi — whole stack, one command, offline at runtime.
+#   docker compose up -d                       → postgres, ollama, backend (+ services whose Dockerfile exists, see below)
+#   docker compose --profile full up -d        → also voice, ocr, frontend, whatsapp-bridge
+#   docker compose --profile full --profile hardware up -d   → also sms-gateway (USB GSM modem)
+#
+# Owned by T0. Each service's Dockerfile is owned by the terminal that owns its folder.
+# Services whose folder has no Dockerfile yet are behind a profile so `docker compose up` still works.
+# When an owner adds a Dockerfile, T0 removes that service's own profile (keeping "full").
+#
+# Offline rules: images are built/pulled before going offline (`pull_policy: missing`, never at runtime);
+# LLMs live in the ollama-models volume (scripts/pull_models.sh). Only the WhatsApp bridge uses the internet.
+# Host ports bind to 127.0.0.1 except backend and frontend (needed by the Android phone on the LAN).
+
+name: kabangutsi
+
+x-common: &common
+  restart: unless-stopped
+  pull_policy: missing
+  networks: [kabangutsi]
+  env_file:
+    - path: .env
+      required: false
+
+services:
+  postgres:
+    <<: *common
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kabangutsi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kabangutsi_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-kabangutsi}
+      TZ: UTC
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./contracts/db_schema.sql:/demo/db_schema.sql:ro
+      - ./scripts/reset_demo.sql:/demo/reset_demo.sql:ro
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  ollama:
+    <<: *common
+    image: ollama/ollama:0.34.3   # same as the host Ollama; gemma4 needs >= 0.30.9
+    environment:
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-30m}
+      OLLAMA_NUM_PARALLEL: ${OLLAMA_NUM_PARALLEL:-2}
+      OLLAMA_MAX_LOADED_MODELS: ${OLLAMA_MAX_LOADED_MODELS:-2}
+    volumes:
+      - ollama-models:/root/.ollama
+    ports:
+      # 11435 on the host because a host Ollama usually already listens on 11434.
+      - "127.0.0.1:${OLLAMA_HOST_PORT:-11435}:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  backend:
+    <<: *common
+    build: ./backend
+    image: kabangutsi/backend:dev
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-kabangutsi}:${POSTGRES_PASSWORD:-kabangutsi_dev}@postgres:5432/${POSTGRES_DB:-kabangutsi}
+      OLLAMA_URL: http://ollama:11434
+      VOICE_URL: http://voice:8001
+      OCR_URL: http://ocr:8002
+      SMS_GATEWAY_URL: http://sms-gateway:8003
+      WHATSAPP_BRIDGE_URL: http://whatsapp-bridge:8004
+      FILES_DIR: /data/files
+    volumes:
+      - backend-files:/data/files
+    ports:
+      - "${BACKEND_HOST_PORT:-8000}:8000"
+    depends_on:
+      postgres: { condition: service_healthy }
+      ollama: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/v1/health', timeout=3).status == 200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # ---------- services waiting for their owner's Dockerfile (see status/T0.md) ----------
+
+  voice:                     # T3 — voice/Dockerfile, FastAPI on 8001, GET /health
+    <<: *common
+    profiles: ["voice", "full"]
+    build: ./voice
+    image: kabangutsi/voice:dev
+    environment:
+      VOICE_MODELS_DIR: /models
+    volumes:
+      - voice-models:/models
+    ports:
+      - "127.0.0.1:${VOICE_HOST_PORT:-8001}:8001"
+
+  ocr:                       # T4 — ocr/Dockerfile, FastAPI on 8002, GET /health
+    <<: *common
+    profiles: ["ocr", "full"]
+    build: ./ocr
+    image: kabangutsi/ocr:dev
+    environment:
+      OCR_MODELS_DIR: /models
+    volumes:
+      - ocr-models:/models
+    ports:
+      - "127.0.0.1:${OCR_HOST_PORT:-8002}:8002"
+
+  frontend:                  # T2 — frontend/Dockerfile, nginx on 80 serving the Flutter web build
+    <<: *common
+    profiles: ["frontend", "full"]
+    build: ./frontend
+    image: kabangutsi/frontend:dev
+    ports:
+      - "${FRONTEND_HOST_PORT:-8080}:80"
+    depends_on:
+      - backend
+
+  sms-gateway:               # T4 — sms/Dockerfile, on 8003, GET /health + POST /send (adapter_api.yaml)
+    <<: *common
+    profiles: ["hardware"]
+    build: ./sms
+    image: kabangutsi/sms-gateway:dev
+    environment:
+      BACKEND_URL: http://backend:8000
+      MODEM_DEVICE: ${MODEM_DEVICE:-/dev/ttyUSB0}
+    devices:
+      - "${MODEM_DEVICE:-/dev/ttyUSB0}:${MODEM_DEVICE:-/dev/ttyUSB0}"
+    group_add:
+      - dialout
+    ports:
+      - "127.0.0.1:${SMS_HOST_PORT:-8003}:8003"
+    depends_on:
+      - backend
+
+  whatsapp-bridge:           # T4 — whatsapp/Dockerfile, on 8004, GET /health + POST /send (adapter_api.yaml)
+    <<: *common
+    profiles: ["whatsapp", "full"]
+    build: ./whatsapp
+    image: kabangutsi/whatsapp-bridge:dev
+    environment:
+      BACKEND_URL: http://backend:8000
+    volumes:
+      - whatsapp-session:/session
+    ports:
+      - "127.0.0.1:${WHATSAPP_HOST_PORT:-8004}:8004"
+    depends_on:
+      - backend
+
+networks:
+  kabangutsi:
+    name: kabangutsi
+
+volumes:
+  postgres-data:
+  ollama-models:
+  voice-models:
+  ocr-models:
+  whatsapp-session:
+  backend-files:
