@@ -1,0 +1,1899 @@
+{
+  "threads": 4,
+  "load_s": 1.0,
+  "beam_size": 1,
+  "machine_before": {
+    "loadavg_1m": 4.84,
+    "mem_available_gb": 1.4
+  },
+  "results": [
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "espeak[hint]",
+      "n": 10,
+      "wer": 0.558,
+      "word_acc": 0.442,
+      "latency_per_5s_audio_s": 6.247,
+      "rtf": 1.249,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bouhou, je vous mettrais les bonheur de votre main.",
+          "audio_s": 3.48,
+          "proc_s": 3.6976860819995636
+        },
+        {
+          "file": "02.wav",
+          "text": "Je ne peux pas me bloquer de plus en plus.",
+          "audio_s": 2.6745,
+          "proc_s": 4.388316300999577
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite une vie à compte d'épargne.",
+          "audio_s": 2.346375,
+          "proc_s": 3.1423053779981274
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il vous demander à crédit ?",
+          "audio_s": 2.75575,
+          "proc_s": 2.1566544249981234
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.944,
+          "proc_s": 2.117162187001668
+        },
+        {
+          "file": "06.wav",
+          "text": "Je vous remercie à conseiller, s'il vous plaît.",
+          "audio_s": 3.041875,
+          "proc_s": 2.292071366999153
+        },
+        {
+          "file": "07.wav",
+          "text": "à quel heure la personne ne l'a mis en vie?",
+          "audio_s": 2.5435625,
+          "proc_s": 8.632549491001555
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le compte secret de ma carte.",
+          "audio_s": 2.495875,
+          "proc_s": 2.28154731000177
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un autre énoïste.",
+          "audio_s": 3.4165,
+          "proc_s": 2.4522356770030456
+        },
+        {
+          "file": "10.wav",
+          "text": "La main va y aller pas à l'immé su moucoute.",
+          "audio_s": 2.99075,
+          "proc_s": 3.4342115920007927
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "espeak[auto]",
+      "n": 10,
+      "wer": 0.663,
+      "word_acc": 0.337,
+      "latency_per_5s_audio_s": 11.091,
+      "rtf": 2.218,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bouhou, je vous mettrais les bonheur de votre main.",
+          "audio_s": 3.48,
+          "proc_s": 6.465754623000976,
+          "detected": "fr",
+          "detected_p": 0.48
+        },
+        {
+          "file": "02.wav",
+          "text": "I can't look at him look at the please a matter",
+          "audio_s": 2.6745,
+          "proc_s": 4.238062463999086,
+          "detected": "en",
+          "detected_p": 0.24
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite une réaconte d'épargne.",
+          "audio_s": 2.346375,
+          "proc_s": 5.371146662000683,
+          "detected": "fr",
+          "detected_p": 0.74
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il vous demander à crédit ?",
+          "audio_s": 2.75575,
+          "proc_s": 4.569550227999571,
+          "detected": "fr",
+          "detected_p": 0.74
+        },
+        {
+          "file": "05.wav",
+          "text": "MENSIBOKU PUNOKONEN",
+          "audio_s": 1.944,
+          "proc_s": 8.401020868997875,
+          "detected": "en",
+          "detected_p": 0.34
+        },
+        {
+          "file": "06.wav",
+          "text": "Je vous remercie à conseiller, s'il vous plaît.",
+          "audio_s": 3.041875,
+          "proc_s": 4.879741205000755,
+          "detected": "fr",
+          "detected_p": 0.8
+        },
+        {
+          "file": "07.wav",
+          "text": "I can't allow that to happen to me someday.",
+          "audio_s": 2.5435625,
+          "proc_s": 11.10700100500253,
+          "detected": "en",
+          "detected_p": 0.18
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le compte secret de ma carte.",
+          "audio_s": 2.495875,
+          "proc_s": 4.525154982999084,
+          "detected": "fr",
+          "detected_p": 0.81
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un autre énoïste.",
+          "audio_s": 3.4165,
+          "proc_s": 5.024766274000285,
+          "detected": "fr",
+          "detected_p": 0.87
+        },
+        {
+          "file": "10.wav",
+          "text": "La main va y est, elle n'est pas allée, mais c'est bon.",
+          "audio_s": 2.99075,
+          "proc_s": 6.837199614998099,
+          "detected": "fr",
+          "detected_p": 0.4
+        }
+      ],
+      "langid_acc": 0.7,
+      "detected": [
+        "en",
+        "fr"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-siwis-medium[hint]",
+      "n": 10,
+      "wer": 0.047,
+      "word_acc": 0.953,
+      "latency_per_5s_audio_s": 10.575,
+      "rtf": 2.115,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre agence.",
+          "audio_s": 3.0650625,
+          "proc_s": 3.1535288880004373
+        },
+        {
+          "file": "02.wav",
+          "text": "Ma carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 2.819119216001127
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.066625,
+          "proc_s": 2.923297265999281
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander un crédit ?",
+          "audio_s": 2.3916875,
+          "proc_s": 2.949727384999278
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.9969375,
+          "proc_s": 2.512020381000184
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller s'il vous plaît.",
+          "audio_s": 2.461375,
+          "proc_s": 3.1817553280016
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agence de Ngozi Saturday ?",
+          "audio_s": 2.832875,
+          "proc_s": 3.4363636250018317
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le cas secret de ma carte.",
+          "audio_s": 2.4265,
+          "proc_s": 29.28348018500037
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un retrait non reçu.",
+          "audio_s": 3.425,
+          "proc_s": 3.106826621999062
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé hier n'est pas arrivé sur mon compte.",
+          "audio_s": 3.2508125,
+          "proc_s": 2.5472590629979095
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-siwis-medium[auto]",
+      "n": 10,
+      "wer": 0.047,
+      "word_acc": 0.953,
+      "latency_per_5s_audio_s": 8.874,
+      "rtf": 1.775,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre agence.",
+          "audio_s": 3.0650625,
+          "proc_s": 4.8234136430000945,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "02.wav",
+          "text": "Ma carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 4.498668910000561,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.066625,
+          "proc_s": 4.488372150997748,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander un crédit ?",
+          "audio_s": 2.3916875,
+          "proc_s": 4.586609275000228,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.9969375,
+          "proc_s": 4.49022698599947,
+          "detected": "fr",
+          "detected_p": 0.98
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller s'il vous plaît.",
+          "audio_s": 2.461375,
+          "proc_s": 4.362482131000434,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agence de Ngozi Saturday ?",
+          "audio_s": 2.832875,
+          "proc_s": 4.6288489130020025,
+          "detected": "fr",
+          "detected_p": 0.97
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le cas secret de ma carte.",
+          "audio_s": 2.4265,
+          "proc_s": 4.6899224989974755,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un retrait non reçu.",
+          "audio_s": 3.425,
+          "proc_s": 5.252409198998066,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé hier n'est pas arrivé sur mon compte.",
+          "audio_s": 3.2508125,
+          "proc_s": 5.099223523000546,
+          "detected": "fr",
+          "detected_p": 1.0
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "fr"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-siwis-medium_phone[hint]",
+      "n": 10,
+      "wer": 0.07,
+      "word_acc": 0.93,
+      "latency_per_5s_audio_s": 6.471,
+      "rtf": 1.294,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre agence.",
+          "audio_s": 3.065125,
+          "proc_s": 3.0483973569971567
+        },
+        {
+          "file": "02.wav",
+          "text": "Ma carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 2.9559152410001843
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.066625,
+          "proc_s": 2.962053357001423
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander un crédit ?",
+          "audio_s": 2.39175,
+          "proc_s": 2.843050334999134
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.997,
+          "proc_s": 2.7162238669989165
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller s'il vous plaît.",
+          "audio_s": 2.461375,
+          "proc_s": 2.7599877959983132
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agent de Ngoji Saturday ?",
+          "audio_s": 2.832875,
+          "proc_s": 2.747823432997393
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le cas secret de ma carte.",
+          "audio_s": 2.4265,
+          "proc_s": 2.485855957002059
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un retrait non reçu.",
+          "audio_s": 3.425,
+          "proc_s": 2.561147559001256
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé hier n'est pas arrivé sur mon compte.",
+          "audio_s": 3.250875,
+          "proc_s": 9.13590746099726
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-siwis-medium_phone[auto]",
+      "n": 10,
+      "wer": 0.07,
+      "word_acc": 0.93,
+      "latency_per_5s_audio_s": 10.661,
+      "rtf": 2.132,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre agence.",
+          "audio_s": 3.065125,
+          "proc_s": 6.133102859999781,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "02.wav",
+          "text": "Ma carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 5.774872443002096,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.066625,
+          "proc_s": 5.853190334997635,
+          "detected": "fr",
+          "detected_p": 0.98
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander un crédit ?",
+          "audio_s": 2.39175,
+          "proc_s": 5.180915519998962,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.997,
+          "proc_s": 5.341683562000981,
+          "detected": "fr",
+          "detected_p": 0.95
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller s'il vous plaît.",
+          "audio_s": 2.461375,
+          "proc_s": 12.76178021099986,
+          "detected": "fr",
+          "detected_p": 0.98
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agent de Ngoji Saturday ?",
+          "audio_s": 2.832875,
+          "proc_s": 3.8894635469987406,
+          "detected": "fr",
+          "detected_p": 0.96
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le cas secret de ma carte.",
+          "audio_s": 2.4265,
+          "proc_s": 3.7940071650009486,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un retrait non reçu.",
+          "audio_s": 3.425,
+          "proc_s": 3.7462602730010985,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé hier n'est pas arrivé sur mon compte.",
+          "audio_s": 3.250875,
+          "proc_s": 3.894134887999826,
+          "detected": "fr",
+          "detected_p": 0.99
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "fr"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-upmc-medium[hint]",
+      "n": 10,
+      "wer": 0.058,
+      "word_acc": 0.942,
+      "latency_per_5s_audio_s": 4.03,
+      "rtf": 0.806,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre agence.",
+          "audio_s": 3.483,
+          "proc_s": 2.1667994810013624
+        },
+        {
+          "file": "02.wav",
+          "text": "Ma carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 2.1987836730004346
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.3800625,
+          "proc_s": 2.0269307540002046
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander à crédit ?",
+          "audio_s": 2.4961875,
+          "proc_s": 2.0613612179986376
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.55575,
+          "proc_s": 1.9019542629976058
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller, s'il vous plaît.",
+          "audio_s": 2.61225,
+          "proc_s": 2.0432526449985744
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agence de Ngozi samedi ?",
+          "audio_s": 2.519375,
+          "proc_s": 2.1169373619995895
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le code secret de ma carte.",
+          "audio_s": 2.3800625,
+          "proc_s": 2.204115563999949
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un redret non reçu.",
+          "audio_s": 3.4481875,
+          "proc_s": 2.2189889319997746
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé d'hier n'est pas arrivé sur mon compte.",
+          "audio_s": 2.8909375,
+          "proc_s": 2.2442159649981477
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-upmc-medium[auto]",
+      "n": 10,
+      "wer": 0.058,
+      "word_acc": 0.942,
+      "latency_per_5s_audio_s": 7.422,
+      "rtf": 1.484,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre agence.",
+          "audio_s": 3.483,
+          "proc_s": 4.068141563999234,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "02.wav",
+          "text": "Ma carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 3.8196134499994514,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.3800625,
+          "proc_s": 3.7612701969992486,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander à crédit ?",
+          "audio_s": 2.4961875,
+          "proc_s": 3.816662280998571,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.55575,
+          "proc_s": 3.7905790010008786,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller, s'il vous plaît.",
+          "audio_s": 2.61225,
+          "proc_s": 4.010259784001391,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agence de Ngozi samedi ?",
+          "audio_s": 2.519375,
+          "proc_s": 3.879678656998294,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le code secret de ma carte.",
+          "audio_s": 2.3800625,
+          "proc_s": 3.8103194319992326,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un redret non reçu.",
+          "audio_s": 3.4481875,
+          "proc_s": 4.064968530001352,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé d'hier n'est pas arrivé sur mon compte.",
+          "audio_s": 2.8909375,
+          "proc_s": 3.9973524150009325,
+          "detected": "fr",
+          "detected_p": 1.0
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "fr"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-upmc-medium_phone[hint]",
+      "n": 10,
+      "wer": 0.093,
+      "word_acc": 0.907,
+      "latency_per_5s_audio_s": 4.018,
+      "rtf": 0.804,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre argent.",
+          "audio_s": 3.483,
+          "proc_s": 2.0915996639996592
+        },
+        {
+          "file": "02.wav",
+          "text": "La carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 2.0644012199991266
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.380125,
+          "proc_s": 2.1165712239999266
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander à Crédit ?",
+          "audio_s": 2.49625,
+          "proc_s": 2.0340195479984686
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.55575,
+          "proc_s": 1.9553262169974914
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller, s'il vous plaît.",
+          "audio_s": 2.61225,
+          "proc_s": 2.10587558500265
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agence de Ngozi Fami ?",
+          "audio_s": 2.519375,
+          "proc_s": 2.18072615300116
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le code secret de ma carte.",
+          "audio_s": 2.380125,
+          "proc_s": 2.051533855999878
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un redressement reçu.",
+          "audio_s": 3.44825,
+          "proc_s": 2.3773433400019712
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé hier n'est pas arrivé sur mon compte.",
+          "audio_s": 2.891,
+          "proc_s": 2.1437437210006465
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "fr",
+      "source": "fr_FR-upmc-medium_phone[auto]",
+      "n": 10,
+      "wer": 0.093,
+      "word_acc": 0.907,
+      "latency_per_5s_audio_s": 7.846,
+      "rtf": 1.569,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Bonjour, je voudrais connaître les horaires de votre argent.",
+          "audio_s": 3.483,
+          "proc_s": 3.992544478001946,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "02.wav",
+          "text": "La carte bancaire est bloquée depuis ce matin.",
+          "audio_s": 2.519375,
+          "proc_s": 4.639243490997615,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "03.wav",
+          "text": "Je souhaite ouvrir un compte d'épargne.",
+          "audio_s": 2.380125,
+          "proc_s": 4.117874268002197,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "04.wav",
+          "text": "Quel document faut-il pour demander à Crédit ?",
+          "audio_s": 2.49625,
+          "proc_s": 4.429071717000625,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "05.wav",
+          "text": "Merci beaucoup pour votre aide.",
+          "audio_s": 1.55575,
+          "proc_s": 3.9727137659974687,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "06.wav",
+          "text": "Je voudrais parler à un conseiller, s'il vous plaît.",
+          "audio_s": 2.61225,
+          "proc_s": 3.9391577930000494,
+          "detected": "fr",
+          "detected_p": 1.0
+        },
+        {
+          "file": "07.wav",
+          "text": "À quelle heure ouvre l'agence de Ngozi Fami ?",
+          "audio_s": 2.519375,
+          "proc_s": 4.057730192998861,
+          "detected": "fr",
+          "detected_p": 0.96
+        },
+        {
+          "file": "08.wav",
+          "text": "J'ai oublié le code secret de ma carte.",
+          "audio_s": 2.380125,
+          "proc_s": 4.0307647419977,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "09.wav",
+          "text": "Je veux déposer une réclamation pour un redressement reçu.",
+          "audio_s": 3.44825,
+          "proc_s": 3.9208222220004245,
+          "detected": "fr",
+          "detected_p": 0.99
+        },
+        {
+          "file": "10.wav",
+          "text": "L'argent envoyé hier n'est pas arrivé sur mon compte.",
+          "audio_s": 2.891,
+          "proc_s": 4.14912858399839,
+          "detected": "fr",
+          "detected_p": 1.0
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "fr"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-amy-medium[hint]",
+      "n": 10,
+      "wer": 0.011,
+      "word_acc": 0.989,
+      "latency_per_5s_audio_s": 3.386,
+      "rtf": 0.677,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 3.7268125,
+          "proc_s": 2.1729232049983693
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 3.123125,
+          "proc_s": 2.1344249209978443
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 2.519375,
+          "proc_s": 2.210673104000307
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for a loan?",
+          "audio_s": 3.19275,
+          "proc_s": 2.3481602520005254
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 2.066625,
+          "proc_s": 2.2275980970007367
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 2.9605625,
+          "proc_s": 2.084087893999822
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the Angosi branch open on Saturday?",
+          "audio_s": 3.6571875,
+          "proc_s": 2.0803621539998858
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.7748125,
+          "proc_s": 2.064328125998145
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 4.2725,
+          "proc_s": 2.149967214001663
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 3.6339375,
+          "proc_s": 2.1497253629968327
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-amy-medium[auto]",
+      "n": 10,
+      "wer": 0.011,
+      "word_acc": 0.989,
+      "latency_per_5s_audio_s": 6.355,
+      "rtf": 1.271,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 3.7268125,
+          "proc_s": 3.897240017999138,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 3.123125,
+          "proc_s": 3.882559850000689,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 2.519375,
+          "proc_s": 3.954397236000659,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for a loan?",
+          "audio_s": 3.19275,
+          "proc_s": 3.9158432989970606,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 2.066625,
+          "proc_s": 3.955980177001038,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 2.9605625,
+          "proc_s": 3.9581845450011315,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the Angosi branch open on Saturday?",
+          "audio_s": 3.6571875,
+          "proc_s": 4.5041314600021,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.7748125,
+          "proc_s": 4.13679496199984,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 4.2725,
+          "proc_s": 4.173986614001478,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 3.6339375,
+          "proc_s": 4.197922674000438,
+          "detected": "en",
+          "detected_p": 1.0
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "en"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-amy-medium_phone[hint]",
+      "n": 10,
+      "wer": 0.011,
+      "word_acc": 0.989,
+      "latency_per_5s_audio_s": 3.763,
+      "rtf": 0.753,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 3.726875,
+          "proc_s": 2.296340377000888
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 3.123125,
+          "proc_s": 2.7693910299967683
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 2.519375,
+          "proc_s": 2.8445344069987186
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for a loan?",
+          "audio_s": 3.19275,
+          "proc_s": 2.637859935999586
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 2.066625,
+          "proc_s": 2.1370349259996146
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent please.",
+          "audio_s": 2.960625,
+          "proc_s": 2.1961614649990224
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the Angosi branch open on Saturday?",
+          "audio_s": 3.65725,
+          "proc_s": 2.2691118309994636
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.774875,
+          "proc_s": 2.126527847998659
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 4.2725,
+          "proc_s": 2.3544289940000453
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 3.634,
+          "proc_s": 2.3993226359998516
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-amy-medium_phone[auto]",
+      "n": 10,
+      "wer": 0.011,
+      "word_acc": 0.989,
+      "latency_per_5s_audio_s": 6.648,
+      "rtf": 1.33,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 3.726875,
+          "proc_s": 4.507293974998902,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 3.123125,
+          "proc_s": 4.431448040999385,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 2.519375,
+          "proc_s": 4.123443939002755,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for a loan?",
+          "audio_s": 3.19275,
+          "proc_s": 4.393021239000518,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 2.066625,
+          "proc_s": 5.197245955001563,
+          "detected": "en",
+          "detected_p": 0.98
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent please.",
+          "audio_s": 2.960625,
+          "proc_s": 3.8130503949978447,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the Angosi branch open on Saturday?",
+          "audio_s": 3.65725,
+          "proc_s": 3.9152822920004837,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.774875,
+          "proc_s": 3.8330347160008387,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 4.2725,
+          "proc_s": 4.082790087999456,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 3.634,
+          "proc_s": 4.157000225000957,
+          "detected": "en",
+          "detected_p": 0.99
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "en"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-lessac-medium[hint]",
+      "n": 10,
+      "wer": 0.022,
+      "word_acc": 0.978,
+      "latency_per_5s_audio_s": 4.067,
+      "rtf": 0.813,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 2.9721875,
+          "proc_s": 2.0874396949984657
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 2.623875,
+          "proc_s": 2.0617239630009863
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 1.846,
+          "proc_s": 2.068034349998925
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for a loan?",
+          "audio_s": 2.6355,
+          "proc_s": 2.1463820960016164
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 1.9505,
+          "proc_s": 2.071506339001644
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 2.438125,
+          "proc_s": 2.149276372001623
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the ungozy branch open on Saturday?",
+          "audio_s": 3.1463125,
+          "proc_s": 2.0908515480005008
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.13625,
+          "proc_s": 2.1131076730016503
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about her withdrawal I did not receive.",
+          "audio_s": 3.29725,
+          "proc_s": 2.1039129980017606
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 2.71675,
+          "proc_s": 2.0617925009973987
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-lessac-medium[auto]",
+      "n": 10,
+      "wer": 0.022,
+      "word_acc": 0.978,
+      "latency_per_5s_audio_s": 7.541,
+      "rtf": 1.508,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 2.9721875,
+          "proc_s": 3.977676602997235,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 2.623875,
+          "proc_s": 3.823721843000385,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 1.846,
+          "proc_s": 3.8306316179987334,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for a loan?",
+          "audio_s": 2.6355,
+          "proc_s": 3.8524078789996565,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 1.9505,
+          "proc_s": 3.804860637999809,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 2.438125,
+          "proc_s": 3.9720284739996714,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the ungozy branch open on Saturday?",
+          "audio_s": 3.1463125,
+          "proc_s": 3.9138189109980885,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.13625,
+          "proc_s": 3.855727685000602,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about her withdrawal I did not receive.",
+          "audio_s": 3.29725,
+          "proc_s": 3.939909278000414,
+          "detected": "en",
+          "detected_p": 1.0
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 2.71675,
+          "proc_s": 3.8864949950002483,
+          "detected": "en",
+          "detected_p": 0.99
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "en"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-lessac-medium_phone[hint]",
+      "n": 10,
+      "wer": 0.033,
+      "word_acc": 0.967,
+      "latency_per_5s_audio_s": 4.031,
+      "rtf": 0.806,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 2.97225,
+          "proc_s": 2.0882241259969305
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 2.623875,
+          "proc_s": 2.180430945001717
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 1.846,
+          "proc_s": 2.023788975999196
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for alone?",
+          "audio_s": 2.6355,
+          "proc_s": 2.067120972002158
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 1.9505,
+          "proc_s": 2.056674355000723
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 2.438125,
+          "proc_s": 2.045047244999296
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the ungozie branch open on Saturday?",
+          "audio_s": 3.146375,
+          "proc_s": 2.0748985380014346
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.13625,
+          "proc_s": 2.035926094999013
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 3.29725,
+          "proc_s": 2.109187672002008
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 2.71675,
+          "proc_s": 2.0877846740004316
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "en_US-lessac-medium_phone[auto]",
+      "n": 10,
+      "wer": 0.033,
+      "word_acc": 0.967,
+      "latency_per_5s_audio_s": 7.634,
+      "rtf": 1.527,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 2.97225,
+          "proc_s": 3.8855177590012318,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been blocked since this morning.",
+          "audio_s": 2.623875,
+          "proc_s": 3.9059895719983615,
+          "detected": "en",
+          "detected_p": 0.97
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 1.846,
+          "proc_s": 3.915647320001881,
+          "detected": "en",
+          "detected_p": 0.97
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for alone?",
+          "audio_s": 2.6355,
+          "proc_s": 3.8479973149987927,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 1.9505,
+          "proc_s": 3.8541955590008,
+          "detected": "en",
+          "detected_p": 0.97
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 2.438125,
+          "proc_s": 3.9230966600007378,
+          "detected": "en",
+          "detected_p": 0.98
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the ungozie branch open on Saturday?",
+          "audio_s": 3.146375,
+          "proc_s": 3.9730647040014446,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.13625,
+          "proc_s": 4.111835395000526,
+          "detected": "en",
+          "detected_p": 0.97
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 3.29725,
+          "proc_s": 4.047559940998326,
+          "detected": "en",
+          "detected_p": 0.99
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday has not arrived in my account.",
+          "audio_s": 2.71675,
+          "proc_s": 3.868153016999713,
+          "detected": "en",
+          "detected_p": 0.99
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "en"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "espeak[hint]",
+      "n": 10,
+      "wer": 0.065,
+      "word_acc": 0.935,
+      "latency_per_5s_audio_s": 3.16,
+      "rtf": 0.632,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 3.637875,
+          "proc_s": 2.072873022996646
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been locked since this morning.",
+          "audio_s": 3.676125,
+          "proc_s": 2.038298136998492
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 2.5765625,
+          "proc_s": 2.0336504799997783
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for alone?",
+          "audio_s": 3.272875,
+          "proc_s": 2.152508906001458
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 2.505875,
+          "proc_s": 2.001984286998777
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 3.1035,
+          "proc_s": 2.0501387300028
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the Gozie branch open on Saturday?",
+          "audio_s": 3.5614375,
+          "proc_s": 2.0734234919982555
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.7865,
+          "proc_s": 2.062444505998428
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 4.21025,
+          "proc_s": 2.1603278040020086
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday does not arrive in my account.",
+          "audio_s": 3.4846875,
+          "proc_s": 2.0928545349997876
+        }
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "en",
+      "source": "espeak[auto]",
+      "n": 10,
+      "wer": 0.065,
+      "word_acc": 0.935,
+      "latency_per_5s_audio_s": 6.101,
+      "rtf": 1.22,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Hello, I would like to know your branch opening hours.",
+          "audio_s": 3.637875,
+          "proc_s": 3.9592951929989795,
+          "detected": "en",
+          "detected_p": 0.96
+        },
+        {
+          "file": "02.wav",
+          "text": "My bank card has been locked since this morning.",
+          "audio_s": 3.676125,
+          "proc_s": 4.12365464100003,
+          "detected": "en",
+          "detected_p": 0.95
+        },
+        {
+          "file": "03.wav",
+          "text": "I want to open a savings account.",
+          "audio_s": 2.5765625,
+          "proc_s": 3.900131041998975,
+          "detected": "en",
+          "detected_p": 0.91
+        },
+        {
+          "file": "04.wav",
+          "text": "Which documents do I need to apply for alone?",
+          "audio_s": 3.272875,
+          "proc_s": 3.843262266000238,
+          "detected": "en",
+          "detected_p": 0.96
+        },
+        {
+          "file": "05.wav",
+          "text": "Thank you very much for your help.",
+          "audio_s": 2.505875,
+          "proc_s": 3.990622601002542,
+          "detected": "en",
+          "detected_p": 0.91
+        },
+        {
+          "file": "06.wav",
+          "text": "I would like to speak to an agent, please.",
+          "audio_s": 3.1035,
+          "proc_s": 3.8914828230008425,
+          "detected": "en",
+          "detected_p": 0.94
+        },
+        {
+          "file": "07.wav",
+          "text": "What time does the Gozie branch open on Saturday?",
+          "audio_s": 3.5614375,
+          "proc_s": 3.9398620940010005,
+          "detected": "en",
+          "detected_p": 0.96
+        },
+        {
+          "file": "08.wav",
+          "text": "I forgot the secret code of my card.",
+          "audio_s": 2.7865,
+          "proc_s": 3.850335860999621,
+          "detected": "en",
+          "detected_p": 0.97
+        },
+        {
+          "file": "09.wav",
+          "text": "I want to file a complaint about a withdrawal I did not receive.",
+          "audio_s": 4.21025,
+          "proc_s": 4.143369706998783,
+          "detected": "en",
+          "detected_p": 0.96
+        },
+        {
+          "file": "10.wav",
+          "text": "The money sent yesterday does not arrive in my account.",
+          "audio_s": 3.4846875,
+          "proc_s": 4.3972084159977385,
+          "detected": "en",
+          "detected_p": 0.95
+        }
+      ],
+      "langid_acc": 1.0,
+      "detected": [
+        "en"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "rn",
+      "source": "mms-tts-run[auto]",
+      "n": 10,
+      "wer": 1.134,
+      "word_acc": -0.134,
+      "latency_per_5s_audio_s": 14.77,
+      "rtf": 2.954,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "Ammaoranda shaka kumenya ma sayi biroze anewi kimbo diraho.",
+          "audio_s": 3.296,
+          "proc_s": 4.366205659000116,
+          "detected": "sw",
+          "detected_p": 0.76
+        },
+        {
+          "file": "02.wav",
+          "text": "Ika rata e angiria fonsga kuva muri ki ghtono.",
+          "audio_s": 2.528,
+          "proc_s": 5.793228662998445,
+          "detected": "sq",
+          "detected_p": 0.22
+        },
+        {
+          "file": "03.wav",
+          "text": "داشا ککو گرورا کد یکو زیگان",
+          "audio_s": 2.224,
+          "proc_s": 6.133297511998535,
+          "detected": "fa",
+          "detected_p": 0.6
+        },
+        {
+          "file": "04.wav",
+          "text": "Իվ իվզ եամ գոմ գան տեն ես խուգիրամ ուսվիմ ուրան.",
+          "audio_s": 2.464,
+          "proc_s": 6.453146195002773,
+          "detected": "hy",
+          "detected_p": 0.25
+        },
+        {
+          "file": "05.wav",
+          "text": "مراکوز ای چانکو فاشبگانیو",
+          "audio_s": 2.608,
+          "proc_s": 4.696884441000293,
+          "detected": "fa",
+          "detected_p": 0.68
+        },
+        {
+          "file": "06.wav",
+          "text": "ده ساکا کفگرانو مکدویو  ببینگیو",
+          "audio_s": 3.152,
+          "proc_s": 4.955018733999168,
+          "detected": "fa",
+          "detected_p": 0.8
+        },
+        {
+          "file": "07.wav",
+          "text": "هیشان اگه بزری کنگوراکوی سا حق واقع تندت",
+          "audio_s": 4.24,
+          "proc_s": 4.854725426001096,
+          "detected": "fa",
+          "detected_p": 0.75
+        },
+        {
+          "file": "08.wav",
+          "text": "E ora, in questo caso, ci sono i carattere.",
+          "audio_s": 2.48,
+          "proc_s": 9.212206877000426,
+          "detected": "it",
+          "detected_p": 0.76
+        },
+        {
+          "file": "09.wav",
+          "text": "ṣākā gūtṅ ākīgō kūma Ṣaṅgā nārhus.",
+          "audio_s": 2.752,
+          "proc_s": 35.71040911700038,
+          "detected": "bo",
+          "detected_p": 0.21
+        },
+        {
+          "file": "10.wav",
+          "text": "ammaffaranno a Darungitse e siano rascicco i colonni e agge.",
+          "audio_s": 3.92,
+          "proc_s": 5.451360413000657,
+          "detected": "it",
+          "detected_p": 0.88
+        }
+      ],
+      "langid_acc": 0.0,
+      "detected": [
+        "bo",
+        "fa",
+        "hy",
+        "it",
+        "sq",
+        "sw"
+      ]
+    },
+    {
+      "model": "whisper-small-int8",
+      "lang": "rn",
+      "source": "mms-tts-run_phone[auto]",
+      "n": 10,
+      "wer": 1.209,
+      "word_acc": -0.209,
+      "latency_per_5s_audio_s": 24.438,
+      "rtf": 4.888,
+      "rows": [
+        {
+          "file": "01.wav",
+          "text": "amaorondasha kakumenyama suebi rozi anewi kingu diraho.",
+          "audio_s": 3.296,
+          "proc_s": 13.629806799002836,
+          "detected": "sw",
+          "detected_p": 0.41
+        },
+        {
+          "file": "02.wav",
+          "text": "e carata de angriafonso com uma murique de tonos.",
+          "audio_s": 2.528,
+          "proc_s": 9.27943113800211,
+          "detected": "pt",
+          "detected_p": 0.25
+        },
+        {
+          "file": "03.wav",
+          "text": "تشتا ککو گرورا کد یا کد بگاد",
+          "audio_s": 2.224,
+          "proc_s": 4.87196514900279,
+          "detected": "fa",
+          "detected_p": 0.25
+        },
+        {
+          "file": "04.wav",
+          "text": "кноп  Essentialw op 預備  neon     的                         も   大                      ね",
+          "audio_s": 2.464,
+          "proc_s": 47.776448308999534,
+          "detected": "bn",
+          "detected_p": 0.19
+        },
+        {
+          "file": "05.wav",
+          "text": "مراکز چن کوفا شبگانی",
+          "audio_s": 2.608,
+          "proc_s": 4.513926550000178,
+          "detected": "fa",
+          "detected_p": 0.76
+        },
+        {
+          "file": "06.wav",
+          "text": "دستا که که بگرانمو که بید  ده وینگی",
+          "audio_s": 3.152,
+          "proc_s": 5.236742098000832,
+          "detected": "fa",
+          "detected_p": 0.74
+        },
+        {
+          "file": "07.wav",
+          "text": "ishami ga bozri kimgurakuiye sa hakuaga tandahti.",
+          "audio_s": 4.24,
+          "proc_s": 6.148900821997813,
+          "detected": "sw",
+          "detected_p": 0.28
+        },
+        {
+          "file": "08.wav",
+          "text": "이 와중에 콧대 이 반가이 카라테야",
+          "audio_s": 2.48,
+          "proc_s": 8.466909383998427,
+          "detected": "ko",
+          "detected_p": 0.35
+        },
+        {
+          "file": "09.wav",
+          "text": "dostakha gu stallke gukumap para nga, na rotsu",
+          "audio_s": 2.752,
+          "proc_s": 40.60999490500035,
+          "detected": "bo",
+          "detected_p": 0.19
+        },
+        {
+          "file": "10.wav",
+          "text": "ammapparanno da lunghi zi e non lo restano qui con gli altri",
+          "audio_s": 3.92,
+          "proc_s": 4.4533394210011465,
+          "detected": "it",
+          "detected_p": 0.94
+        }
+      ],
+      "langid_acc": 0.0,
+      "detected": [
+        "bn",
+        "bo",
+        "fa",
+        "it",
+        "ko",
+        "pt",
+        "sw"
+      ]
+    }
+  ],
+  "machine_after": {
+    "loadavg_1m": 5.68,
+    "mem_available_gb": 2.6
+  }
+}

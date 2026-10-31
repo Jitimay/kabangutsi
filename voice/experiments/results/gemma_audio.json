@@ -1,0 +1,21 @@
+{
+  "model": "gemma4:e4b",
+  "results": [
+    {
+      "wav": "out/gemma/fr16.wav",
+      "ok": true,
+      "seconds": 146.82,
+      "reply": "Ma carte bancaire bloquée depuis ce matin\nLANG=fr",
+      "load_s": 112.4,
+      "prompt_tokens": 105
+    },
+    {
+      "wav": "out/gemma/en16.wav",
+      "ok": true,
+      "seconds": 14.64,
+      "reply": "I would like to speak to an agent please\nLANG=en",
+      "load_s": 0.11,
+      "prompt_tokens": 116
+    }
+  ]
+}
