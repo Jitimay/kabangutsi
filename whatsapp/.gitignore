@@ -1,0 +1,10 @@
+node_modules/
+# WhatsApp session credentials: never commit
+session/
+auth_info*/
+creds.json
+pre-key-*.json
+session-*.json
+sender-key-*.json
+app-state-sync-*.json
+*.log
