@@ -24,8 +24,8 @@ A change needs an entry below and inspector approval **before** anyone codes aga
 
 ## Entries
 
-### 2026-10-31 — v1.0.0, initial contracts for G0
-- Status: proposed (waiting for inspector review at G0)
+### 2026-10-31 — v1.0.0 frozen at G0
+- Status: approved by the inspector (G0, 2026-10-31)
 - Files: all
 - What: first version of openapi.yaml, ws_events.json, message.schema.json, intent.schema.json,
   voice_api.yaml, ocr_api.yaml, adapter_api.yaml, db_schema.sql/.md
