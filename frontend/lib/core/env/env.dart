@@ -10,7 +10,7 @@ class Env {
   static const kApiUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:8000');
 
   /// Compile-time constant so the mock backend is tree-shaken out of real builds.
-  static const kUseMock = bool.fromEnvironment('USE_MOCK', defaultValue: true);
+  static const kUseMock = bool.fromEnvironment('USE_MOCK', defaultValue: false);
 
   /// Backend base URL, without trailing slash (REST lives under `/v1`).
   final String apiUrl;

@@ -7,7 +7,8 @@ ARG FLUTTER_VERSION=3.44.9
 FROM ghcr.io/cirruslabs/flutter:${FLUTTER_VERSION} AS build
 # Backend URL as seen from the browser (host port 8000).
 ARG API_URL=http://localhost:8000
-ARG USE_MOCK=true
+# Real backend by default (verified live against T1 at G1); USE_MOCK=true for an offline UI demo.
+ARG USE_MOCK=false
 WORKDIR /app
 COPY pubspec.yaml pubspec.lock ./
 RUN flutter pub get

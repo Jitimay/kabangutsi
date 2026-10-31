@@ -10,6 +10,7 @@ import 'package:kabangutsi/data/mock/mock_backend.dart';
 void main() {
   setUp(() => configureDependencies(
         env: const Env(apiUrl: 'http://test', useMock: true),
+        registerRepositories: registerMockRepositories,
       ));
 
   testWidgets('customer app opens on chat and switches language to Kirundi',

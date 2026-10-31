@@ -14,14 +14,20 @@ final sl = GetIt.instance;
 /// Registers app-wide dependencies. Repositories are interfaces with a real
 /// (REST/SSE/WebSocket) and a mock implementation, switched by `USE_MOCK`.
 /// BLoCs/Cubits for a screen are created by that screen with `sl<Repo>()`.
-Future<void> configureDependencies({Env? env}) async {
+///
+/// Tests pass [registerRepositories] (e.g. `registerMockRepositories`) to use the
+/// mock without a `--dart-define`; the app decides with the compile-time
+/// [Env.kUseMock] so the mock is tree-shaken out of real builds.
+Future<void> configureDependencies({Env? env, void Function(GetIt sl)? registerRepositories}) async {
   await sl.reset();
   final e = env ?? Env.fromDefines();
   sl
     ..registerSingleton<Env>(e)
     ..registerLazySingleton<LanguageCubit>(LanguageCubit.new);
 
-  if (Env.kUseMock && e.useMock) {
+  if (registerRepositories != null) {
+    registerRepositories(sl);
+  } else if (Env.kUseMock) {
     registerMockRepositories(sl);
   } else {
     final api = ApiClient(e);
