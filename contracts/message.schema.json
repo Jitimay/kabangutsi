@@ -233,7 +233,7 @@
           "expected_input": "text",
           "handoff": false,
           "end_session": false,
-          "model_used": "gemma4:e4b",
+          "model_used": "gemma:2b",
           "model_notice": null,
           "ts": "2026-11-02T08:15:33Z"
         },
@@ -261,7 +261,7 @@
           "expected_input": "text",
           "handoff": false,
           "end_session": false,
-          "model_used": "gemma4:e4b",
+          "model_used": "gemma:2b",
           "model_notice": null,
           "ts": "2026-11-02T09:31:05Z"
         },
