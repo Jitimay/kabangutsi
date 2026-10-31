@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kabangutsi.local/contracts/intent.schema.json",
+  "title": "LLM intent output",
+  "description": "The JSON the LLM must return for each customer turn. The backend validates it with Pydantic (extra fields forbidden); on failure it retries once, then uses the keyword fallback (fr/en/rn), which also produces this exact shape. The LLM only understands: it never sees a PIN, a date of birth or an account number in full, and it never decides an action.",
+  "type": "object",
+  "required": ["intent", "lang", "entities", "confidence", "frustration"],
+  "additionalProperties": false,
+  "properties": {
+    "intent": {
+      "type": "string",
+      "enum": ["product_info", "account_opening", "card_block", "loan_info", "complaint", "branch_info", "handoff", "other"],
+      "description": "product_info = products, fees, services; account_opening = requirements to open an account; card_block = lost, stolen or blocked card; loan_info = loan products and repayment simulation; complaint = file or follow a complaint; branch_info = branch hours, address, phone; handoff = caller asks for a human; other = greeting, thanks, off-topic."
+    },
+    "lang": {
+      "type": "string",
+      "enum": ["fr", "en", "rn"],
+      "description": "Language of the customer turn (fr, en, rn = Kirundi)."
+    },
+    "entities": {
+      "type": "object",
+      "description": "Only these keys are allowed; omit keys that are not mentioned. Sensitive values (PIN, date of birth, full account number) are NOT entities: the orchestrator collects them in code.",
+      "additionalProperties": false,
+      "properties": {
+        "province": {
+          "type": "string",
+          "description": "Province name as written in the knowledge base (e.g. Bujumbura, Gitega, Ngozi, Muyinga, Rumonge)."
+        },
+        "town": { "type": "string", "description": "Town or commune name." },
+        "branch_name": { "type": "string" },
+        "product": {
+          "type": "string",
+          "description": "Product id when recognisable: current_account, savings_account, youth_account, debit_card, mobile_banking, business_loan, agri_loan, salary_advance, housing_loan, school_fees_loan, women_group_loan."
+        },
+        "loan_amount": { "type": "integer", "minimum": 0, "description": "FBu, integer." },
+        "term_months": { "type": "integer", "minimum": 1, "maximum": 360 },
+        "card_last4": { "type": "string", "pattern": "^[0-9]{4}$" },
+        "card_issue": { "type": "string", "enum": ["lost", "stolen", "blocked", "damaged", "swallowed_by_atm", "fraud_suspected"] },
+        "complaint_category": {
+          "type": "string",
+          "enum": ["fees", "card", "loan", "account", "service_quality", "mobile_banking", "atm", "other"]
+        },
+        "ticket_number": { "type": "string", "pattern": "^TCK-[0-9]{4}-[0-9]{5}$" },
+        "urgency": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "topic": { "type": "string", "maxLength": 120, "description": "Short free-text topic for knowledge-base search." }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Model confidence in the intent. Below CONFIDENCE_THRESHOLD (default 0.5) twice in a row → handoff (reason low_confidence)."
+    },
+    "frustration": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Caller frustration for this turn. At or above FRUSTRATION_THRESHOLD (default 0.7) → urgency raised and handoff (reason frustration)."
+    }
+  },
+  "examples": [
+    {
+      "intent": "branch_info",
+      "lang": "rn",
+      "entities": { "province": "Ngozi", "topic": "amasaha y'ishami" },
+      "confidence": 0.91,
+      "frustration": 0.05
+    },
+    {
+      "intent": "loan_info",
+      "lang": "fr",
+      "entities": { "product": "business_loan", "loan_amount": 5000000, "term_months": 24 },
+      "confidence": 0.88,
+      "frustration": 0.1
+    },
+    {
+      "intent": "card_block",
+      "lang": "en",
+      "entities": { "card_issue": "lost", "card_last4": "4821" },
+      "confidence": 0.95,
+      "frustration": 0.3
+    },
+    {
+      "intent": "complaint",
+      "lang": "rn",
+      "entities": { "complaint_category": "fees", "urgency": "high", "topic": "amafaranga yakuweko atazwi" },
+      "confidence": 0.82,
+      "frustration": 0.86
+    },
+    {
+      "intent": "account_opening",
+      "lang": "en",
+      "entities": { "product": "savings_account", "topic": "documents required" },
+      "confidence": 0.9,
+      "frustration": 0.0
+    },
+    {
+      "intent": "handoff",
+      "lang": "fr",
+      "entities": {},
+      "confidence": 0.97,
+      "frustration": 0.55
+    }
+  ]
+}

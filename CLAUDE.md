@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Kabangutsi — shared rules for every terminal
 
 Kabangutsi is an AI call center assistant for BancoBu (Burundi), built for a hackathon.
@@ -8,6 +12,49 @@ human agent with a summary when needed, and runs **100% locally**.
 - PRD (source of truth): https://claude.ai/artifact/JneUkGctoTKzFiNAUS1gFp
 - Challenge brief: `requirements/ai_call_center_assistant_challenge.md`
 - Your personal instructions: `docs/terminals/<your terminal>.md`
+- Copy-paste prompts to start each terminal: `docs/terminals/PROMPTS.md`
+
+> Project state: Wave 0 (foundations). Most folders, `contracts/` and `scripts/` are created during
+> Wave 0 by T0; if a path below does not exist yet, it has not been built — check `status/T0.md`.
+
+## Architecture (request flow)
+
+```
+Channel (Flutter call/chat, USSD sim, SMS modem, WhatsApp)
+  → adapter (backend/channels/, sms/, whatsapp/) converts to the standard message (contracts/message.schema.json)
+  → POST /v1/channels/{channel}/inbound or the app's /v1 conversation API
+  → [voice/ service: STT for audio in]
+  → orchestrator (per-session state machine; PIN/identity handled here, never by the LLM)
+  → model router (picks an installed Ollama model by capability; auto-switches, logs model_events)
+  → NLU: LLM returns intent JSON (contracts/intent.schema.json), Pydantic-validated, keyword fallback
+  → policy (code-only checks) → intent handler (card block, loan, complaint, branch, product/RAG)
+  → PostgreSQL (pgvector + pg_trgm/full-text hybrid search for the knowledge base)
+  → reply (templates fr/en/rn; short_text ≤160 for SMS) → [voice/ TTS for audio out]
+  → events via Postgres LISTEN/NOTIFY → WebSocket /v1/ws → Flutter agent dashboard
+  (handoff to a human agent with AI summary; queue claim uses SELECT … FOR UPDATE SKIP LOCKED)
+```
+
+- Only the FastAPI backend writes to PostgreSQL; every other service talks to it over HTTP.
+- `voice/` and `ocr/` are separate FastAPI services (CPU-heavy work kept out of the API process).
+- Model capabilities come from Ollama `/api/show` at runtime, never hard-coded.
+
+## Commands
+
+Run from the repo root unless noted. Service ports are in the conventions table below.
+
+| Task | Command |
+|---|---|
+| Start the stack | `docker compose up -d` (SMS modem: add `--profile hardware`) |
+| Pull LLMs into the ollama volume | `scripts/pull_models.sh` |
+| Reset demo data | `scripts/reset_demo.sh` |
+| Backend deps (local dev) | `pip install -r backend/requirements-dev.txt` (Python 3.12+) |
+| DB migrations | `cd backend && alembic upgrade head` |
+| Backend tests / one test | `cd backend && pytest` · `pytest tests/<file>.py::<test_name>` |
+| Backend lint / format | `cd backend && ruff check . && ruff format .` |
+| Flutter tests / one test | `cd frontend && flutter test` · `flutter test test/<path>_test.dart --plain-name "<test name>"` |
+| Flutter analyze | `cd frontend && flutter analyze` |
+| Flutter web build (offline-safe) | `cd frontend && flutter build web --no-web-resources-cdn -t lib/main_agent.dart` |
+| Run customer app on Android | `cd frontend && flutter run -t lib/main_customer.dart --dart-define=API_URL=http://<host>:8000` |
 
 ## Terminals and folder ownership
 

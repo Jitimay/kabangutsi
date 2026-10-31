@@ -1,0 +1,188 @@
+openapi: 3.1.0
+info:
+  title: Kabangutsi OCR + PDF service
+  version: 1.0.0
+  description: |
+    Internal FastAPI service owned by T4, port 8002, called only by the backend
+    (`OCR_URL`, default `http://ocr:8002`). Offline: OCR models are on disk before start
+    (PaddleOCR auto-download disabled). Never writes to the database.
+
+    Document types come from the YAML registry `ocr/doc_types/*.yaml` (fields, regex, validation,
+    route_to). Adding a YAML file adds a type without code changes. Field confidence below 0.8 →
+    `needs_review: true`; the backend then routes to agent review.
+
+    PDF templates are HTML (WeasyPrint) in fr, en and rn.
+servers:
+  - url: http://ocr:8002
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: Up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, engines, doc_types]
+                properties:
+                  status: { type: string, enum: [ok, degraded] }
+                  engines: { type: array, items: { type: string } }
+                  doc_types: { type: integer }
+              example: { status: ok, engines: [paddleocr, tesseract], doc_types: 4 }
+
+  /doc-types:
+    get:
+      operationId: listDocTypes
+      responses:
+        "200":
+          description: Registered document types
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/DocType" } }
+              example:
+                items:
+                  - id: cni
+                    name: { fr: "Carte nationale d'identité", en: "National ID card", rn: "Ikarata y'ibiranga umuntu" }
+                    fields: [ { name: full_name, type: string, required: true }, { name: id_number, type: string, required: true }, { name: date_of_birth, type: date, required: true }, { name: place_of_birth, type: string, required: false } ]
+                    route_to: account_opening
+                  - id: loan_application
+                    name: { fr: "Demande de crédit", en: "Loan application", rn: "Isaba ry'ingurane" }
+                    fields: [ { name: applicant_name, type: string, required: true }, { name: amount, type: integer, required: true }, { name: term_months, type: integer, required: true }, { name: product, type: string, required: false } ]
+                    route_to: loan_info
+                  - id: coffee_receipt
+                    name: { fr: "Reçu de livraison de café", en: "Coffee delivery receipt", rn: "Icemezo co gutanga ikawa" }
+                    fields: [ { name: farmer_name, type: string, required: true }, { name: weight_kg, type: number, required: true }, { name: amount, type: integer, required: true }, { name: date, type: date, required: true } ]
+                    route_to: loan_info
+                  - id: complaint_photo
+                    name: { fr: "Photo jointe à une réclamation", en: "Complaint photo", rn: "Ifoto y'ikirego" }
+                    fields: [ { name: visible_text, type: string, required: false } ]
+                    route_to: complaint
+
+  /ocr/extract:
+    post:
+      operationId: extractDocument
+      summary: Image → fields with per-field confidence
+      description: Preprocessing (crop, deskew, contrast) → OCR → field extraction (regex/rules) → validation.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, format: binary, description: "jpeg, png or webp, max 10 MB" }
+                doc_type: { type: string, description: "Registry id; omit to auto-detect" }
+                lang: { type: string, enum: [fr, en, rn], description: "Language for messages; OCR itself reads fr/en text" }
+      responses:
+        "200":
+          description: Extraction result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExtractResult" }
+              example:
+                doc_type: cni
+                doc_type_confidence: 0.92
+                fields:
+                  - { name: full_name, value: "NIYONZIMA Claudine", confidence: 0.94, valid: true, needs_review: false }
+                  - { name: id_number, value: "0000/DEMO/123", confidence: 0.71, valid: true, needs_review: true }
+                  - { name: date_of_birth, value: "1990-03-14", confidence: 0.88, valid: true, needs_review: false }
+                needs_review: true
+                route_to: account_opening
+                raw_text: "REPUBLIQUE DU BURUNDI (SPECIMEN FICTIF) ... NIYONZIMA Claudine ..."
+                processing_ms: 2850
+                engine: paddleocr
+        "413": { $ref: "#/components/responses/Error" }
+        "415": { $ref: "#/components/responses/Error" }
+        "422": { $ref: "#/components/responses/Error" }
+
+  /pdf/render:
+    post:
+      operationId: renderPdf
+      summary: Template + data → PDF in the requested language
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template, lang, data]
+              additionalProperties: false
+              properties:
+                template: { type: string, enum: [loan_simulation, ticket_receipt] }
+                lang: { type: string, enum: [fr, en, rn] }
+                data:
+                  description: Template data. loan_simulation → LoanSimulation (backend openapi); ticket_receipt → Ticket (ws_events.json).
+                  oneOf:
+                    - { $ref: "openapi.yaml#/components/schemas/LoanSimulation" }
+                    - { $ref: "ws_events.json#/$defs/Ticket" }
+            example:
+              template: loan_simulation
+              lang: fr
+              data: { product_id: business_loan, product_name: "Crédit commerce", amount: 5000000, term_months: 24, annual_rate_pct: 16.0, monthly_payment: 244816, total_payment: 5875584, total_interest: 875584, explanation: "…", lang: fr, pdf: null }
+      responses:
+        "200":
+          description: PDF bytes
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        "422": { $ref: "#/components/responses/Error" }
+
+components:
+  responses:
+    Error:
+      description: Error (same shape as the backend Error)
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [code, message]
+            properties:
+              code: { type: string, enum: [validation_error, too_large, unsupported_media_type, unknown_doc_type, unknown_template, internal_error] }
+              message: { type: string }
+              details: { type: object }
+  schemas:
+    LocalizedText: { $ref: "message.schema.json#/$defs/LocalizedText" }
+    DocType:
+      type: object
+      required: [id, name, fields, route_to]
+      properties:
+        id: { type: string }
+        name: { $ref: "#/components/schemas/LocalizedText" }
+        fields:
+          type: array
+          items:
+            type: object
+            required: [name, type, required]
+            properties:
+              name: { type: string }
+              type: { type: string, enum: [string, integer, number, date] }
+              required: { type: boolean }
+        route_to: { type: string, enum: [product_info, account_opening, card_block, loan_info, complaint, branch_info, handoff, other] }
+    ExtractedField:
+      type: object
+      required: [name, value, confidence, valid, needs_review]
+      properties:
+        name: { type: string }
+        value: { type: [string, number, integer, "null"] }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        valid: { type: boolean, description: "Passed the registry validation (regex, range)" }
+        needs_review: { type: boolean, description: "confidence < 0.8 or not valid" }
+    ExtractResult:
+      type: object
+      required: [doc_type, doc_type_confidence, fields, needs_review, route_to, processing_ms, engine]
+      properties:
+        doc_type: { type: string }
+        doc_type_confidence: { type: number, minimum: 0, maximum: 1 }
+        fields: { type: array, items: { $ref: "#/components/schemas/ExtractedField" } }
+        needs_review: { type: boolean, description: true if any field needs review }
+        route_to: { type: string }
+        raw_text: { type: string }
+        processing_ms: { type: integer }
+        engine: { type: string, enum: [paddleocr, tesseract] }
