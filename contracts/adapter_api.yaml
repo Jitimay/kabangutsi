@@ -1,0 +1,58 @@
+openapi: 3.1.0
+info:
+  title: Kabangutsi channel adapter API (sms-gateway, whatsapp-bridge)
+  version: 1.0.0
+  description: |
+    What the SMS gateway (`sms/`, port 8003) and the WhatsApp bridge (`whatsapp/`, port 8004) expose,
+    both owned by T4. Inbound traffic goes adapter → backend (`POST /v1/channels/{channel}/inbound`
+    in openapi.yaml) and gets a synchronous reply. This file covers the other direction: messages the
+    backend pushes later (a human agent's reply, a ticket update), sent by the backend to
+    `SMS_GATEWAY_URL` / `WHATSAPP_BRIDGE_URL`.
+
+    Rules: adapters never touch the database; phone numbers are `+257XXXXXXXX`; SMS sends
+    `short_text` (≤160 chars); WhatsApp sends `text` and attachments (images, PDFs) fetched from the
+    backend `url` (`/v1/files/{id}`, relative to `BACKEND_URL`).
+servers:
+  - url: http://sms-gateway:8003
+  - url: http://whatsapp-bridge:8004
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: Up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, connected]
+                properties:
+                  status: { type: string, enum: [ok, degraded] }
+                  connected: { type: boolean, description: "Modem registered on the network / WhatsApp session logged in" }
+                  detail: { type: string }
+              example: { status: ok, connected: true, detail: "Modem Huawei E3531 on /dev/ttyUSB0, signal 18/31" }
+  /send:
+    post:
+      operationId: send
+      summary: Deliver a backend message to the customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "message.schema.json#/$defs/OutgoingReply" }
+      responses:
+        "202":
+          description: Accepted for delivery
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, message_id]
+                properties:
+                  status: { type: string, enum: [queued, sent] }
+                  message_id: { type: string, description: "Id of the OutgoingReply" }
+        "422":
+          description: Invalid body (e.g. phone null)
+        "503":
+          description: Modem or WhatsApp session not available
