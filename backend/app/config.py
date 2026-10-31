@@ -39,13 +39,34 @@ class Settings(BaseSettings):
     session_reuse_minutes: int = 30
 
     # RAG
-    rag_min_score: float = 0.12
+    rag_min_score: float = 0.25  # lexical relevance gate (see rag/search.py)
+    rag_min_vector: float = 0.72  # or cosine similarity (nomic-embed-text)
     rag_k: int = 4
+    # Languages where the LLM writes the answer from the chunks (numbers checked against them); the others
+    # get the extractive answer (best KB sentences as written: grounded by construction, < 1 s on CPU).
+    # Default: extractive everywhere. Live test 2026-10-31: gemma:2b turned "registration is free" into
+    # "mobile banking is free" — a distortion no number check catches. Opt in with RAG_LLM_LANGS=fr,en.
+    rag_llm_langs: Annotated[list[str], NoDecode] = []
+    max_answer_sentences: int = 3
+
+    # Audio: channels where speech goes to the voice service STT first (live calls need < 1 s; an audio LLM
+    # takes ~15 s on CPU). Other channels follow the capability router (F20) with STT as fallback (F21).
+    stt_first_channels: Annotated[list[str], NoDecode] = ["phone"]
+    audio_llm_timeout: float = 60.0
+    vision_timeout: float = 90.0
+    # Handoff: queue at once with a code summary, then replace it with the AI summary in the background
+    summary_in_background: bool = True
+    # Backend URL as seen by adapters (attachments /v1/files/... are relative to it)
+    backend_url: str = "http://localhost:8000"
+
+    # Keyword NLU confidence at which it is trusted over the model (and the model call is skipped)
+    keyword_trust: float = 0.75
+    skip_llm_when_trusted: bool = True
 
     # Time budgets for hard-task calls (fall back to code when exceeded)
     handoff_summary_timeout: float = 15.0
     suggestion_timeout: float = 2.5
-    intent_retry_timeout: float = 30.0
+    intent_retry_timeout: float = 15.0
 
     # Other services
     voice_url: str = "http://localhost:8001"
@@ -60,7 +81,7 @@ class Settings(BaseSettings):
     # Start the Postgres LISTEN hub (off in some tests)
     realtime_enabled: bool = True
 
-    @field_validator("model_preference", "cors_origins", mode="before")
+    @field_validator("model_preference", "cors_origins", "rag_llm_langs", "stt_first_channels", mode="before")
     @classmethod
     def _split_csv(cls, v: object) -> object:
         if isinstance(v, str):
