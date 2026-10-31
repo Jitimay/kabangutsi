@@ -1,0 +1,29 @@
+# Kabangutsi backend (FastAPI) - runtime dependencies
+# Python 3.12+ (Docker base image: python:3.12-slim)
+# Voice (STT/TTS) and OCR run in their own containers; they are NOT installed here.
+
+# --- Web framework / server ---
+fastapi==0.162.0
+uvicorn[standard]==0.54.0          # ASGI server + websockets + uvloop
+python-multipart==0.0.32           # file uploads (images, audio clips)
+
+# --- Validation / settings ---
+pydantic==2.14.2                   # intent JSON schemas, standard message format
+pydantic-settings==2.16.2          # .env / config loading
+
+# --- Database: PostgreSQL + pgvector ---
+SQLAlchemy[asyncio]==2.1.6
+asyncpg==0.32.0                    # async PostgreSQL driver (also used for LISTEN/NOTIFY)
+alembic==1.20.1                    # migrations
+pgvector==0.5.1                    # vector column type for SQLAlchemy
+
+# --- AI / service calls ---
+ollama==0.6.3                      # Ollama client: chat, model list, capabilities (/api/show)
+httpx==0.28.1                      # calls to voice, ocr services and channel adapters
+
+# --- Config / documents ---
+PyYAML==6.0.3                      # config.yaml, OCR document registry
+
+# --- Security / logging ---
+argon2-cffi==25.1.0                # PIN hashing
+structlog==26.1.0                  # structured logs (call audit trail)

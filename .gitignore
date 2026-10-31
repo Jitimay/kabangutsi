@@ -1,0 +1,43 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Flutter / Dart
+frontend/.dart_tool/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/android/.gradle/
+frontend/ios/Pods/
+*.iml
+.idea/
+
+# Node (WhatsApp bridge, if any)
+node_modules/
+
+# Data, models, dumps
+*.db
+*.sqlite
+*.dump
+*.sql.gz
+models/
+**/model_cache/
+voice/models/
+ocr/models/
+whatsapp/session/
+
+# OS / editors
+.DS_Store
+.vscode/
+*.log
