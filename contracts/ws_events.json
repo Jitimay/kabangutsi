@@ -1,0 +1,398 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kabangutsi.local/contracts/ws_events.json",
+  "title": "Kabangutsi WebSocket events",
+  "description": "Every message the backend sends on GET /v1/ws (server → client only; clients send nothing except optional {\"type\":\"ping\"}). Connect as an agent with ?role=agent&agent_id=<id> to receive every event, or as a customer with ?role=customer&conversation_id=<id> to receive only call.turn, call.handoff_requested, call.claimed, call.ended and model.switched for that conversation. Events are produced from Postgres LISTEN/NOTIFY. The $defs here (Call, Turn, Ticket, Stats, ModelSwitch, Suggestion) are also the REST shapes referenced by openapi.yaml. All example data is fictional.",
+  "type": "object",
+  "required": ["type", "id", "ts", "data"],
+  "oneOf": [
+    { "$ref": "#/$defs/CallStartedEvent" },
+    { "$ref": "#/$defs/CallTurnEvent" },
+    { "$ref": "#/$defs/CallHandoffRequestedEvent" },
+    { "$ref": "#/$defs/CallClaimedEvent" },
+    { "$ref": "#/$defs/CallEndedEvent" },
+    { "$ref": "#/$defs/TicketCreatedEvent" },
+    { "$ref": "#/$defs/TicketUpdatedEvent" },
+    { "$ref": "#/$defs/ModelSwitchedEvent" },
+    { "$ref": "#/$defs/StatsUpdatedEvent" },
+    { "$ref": "#/$defs/AgentSuggestionEvent" }
+  ],
+  "$defs": {
+    "Uuid": { "$ref": "message.schema.json#/$defs/Uuid" },
+    "Timestamp": { "$ref": "message.schema.json#/$defs/Timestamp" },
+    "Lang": { "$ref": "message.schema.json#/$defs/Lang" },
+    "Channel": { "$ref": "message.schema.json#/$defs/Channel" },
+    "Attachment": { "$ref": "message.schema.json#/$defs/Attachment" },
+    "IntentName": {
+      "type": "string",
+      "enum": ["product_info", "account_opening", "card_block", "loan_info", "complaint", "branch_info", "handoff", "other"]
+    },
+    "Urgency": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "CallStatus": {
+      "type": "string",
+      "enum": ["active", "queued", "with_agent", "ended"],
+      "description": "active = talking to the AI; queued = waiting for a human agent; with_agent = claimed by an agent; ended."
+    },
+    "HandoffReason": {
+      "type": "string",
+      "enum": ["customer_request", "frustration", "low_confidence", "no_answer", "identity_failed", "agent_review", "other"],
+      "description": "no_answer = nothing relevant in the knowledge base; identity_failed = 3 failed identity checks; agent_review = document fields below 0.8 confidence."
+    },
+    "Call": {
+      "type": "object",
+      "description": "A conversation on any channel. Conversation id = call id.",
+      "required": ["id", "phone", "channel", "lang", "status", "resolved_by", "model", "last_intent", "urgency", "frustration", "handoff_reason", "summary", "claimed_by", "started_at", "queued_at", "claimed_at", "ended_at", "wait_seconds"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "phone": { "oneOf": [{ "$ref": "message.schema.json#/$defs/Phone" }, { "type": "null" }] },
+        "customer_name": { "type": ["string", "null"], "description": "Only after a successful identity check." },
+        "channel": { "$ref": "#/$defs/Channel" },
+        "lang": { "$ref": "#/$defs/Lang" },
+        "status": { "$ref": "#/$defs/CallStatus" },
+        "resolved_by": { "type": ["string", "null"], "enum": ["ai", "agent", "abandoned", null] },
+        "model": { "type": ["string", "null"], "description": "The user's chosen model for this session." },
+        "last_intent": { "oneOf": [{ "$ref": "#/$defs/IntentName" }, { "type": "null" }] },
+        "urgency": { "$ref": "#/$defs/Urgency" },
+        "frustration": { "type": "number", "minimum": 0, "maximum": 1, "description": "Highest frustration seen so far." },
+        "handoff_reason": { "oneOf": [{ "$ref": "#/$defs/HandoffReason" }, { "type": "null" }] },
+        "summary": { "type": ["string", "null"], "description": "AI summary for the agent, in the agent dashboard language (fr by default). Set at handoff." },
+        "claimed_by": { "type": ["string", "null"], "description": "Agent id." },
+        "started_at": { "$ref": "#/$defs/Timestamp" },
+        "queued_at": { "oneOf": [{ "$ref": "#/$defs/Timestamp" }, { "type": "null" }] },
+        "claimed_at": { "oneOf": [{ "$ref": "#/$defs/Timestamp" }, { "type": "null" }] },
+        "ended_at": { "oneOf": [{ "$ref": "#/$defs/Timestamp" }, { "type": "null" }] },
+        "wait_seconds": { "type": ["integer", "null"], "minimum": 0, "description": "claimed_at (or now) − queued_at; null if never queued." }
+      }
+    },
+    "Turn": {
+      "type": "object",
+      "description": "One line of a transcript. A turn answering a PIN or date-of-birth prompt is stored and sent with text \"••••\" (redacted).",
+      "required": ["id", "call_id", "speaker", "text", "lang", "intent", "confidence", "frustration", "attachments", "model_used", "ts"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "call_id": { "$ref": "#/$defs/Uuid" },
+        "speaker": { "type": "string", "enum": ["customer", "ai", "agent", "system"] },
+        "agent_id": { "type": ["string", "null"] },
+        "text": { "type": "string" },
+        "lang": { "$ref": "#/$defs/Lang" },
+        "intent": { "oneOf": [{ "$ref": "#/$defs/IntentName" }, { "type": "null" }] },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "frustration": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "attachments": { "type": "array", "items": { "$ref": "#/$defs/Attachment" } },
+        "model_used": { "type": ["string", "null"] },
+        "ts": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "Ticket": {
+      "type": "object",
+      "required": ["id", "number", "call_id", "phone", "category", "urgency", "summary", "status", "lang", "created_at", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "number": { "type": "string", "pattern": "^TCK-[0-9]{4}-[0-9]{5}$", "examples": ["TCK-2026-00042"] },
+        "call_id": { "oneOf": [{ "$ref": "#/$defs/Uuid" }, { "type": "null" }] },
+        "phone": { "oneOf": [{ "$ref": "message.schema.json#/$defs/Phone" }, { "type": "null" }] },
+        "customer_name": { "type": ["string", "null"] },
+        "category": { "type": "string", "enum": ["fees", "card", "loan", "account", "service_quality", "mobile_banking", "atm", "other"] },
+        "urgency": { "$ref": "#/$defs/Urgency" },
+        "summary": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "in_progress", "resolved", "closed"] },
+        "lang": { "$ref": "#/$defs/Lang" },
+        "assigned_to": { "type": ["string", "null"], "description": "Agent id." },
+        "attachments": { "type": "array", "items": { "$ref": "#/$defs/Attachment" } },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "updated_at": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "Stats": {
+      "type": "object",
+      "description": "Supervisor numbers for the current day (Africa/Bujumbura midnight to now).",
+      "required": ["period_start", "total_calls", "resolved_by_ai", "resolved_by_agent", "ai_resolution_rate", "avg_wait_seconds", "queue_length", "active_calls", "open_tickets", "top_intents", "by_channel", "by_lang", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "period_start": { "$ref": "#/$defs/Timestamp" },
+        "total_calls": { "type": "integer", "minimum": 0 },
+        "resolved_by_ai": { "type": "integer", "minimum": 0 },
+        "resolved_by_agent": { "type": "integer", "minimum": 0 },
+        "ai_resolution_rate": { "type": "number", "minimum": 0, "maximum": 1, "description": "resolved_by_ai / (resolved_by_ai + resolved_by_agent); 0 when both are 0." },
+        "avg_wait_seconds": { "type": "number", "minimum": 0 },
+        "queue_length": { "type": "integer", "minimum": 0 },
+        "active_calls": { "type": "integer", "minimum": 0 },
+        "open_tickets": { "type": "integer", "minimum": 0 },
+        "top_intents": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": ["intent", "count"],
+            "additionalProperties": false,
+            "properties": { "intent": { "$ref": "#/$defs/IntentName" }, "count": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "by_channel": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "phone": { "type": "integer" }, "web": { "type": "integer" }, "ussd": { "type": "integer" },
+            "sms": { "type": "integer" }, "whatsapp": { "type": "integer" }
+          }
+        },
+        "by_lang": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "fr": { "type": "integer" }, "en": { "type": "integer" }, "rn": { "type": "integer" } }
+        },
+        "updated_at": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "ModelSwitch": {
+      "type": "object",
+      "description": "F20/F21: the chosen model could not handle the request.",
+      "required": ["id", "call_id", "requested_model", "used_model", "capability_needed", "reason", "fallback_path", "notice", "lang", "ts"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "call_id": { "$ref": "#/$defs/Uuid" },
+        "requested_model": { "type": "string" },
+        "used_model": { "type": ["string", "null"], "description": "Null when no installed model has the capability (fallback_path is then set)." },
+        "capability_needed": { "type": "string", "enum": ["completion", "vision", "audio", "tools", "embedding"] },
+        "reason": { "type": "string", "enum": ["capability_missing", "model_unavailable", "no_capable_model"] },
+        "fallback_path": { "type": ["string", "null"], "enum": ["ocr", "stt", null] },
+        "notice": { "type": "string", "description": "Human-readable notice in the conversation language." },
+        "lang": { "$ref": "#/$defs/Lang" },
+        "ts": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "Suggestion": {
+      "type": "object",
+      "required": ["call_id", "turn_id", "suggestions", "generated_ms"],
+      "additionalProperties": false,
+      "properties": {
+        "call_id": { "$ref": "#/$defs/Uuid" },
+        "turn_id": { "$ref": "#/$defs/Uuid", "description": "The customer turn the suggestions answer." },
+        "suggestions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["text", "lang", "source_ids"],
+            "additionalProperties": false,
+            "properties": {
+              "text": { "type": "string" },
+              "lang": { "$ref": "#/$defs/Lang" },
+              "source_ids": { "type": "array", "items": { "type": "string" }, "description": "kb_chunks ids the suggestion is grounded on." }
+            }
+          }
+        },
+        "generated_ms": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "EventBase": {
+      "type": "object",
+      "required": ["type", "id", "ts", "data"],
+      "properties": {
+        "type": { "type": "string" },
+        "id": { "$ref": "#/$defs/Uuid", "description": "Unique event id (for de-duplication)." },
+        "ts": { "$ref": "#/$defs/Timestamp" },
+        "data": { "type": "object" }
+      }
+    },
+    "CallStartedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "call.started" }, "data": { "$ref": "#/$defs/Call" } },
+      "examples": [{
+        "type": "call.started", "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", "ts": "2026-11-02T08:15:30Z",
+        "data": {
+          "id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d", "phone": "+25779000101", "channel": "phone", "lang": "rn",
+          "status": "active", "resolved_by": null, "model": "gemma4:e2b", "last_intent": null, "urgency": "low",
+          "frustration": 0, "handoff_reason": null, "summary": null, "claimed_by": null,
+          "started_at": "2026-11-02T08:15:30Z", "queued_at": null, "claimed_at": null, "ended_at": null, "wait_seconds": null
+        }
+      }]
+    },
+    "CallTurnEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "call.turn" }, "data": { "$ref": "#/$defs/Turn" } },
+      "examples": [{
+        "type": "call.turn", "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e", "ts": "2026-11-02T08:15:31Z",
+        "data": {
+          "id": "c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f", "call_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+          "speaker": "customer", "agent_id": null, "text": "Ishami rya Ngozi ryugurura ryari?", "lang": "rn",
+          "intent": "branch_info", "confidence": 0.91, "frustration": 0.05, "attachments": [], "model_used": "gemma4:e2b",
+          "ts": "2026-11-02T08:15:31Z"
+        }
+      }]
+    },
+    "CallHandoffRequestedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": {
+        "type": { "const": "call.handoff_requested" },
+        "data": {
+          "type": "object",
+          "required": ["call", "reason", "summary", "transcript"],
+          "additionalProperties": false,
+          "properties": {
+            "call": { "$ref": "#/$defs/Call" },
+            "reason": { "$ref": "#/$defs/HandoffReason" },
+            "summary": { "type": "string" },
+            "transcript": { "type": "array", "items": { "$ref": "#/$defs/Turn" } }
+          }
+        }
+      },
+      "examples": [{
+        "type": "call.handoff_requested", "id": "d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f7a", "ts": "2026-11-02T11:40:02Z",
+        "data": {
+          "call": {
+            "id": "4d5e6f7a-8b9c-4d0e-8f1a-2b3c4d5e6f7a", "phone": "+25779000101", "channel": "phone", "lang": "rn",
+            "status": "queued", "resolved_by": null, "model": "gemma4:e2b", "last_intent": "complaint", "urgency": "high",
+            "frustration": 0.86, "handoff_reason": "frustration",
+            "summary": "Cliente kirundophone (Ngozi). Se plaint de frais de tenue de compte prélevés deux fois en octobre. Ticket TCK-2026-00042 créé (frais, urgence haute). Très frustrée, demande un remboursement.",
+            "claimed_by": null, "started_at": "2026-11-02T11:37:10Z", "queued_at": "2026-11-02T11:40:02Z",
+            "claimed_at": null, "ended_at": null, "wait_seconds": 0
+          },
+          "reason": "frustration",
+          "summary": "Cliente kirundophone (Ngozi). Se plaint de frais de tenue de compte prélevés deux fois en octobre. Ticket TCK-2026-00042 créé (frais, urgence haute). Très frustrée, demande un remboursement.",
+          "transcript": [
+            {
+              "id": "e5f6a7b8-c9d0-4e1f-8a2b-3c4d5e6f7a8b", "call_id": "4d5e6f7a-8b9c-4d0e-8f1a-2b3c4d5e6f7a",
+              "speaker": "customer", "agent_id": null, "text": "Mwanyatse amafaranga kabiri! Ndashaka kuvugana n'umuntu.", "lang": "rn",
+              "intent": "complaint", "confidence": 0.82, "frustration": 0.86, "attachments": [], "model_used": "gemma4:e2b",
+              "ts": "2026-11-02T11:39:50Z"
+            }
+          ]
+        }
+      }]
+    },
+    "CallClaimedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": {
+        "type": { "const": "call.claimed" },
+        "data": {
+          "type": "object",
+          "required": ["call", "agent_id", "agent_name"],
+          "additionalProperties": false,
+          "properties": {
+            "call": { "$ref": "#/$defs/Call" },
+            "agent_id": { "type": "string" },
+            "agent_name": { "type": "string" }
+          }
+        }
+      },
+      "examples": [{
+        "type": "call.claimed", "id": "f6a7b8c9-d0e1-4f2a-9b3c-4d5e6f7a8b9c", "ts": "2026-11-02T11:40:30Z",
+        "data": {
+          "call": {
+            "id": "4d5e6f7a-8b9c-4d0e-8f1a-2b3c4d5e6f7a", "phone": "+25779000101", "channel": "phone", "lang": "rn",
+            "status": "with_agent", "resolved_by": null, "model": "gemma4:e2b", "last_intent": "complaint", "urgency": "high",
+            "frustration": 0.86, "handoff_reason": "frustration", "summary": "Cliente kirundophone (Ngozi)…",
+            "claimed_by": "agent-01", "started_at": "2026-11-02T11:37:10Z", "queued_at": "2026-11-02T11:40:02Z",
+            "claimed_at": "2026-11-02T11:40:30Z", "ended_at": null, "wait_seconds": 28
+          },
+          "agent_id": "agent-01",
+          "agent_name": "Agent Aline (demo)"
+        }
+      }]
+    },
+    "CallEndedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "call.ended" }, "data": { "$ref": "#/$defs/Call" } },
+      "examples": [{
+        "type": "call.ended", "id": "a7b8c9d0-e1f2-4a3b-8c4d-5e6f7a8b9c0d", "ts": "2026-11-02T09:33:00Z",
+        "data": {
+          "id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e", "phone": "+25779000104", "channel": "web", "lang": "fr",
+          "status": "ended", "resolved_by": "ai", "model": "gemma4:e2b", "last_intent": "loan_info", "urgency": "low",
+          "frustration": 0.1, "handoff_reason": null, "summary": null, "claimed_by": null,
+          "started_at": "2026-11-02T09:30:40Z", "queued_at": null, "claimed_at": null, "ended_at": "2026-11-02T09:33:00Z", "wait_seconds": null
+        }
+      }]
+    },
+    "TicketCreatedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "ticket.created" }, "data": { "$ref": "#/$defs/Ticket" } },
+      "examples": [{
+        "type": "ticket.created", "id": "b8c9d0e1-f2a3-4b4c-9d5e-6f7a8b9c0d1e", "ts": "2026-11-02T11:39:55Z",
+        "data": {
+          "id": "c9d0e1f2-a3b4-4c5d-8e6f-7a8b9c0d1e2f", "number": "TCK-2026-00042", "call_id": "4d5e6f7a-8b9c-4d0e-8f1a-2b3c4d5e6f7a",
+          "phone": "+25779000101", "customer_name": null, "category": "fees", "urgency": "high",
+          "summary": "Account maintenance fee charged twice in October; customer asks for a refund.",
+          "status": "open", "lang": "rn", "assigned_to": null, "attachments": [],
+          "created_at": "2026-11-02T11:39:55Z", "updated_at": "2026-11-02T11:39:55Z"
+        }
+      }]
+    },
+    "TicketUpdatedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "ticket.updated" }, "data": { "$ref": "#/$defs/Ticket" } },
+      "examples": [{
+        "type": "ticket.updated", "id": "d0e1f2a3-b4c5-4d6e-8f7a-8b9c0d1e2f3a", "ts": "2026-11-02T11:45:00Z",
+        "data": {
+          "id": "c9d0e1f2-a3b4-4c5d-8e6f-7a8b9c0d1e2f", "number": "TCK-2026-00042", "call_id": "4d5e6f7a-8b9c-4d0e-8f1a-2b3c4d5e6f7a",
+          "phone": "+25779000101", "customer_name": "Claudine Niyonzima (fictional)", "category": "fees", "urgency": "high",
+          "summary": "Account maintenance fee charged twice in October; customer asks for a refund.",
+          "status": "in_progress", "lang": "rn", "assigned_to": "agent-01", "attachments": [],
+          "created_at": "2026-11-02T11:39:55Z", "updated_at": "2026-11-02T11:45:00Z"
+        }
+      }]
+    },
+    "ModelSwitchedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "model.switched" }, "data": { "$ref": "#/$defs/ModelSwitch" } },
+      "examples": [
+        {
+          "type": "model.switched", "id": "e1f2a3b4-c5d6-4e7f-8a8b-9c0d1e2f3a4b", "ts": "2026-11-02T09:02:12Z",
+          "data": {
+            "id": "f2a3b4c5-d6e7-4f8a-9b9c-0d1e2f3a4b5c", "call_id": "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+            "requested_model": "gemma:2b", "used_model": "gemma4:e4b", "capability_needed": "vision",
+            "reason": "capability_missing", "fallback_path": null,
+            "notice": "Modèle changé pour gemma4:e4b : gemma:2b ne peut pas lire les images.", "lang": "fr", "ts": "2026-11-02T09:02:12Z"
+          }
+        },
+        {
+          "type": "model.switched", "id": "a3b4c5d6-e7f8-4a9b-8c0d-1e2f3a4b5c6d", "ts": "2026-11-02T09:05:00Z",
+          "data": {
+            "id": "b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e", "call_id": "6f7a8b9c-0d1e-4f2a-9b3c-4d5e6f7a8b9c",
+            "requested_model": "gemma:2b", "used_model": null, "capability_needed": "vision",
+            "reason": "no_capable_model", "fallback_path": "ocr",
+            "notice": "Nta modèle ishoboye gusoma amafoto: twakoresheje OCR.", "lang": "rn", "ts": "2026-11-02T09:05:00Z"
+          }
+        }
+      ]
+    },
+    "StatsUpdatedEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "stats.updated" }, "data": { "$ref": "#/$defs/Stats" } },
+      "examples": [{
+        "type": "stats.updated", "id": "c5d6e7f8-a9b0-4c1d-8e2f-3a4b5c6d7e8f", "ts": "2026-11-02T11:41:00Z",
+        "data": {
+          "period_start": "2026-11-01T22:00:00Z", "total_calls": 48, "resolved_by_ai": 37, "resolved_by_agent": 8,
+          "ai_resolution_rate": 0.822, "avg_wait_seconds": 41.5, "queue_length": 2, "active_calls": 3, "open_tickets": 6,
+          "top_intents": [
+            { "intent": "branch_info", "count": 14 }, { "intent": "card_block", "count": 11 },
+            { "intent": "loan_info", "count": 9 }, { "intent": "complaint", "count": 6 }
+          ],
+          "by_channel": { "phone": 18, "web": 9, "ussd": 10, "sms": 7, "whatsapp": 4 },
+          "by_lang": { "fr": 17, "en": 9, "rn": 22 },
+          "updated_at": "2026-11-02T11:41:00Z"
+        }
+      }]
+    },
+    "AgentSuggestionEvent": {
+      "allOf": [{ "$ref": "#/$defs/EventBase" }],
+      "properties": { "type": { "const": "agent.suggestion" }, "data": { "$ref": "#/$defs/Suggestion" } },
+      "examples": [{
+        "type": "agent.suggestion", "id": "d6e7f8a9-b0c1-4d2e-9f3a-4b5c6d7e8f9a", "ts": "2026-11-02T11:41:10Z",
+        "data": {
+          "call_id": "4d5e6f7a-8b9c-4d0e-8f1a-2b3c4d5e6f7a", "turn_id": "e7f8a9b0-c1d2-4e3f-8a4b-5c6d7e8f9a0b",
+          "suggestions": [
+            { "text": "Turabasavye imbabazi. Amafaranga yakuweko kabiri azosubizwa mu misi 5 y'akazi inyuma yo kugenzura.", "lang": "rn", "source_ids": ["kb-complaint-process-rn-0"] },
+            { "text": "Itike yanyu ni TCK-2026-00042; muzohabwa ubutumwa bugufi igihe ikibazo kizoba carangiye.", "lang": "rn", "source_ids": ["kb-complaint-process-rn-0"] }
+          ],
+          "generated_ms": 2140
+        }
+      }]
+    }
+  }
+}

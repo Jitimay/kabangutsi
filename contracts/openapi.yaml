@@ -1,0 +1,1231 @@
+openapi: 3.1.0
+info:
+  title: Kabangutsi backend API
+  version: 1.0.0
+  description: |
+    REST API of the Kabangutsi backend (FastAPI, port 8000). Frozen at gate G0; changes go through
+    `contracts/CHANGELOG.md`.
+
+    Conventions
+    - All paths are under `/v1`. JSON bodies, UTF-8. IDs are UUID v4 strings unless stated.
+    - Timestamps ISO 8601 UTC (`Z`). Money in FBu as integers. Phones `+257XXXXXXXX`.
+    - Languages `fr`, `en`, `rn` (Kirundi). Endpoints that return user-facing text take `lang`
+      (query or body); default is the conversation language, else `fr`.
+    - Errors always use the `Error` schema.
+    - A conversation and a call are the same thing: `conversation_id` == `call_id`.
+      Customer-side endpoints use `/conversations`, agent-side endpoints use `/calls`.
+    - No authentication in the prototype (local demo). Agent endpoints take an `agent_id`
+      from `GET /v1/agents`.
+    - The PIN and date of birth are only ever accepted by `POST /v1/cards/block` or as a message
+      when the previous reply had `expected_input` = `pin` / `date_of_birth`. They are checked in code,
+      never sent to a model, never logged, and stored in transcripts as `••••`.
+
+    Real-time
+    - `GET /v1/ws` (WebSocket) — events defined in `ws_events.json`.
+    - Streaming chat replies use Server-Sent Events on `POST /v1/conversations/{id}/messages`
+      when the request has `Accept: text/event-stream` (see `StreamEvent`).
+
+    Shared schemas live in `message.schema.json` (standard message) and `ws_events.json`
+    (Call, Turn, Ticket, Stats, ModelSwitch, Suggestion) and are referenced from here.
+servers:
+  - url: http://localhost:8000
+tags:
+  - name: system
+  - name: models
+  - name: conversations
+  - name: files
+  - name: cards
+  - name: loans
+  - name: tickets
+  - name: branches
+  - name: knowledge
+  - name: calls
+  - name: agents
+  - name: stats
+  - name: channels
+  - name: documents
+
+paths:
+  /v1/health:
+    get:
+      tags: [system]
+      operationId: getHealth
+      summary: Liveness and dependency status
+      responses:
+        "200":
+          description: Backend is up. `status` is `degraded` when a dependency is down.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+              example:
+                status: ok
+                version: 1.0.0
+                dependencies: { postgres: ok, ollama: ok, voice: ok, ocr: down }
+                ts: "2026-11-02T08:00:00Z"
+
+  /v1/ws:
+    get:
+      tags: [system]
+      operationId: openWebSocket
+      summary: WebSocket for live events (see ws_events.json)
+      description: |
+        Upgrade to WebSocket. Agents: `?role=agent&agent_id=agent-01` receive all events.
+        Customers: `?role=customer&conversation_id=<id>` receive only events for that conversation
+        (`call.turn`, `call.handoff_requested`, `call.claimed`, `call.ended`, `model.switched`).
+        On connect as agent, the server first sends one `stats.updated` event.
+      parameters:
+        - { name: role, in: query, required: true, schema: { type: string, enum: [agent, customer] } }
+        - { name: agent_id, in: query, schema: { type: string } }
+        - { name: conversation_id, in: query, schema: { $ref: "#/components/schemas/Uuid" } }
+      responses:
+        "101": { description: Switching protocols }
+        "400":
+          description: Missing agent_id or conversation_id for the role
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/models:
+    get:
+      tags: [models]
+      operationId: listModels
+      summary: Installed Ollama models with capabilities (F19)
+      description: |
+        Read live from Ollama (`/api/tags` + `/api/show`) — never hard-coded. Cached at most 30 s;
+        `?refresh=true` forces a re-read so a newly pulled model appears without a restart.
+        Embedding-only models are listed with `selectable: false`.
+      parameters:
+        - { name: refresh, in: query, schema: { type: boolean, default: false } }
+      responses:
+        "200":
+          description: Model list
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ModelList" }
+              example:
+                default_model: gemma4:e2b
+                preference_order: [gemma4:e2b, gemma4:e4b, gemma:2b]
+                models:
+                  - { name: gemma4:e2b, family: gemma4, parameter_size: 5.1B, quantization: Q4_K_M, size_bytes: 7162394016, capabilities: [completion, vision, audio, tools, thinking], selectable: true, is_default: true }
+                  - { name: gemma4:e4b, family: gemma4, parameter_size: 7.5B, quantization: Q4_K_M, size_bytes: 9608350718, capabilities: [completion, vision, audio, tools, thinking], selectable: true, is_default: false }
+                  - { name: gemma:2b, family: gemma, parameter_size: 3B, quantization: Q4_0, size_bytes: 1678456656, capabilities: [completion], selectable: true, is_default: false }
+                  - { name: nomic-embed-text:latest, family: nomic-bert, parameter_size: 137M, quantization: F16, size_bytes: 274302450, capabilities: [embedding], selectable: false, is_default: false }
+        "503":
+          description: Ollama unreachable
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/conversations:
+    post:
+      tags: [conversations]
+      operationId: createConversation
+      summary: Start a chat or simulated phone call
+      description: Emits `call.started`. Returns the greeting as the first reply.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConversationCreate" }
+            examples:
+              phone_rn: { value: { channel: phone, phone: "+25779000101", lang: rn, model: gemma4:e2b } }
+              chat_fr: { value: { channel: web, phone: null, lang: fr, model: null } }
+      responses:
+        "201":
+          description: Conversation created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Conversation" }
+              example:
+                id: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                channel: phone
+                phone: "+25779000101"
+                lang: rn
+                model: gemma4:e2b
+                status: active
+                started_at: "2026-11-02T08:15:28Z"
+                greeting:
+                  id: 0b1c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4e
+                  conversation_id: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                  in_reply_to: null
+                  channel: phone
+                  phone: "+25779000101"
+                  session_id: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                  lang: rn
+                  text: "Murakaza neza kuri BancoBu. Ndi Kabangutsi, umufasha wanyu. Nobafasha iki?"
+                  short_text: "Murakaza neza kuri BancoBu. Nobafasha iki?"
+                  speaker: ai
+                  intent: null
+                  actions: []
+                  attachments: []
+                  expected_input: text
+                  handoff: false
+                  end_session: false
+                  model_used: null
+                  model_notice: null
+                  ts: "2026-11-02T08:15:28Z"
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/conversations/{conversation_id}:
+    parameters:
+      - $ref: "#/components/parameters/ConversationId"
+    get:
+      tags: [conversations]
+      operationId: getConversation
+      summary: Conversation with its transcript
+      responses:
+        "200":
+          description: Conversation detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CallDetail" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [conversations]
+      operationId: updateConversation
+      summary: Change the session's chosen model or language
+      description: |
+        Used by the model picker (choice kept per session) and when the user accepts an
+        auto-switch as their new default.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConversationUpdate" }
+            example: { model: gemma4:e4b }
+      responses:
+        "200":
+          description: Updated
+          content: { application/json: { schema: { $ref: "#/components/schemas/Conversation" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/conversations/{conversation_id}/messages:
+    parameters:
+      - $ref: "#/components/parameters/ConversationId"
+    post:
+      tags: [conversations]
+      operationId: sendMessage
+      summary: Send one customer turn (text, image, audio)
+      description: |
+        `multipart/form-data` for direct uploads (app), or JSON with attachments already uploaded
+        via `POST /v1/files`. At least one of `text`, `image`, `audio`, `attachments` is required.
+
+        The router picks the model: the session model, or a capable one if the request needs a
+        capability it lacks (image → vision, audio → audio), or the OCR / STT fallback (F20, F21).
+        Audio is transcribed (by an audio model or the voice service); the transcript is the
+        customer turn's text.
+
+        Response format depends on `Accept`:
+        - `application/json` (default): one `OutgoingReply` when complete.
+        - `text/event-stream`: SSE stream, each event named by `StreamEvent.event`, `data` = JSON:
+          `turn` (customer turn stored, includes STT transcript) → optional `model.switched` →
+          many `token` → one `sentence` per finished sentence (with TTS `audio_url` when `voice=true`)
+          → `done` (the full `OutgoingReply`). On failure: `error` then the stream closes.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { $ref: "#/components/schemas/MessageUpload" }
+            encoding:
+              image: { contentType: "image/jpeg, image/png, image/webp" }
+              audio: { contentType: "audio/wav, audio/webm, audio/ogg, audio/mp4, audio/mpeg" }
+          application/json:
+            schema: { $ref: "#/components/schemas/MessageJson" }
+            examples:
+              text_fr: { value: { text: "Je voudrais un crédit commerce de 5 millions sur 24 mois", lang: null, model: null, voice: false, attachments: [] } }
+              pin_answer: { value: { text: "1234", lang: en, model: null, voice: true, attachments: [] } }
+      responses:
+        "200":
+          description: Reply
+          content:
+            application/json:
+              schema: { $ref: "message.schema.json#/$defs/OutgoingReply" }
+            text/event-stream:
+              schema: { $ref: "#/components/schemas/StreamEvent" }
+              example: |
+                event: turn
+                data: {"id":"7e8f9a0b-1c2d-4e3f-a4b5-c6d7e8f9a0b1","call_id":"2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e","speaker":"customer","agent_id":null,"text":"Je voudrais un crédit commerce de 5 millions sur 24 mois","lang":"fr","intent":"loan_info","confidence":0.88,"frustration":0.1,"attachments":[],"model_used":"gemma4:e2b","ts":"2026-11-02T09:31:01Z"}
+
+                event: token
+                data: {"delta":"Pour un crédit"}
+
+                event: sentence
+                data: {"index":0,"text":"Pour un crédit commerce de 5 000 000 FBu sur 24 mois au taux de 16 % par an, la mensualité est de 244 816 FBu.","audio_url":null}
+
+                event: done
+                data: {"id":"9f8e7d6c-…","conversation_id":"2b3c4d5e-…","text":"…"}
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Conversation ended, or currently with a human agent (message is still stored and forwarded to the agent; reply has speaker=system)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "413":
+          description: File too large (image > 10 MB, audio > 20 MB)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/conversations/{conversation_id}/handoff:
+    parameters:
+      - $ref: "#/components/parameters/ConversationId"
+    post:
+      tags: [conversations]
+      operationId: requestHandoff
+      summary: Customer presses "talk to an agent"
+      description: Generates the AI summary, queues the call, emits `call.handoff_requested`.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason: { $ref: "ws_events.json#/$defs/HandoffReason" }
+            example: { reason: customer_request }
+      responses:
+        "200":
+          description: Queued; the reply tells the customer to wait
+          content: { application/json: { schema: { $ref: "message.schema.json#/$defs/OutgoingReply" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Already queued, with an agent, or ended
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/conversations/{conversation_id}/end:
+    parameters:
+      - $ref: "#/components/parameters/ConversationId"
+    post:
+      tags: [conversations]
+      operationId: endConversation
+      summary: Customer hangs up / closes chat
+      description: Sets `resolved_by` (ai if never queued, abandoned if hung up while queued). Emits `call.ended`.
+      responses:
+        "200":
+          description: Ended
+          content: { application/json: { schema: { $ref: "ws_events.json#/$defs/Call" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/files:
+    post:
+      tags: [files]
+      operationId: uploadFile
+      summary: Upload an image, audio clip or PDF
+      description: Used by adapters (WhatsApp images) and the app before referencing an attachment by URL.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201":
+          description: Stored
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FileRef" }
+              example: { id: 7d1f6a52-3c1e-4f0b-9a7e-2b6f0d4c8e11, url: /v1/files/7d1f6a52-3c1e-4f0b-9a7e-2b6f0d4c8e11, type: image, mime: image/jpeg, size_bytes: 284311, created_at: "2026-11-02T09:02:10Z" }
+        "413":
+          description: Too large
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "415":
+          description: Unsupported type
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/files/{file_id}:
+    get:
+      tags: [files]
+      operationId: getFile
+      summary: Download a stored file (upload, TTS audio, generated PDF)
+      parameters:
+        - { name: file_id, in: path, required: true, schema: { $ref: "#/components/schemas/Uuid" } }
+      responses:
+        "200":
+          description: File bytes with the stored Content-Type
+          content:
+            image/*: { schema: { type: string, format: binary } }
+            audio/*: { schema: { type: string, format: binary } }
+            application/pdf: { schema: { type: string, format: binary } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/cards/block:
+    post:
+      tags: [cards]
+      operationId: verifyCardBlock
+      summary: Step 1 of card block — identity check in code (F5)
+      description: |
+        Checks account number + (PIN or date of birth) against the database, in code. The PIN is
+        compared with the argon2 hash and never logged or sent to a model. 3 failures for the same
+        account or conversation → 423 and handoff (reason identity_failed).
+        On success returns a confirmation id valid 5 minutes; nothing is blocked yet.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CardBlockRequest" }
+            examples:
+              with_pin: { value: { conversation_id: 3c4d5e6f-7a8b-4c9d-8e1f-2a3b4c5d6e7f, account_number: "40012345678", pin: "1234", date_of_birth: null, card_last4: "4821", reason: lost, lang: en } }
+              with_dob: { value: { conversation_id: null, account_number: "40012345679", pin: null, date_of_birth: "1988-04-12", card_last4: null, reason: stolen, lang: fr } }
+      responses:
+        "200":
+          description: Identity verified; confirmation required
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CardBlockPending" }
+              example:
+                confirmation_id: 0c1d2e3f-4a5b-4c6d-8e7f-8a9b0c1d2e3f
+                expires_at: "2026-11-02T10:11:00Z"
+                card: { last4: "4821", type: visa_debit, status: active }
+                message: "Please confirm: block the Visa debit card ending in 4821? This cannot be undone by phone."
+        "403":
+          description: Identity check failed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+              example: { code: identity_failed, message: "The details do not match.", details: { attempts_left: 2 } }
+        "404":
+          description: No active card for this account (or card_last4 not found)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "423":
+          description: Too many failed attempts; call handed over to an agent
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/cards/block/{confirmation_id}/confirm:
+    post:
+      tags: [cards]
+      operationId: confirmCardBlock
+      summary: Step 2 of card block — confirm and block
+      parameters:
+        - { name: confirmation_id, in: path, required: true, schema: { $ref: "#/components/schemas/Uuid" } }
+      responses:
+        "200":
+          description: Card blocked; reference to read back
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CardBlockResult" }
+              example:
+                reference: BLK-2026-00017
+                card: { last4: "4821", type: visa_debit, status: blocked }
+                blocked_at: "2026-11-02T10:06:30Z"
+                message: "Your card ending in 4821 is blocked. Your reference is BLK-2026-00017. Visit any branch with your ID to order a new card."
+        "404": { $ref: "#/components/responses/NotFound" }
+        "410":
+          description: Confirmation expired
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/loan-products:
+    get:
+      tags: [loans]
+      operationId: listLoanProducts
+      summary: Loan products (from the database, never invented)
+      parameters:
+        - $ref: "#/components/parameters/Lang"
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/LoanProduct" } }
+              example:
+                items:
+                  - { id: business_loan, name: "Crédit commerce", description: "Pour financer le stock ou l'équipement d'un commerce.", annual_rate_pct: 16.0, min_amount: 500000, max_amount: 50000000, min_term_months: 3, max_term_months: 36, requirements: ["Compte courant BancoBu depuis 6 mois", "Registre de commerce", "Relevés des 6 derniers mois"], fictional: true }
+
+  /v1/loans/simulate:
+    post:
+      tags: [loans]
+      operationId: simulateLoan
+      summary: Monthly payment (annuity, pure Python) (F6)
+      description: |
+        monthly_payment = round(P·r / (1 − (1 + r)^−n)) with r = annual_rate_pct / 1200, n = term_months
+        (r = 0 → P / n). All amounts are integers in FBu, rounded half up.
+        `pdf=true` also renders the simulation as a PDF in `lang` (via the OCR/PDF service) and returns it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoanSimulationRequest" }
+            example: { product_id: business_loan, amount: 5000000, term_months: 24, lang: fr, pdf: false, conversation_id: null }
+      responses:
+        "200":
+          description: Simulation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LoanSimulation" }
+              example:
+                product_id: business_loan
+                product_name: "Crédit commerce"
+                amount: 5000000
+                term_months: 24
+                annual_rate_pct: 16.0
+                monthly_payment: 244816
+                total_payment: 5875584
+                total_interest: 875584
+                explanation: "Pour 5 000 000 FBu sur 24 mois à 16 % par an, vous paierez 244 816 FBu par mois, soit 875 584 FBu d'intérêts au total."
+                lang: fr
+                pdf: null
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422":
+          description: Amount or term outside the product limits (code out_of_range) or invalid body
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+              example: { code: out_of_range, message: "Le montant maximum pour ce crédit est 50 000 000 FBu.", details: { field: amount, min: 500000, max: 50000000 } }
+
+  /v1/tickets:
+    get:
+      tags: [tickets]
+      operationId: listTickets
+      summary: Tickets, newest first
+      parameters:
+        - { name: status, in: query, schema: { type: string, enum: [open, in_progress, resolved, closed] } }
+        - { name: urgency, in: query, schema: { $ref: "ws_events.json#/$defs/Urgency" } }
+        - { name: category, in: query, schema: { type: string, enum: [fees, card, loan, account, service_quality, mobile_banking, atm, other] } }
+        - { name: phone, in: query, schema: { $ref: "message.schema.json#/$defs/Phone" } }
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Page of tickets
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total]
+                properties:
+                  items: { type: array, items: { $ref: "ws_events.json#/$defs/Ticket" } }
+                  total: { type: integer }
+    post:
+      tags: [tickets]
+      operationId: createTicket
+      summary: Create a complaint ticket (F7)
+      description: Emits `ticket.created`. The ticket number is read back to the caller.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TicketCreate" }
+            example: { conversation_id: null, phone: "+25779000110", category: atm, urgency: medium, description: "Le guichet automatique de Gitega a avalé ma carte hier soir.", lang: fr, attachments: [] }
+      responses:
+        "201":
+          description: Created
+          content: { application/json: { schema: { $ref: "ws_events.json#/$defs/Ticket" } } }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/tickets/{ticket_id}:
+    parameters:
+      - { name: ticket_id, in: path, required: true, description: "Ticket UUID or number (TCK-2026-00042)", schema: { type: string } }
+    get:
+      tags: [tickets]
+      operationId: getTicket
+      responses:
+        "200":
+          description: Ticket
+          content: { application/json: { schema: { $ref: "ws_events.json#/$defs/Ticket" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [tickets]
+      operationId: updateTicket
+      summary: Agent updates status, urgency or assignee
+      description: Emits `ticket.updated`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TicketUpdate" }
+            example: { status: in_progress, assigned_to: agent-01 }
+      responses:
+        "200":
+          description: Updated
+          content: { application/json: { schema: { $ref: "ws_events.json#/$defs/Ticket" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/tickets/{ticket_id}/receipt:
+    get:
+      tags: [tickets, documents]
+      operationId: getTicketReceipt
+      summary: Ticket receipt as PDF in the requested language (F18)
+      parameters:
+        - { name: ticket_id, in: path, required: true, schema: { type: string } }
+        - $ref: "#/components/parameters/Lang"
+      responses:
+        "200":
+          description: PDF
+          content: { application/pdf: { schema: { type: string, format: binary } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503":
+          description: PDF service unavailable
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/branches:
+    get:
+      tags: [branches]
+      operationId: listBranches
+      summary: Branches with hours and contacts (F8)
+      description: Filter by province or town (accent- and case-insensitive, trigram match).
+      parameters:
+        - { name: province, in: query, schema: { type: string }, example: Ngozi }
+        - { name: town, in: query, schema: { type: string } }
+        - { name: q, in: query, description: "Free-text search on name, town, province", schema: { type: string } }
+        - $ref: "#/components/parameters/Lang"
+      responses:
+        "200":
+          description: Branches
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/Branch" } }
+              example:
+                items:
+                  - id: br-ngozi
+                    name: "Agence Ngozi (fictive)"
+                    province: Ngozi
+                    town: Ngozi
+                    address: "Avenue de l'Indépendance, Ngozi (adresse fictive)"
+                    phone: "+25779000201"
+                    hours:
+                      mon: { open: "08:00", close: "17:00" }
+                      tue: { open: "08:00", close: "17:00" }
+                      wed: { open: "08:00", close: "17:00" }
+                      thu: { open: "08:00", close: "17:00" }
+                      fri: { open: "08:00", close: "17:00" }
+                      sat: { open: "08:00", close: "12:00" }
+                      sun: null
+                    hours_text: "Lundi–vendredi 08:00–17:00, samedi 08:00–12:00, fermé le dimanche"
+                    services: [cash, accounts, loans, cards, atm]
+                    is_open_now: true
+                    fictional: true
+
+  /v1/kb/search:
+    get:
+      tags: [knowledge]
+      operationId: searchKnowledgeBase
+      summary: Hybrid search (pgvector + pg_trgm + full-text `simple`) over the knowledge base
+      description: Used by RAG and agent assist; exposed for debugging and the agent dashboard.
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string, minLength: 2 } }
+        - $ref: "#/components/parameters/Lang"
+        - { name: k, in: query, schema: { type: integer, minimum: 1, maximum: 20, default: 5 } }
+      responses:
+        "200":
+          description: Ranked chunks
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/KbHit" } }
+
+  /v1/calls:
+    get:
+      tags: [calls]
+      operationId: listCalls
+      summary: Call history (agent dashboard)
+      parameters:
+        - { name: status, in: query, schema: { $ref: "ws_events.json#/$defs/CallStatus" } }
+        - { name: channel, in: query, schema: { $ref: "message.schema.json#/$defs/Channel" } }
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Calls, newest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total]
+                properties:
+                  items: { type: array, items: { $ref: "ws_events.json#/$defs/Call" } }
+                  total: { type: integer }
+
+  /v1/calls/queue:
+    get:
+      tags: [calls]
+      operationId: getQueue
+      summary: Calls waiting for a human (F10)
+      description: Status `queued`, ordered by urgency (critical first) then queued_at.
+      responses:
+        "200":
+          description: Queue
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "ws_events.json#/$defs/Call" } }
+
+  /v1/calls/{call_id}:
+    parameters:
+      - $ref: "#/components/parameters/CallId"
+    get:
+      tags: [calls]
+      operationId: getCall
+      summary: Call detail — transcript, AI summary, tickets, model events (F9)
+      responses:
+        "200":
+          description: Detail
+          content: { application/json: { schema: { $ref: "#/components/schemas/CallDetail" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/calls/{call_id}/claim:
+    parameters:
+      - $ref: "#/components/parameters/CallId"
+    post:
+      tags: [calls]
+      operationId: claimCall
+      summary: Agent takes a queued call
+      description: |
+        Uses `SELECT … FOR UPDATE SKIP LOCKED`: when two agents claim at once exactly one gets 200,
+        the other 409. Emits `call.claimed`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AgentRef" }
+            example: { agent_id: agent-01 }
+      responses:
+        "200":
+          description: Claimed
+          content: { application/json: { schema: { $ref: "#/components/schemas/CallDetail" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Already claimed by someone else, or not queued
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+              example: { code: already_claimed, message: "Call already claimed by agent-02", details: { claimed_by: agent-02 } }
+
+  /v1/calls/{call_id}/messages:
+    parameters:
+      - $ref: "#/components/parameters/CallId"
+    post:
+      tags: [calls]
+      operationId: sendAgentMessage
+      summary: Agent writes to the customer during a human call
+      description: |
+        Stored as a turn with speaker=agent, pushed to the customer (WebSocket `call.turn`; for SMS and
+        WhatsApp via the adapter's `POST /send`, see adapter_api.yaml; for phone the app plays TTS
+        of `audio_url`). Each customer turn during a human call triggers `agent.suggestion` (F11).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agent_id, text]
+              additionalProperties: false
+              properties:
+                agent_id: { type: string }
+                text: { type: string, minLength: 1, maxLength: 2000 }
+                voice: { type: boolean, default: false, description: "Also synthesise TTS for phone calls" }
+            example: { agent_id: agent-01, text: "Muraho Claudine, ndi Aline. Ndabona ikibazo canyu c'amafaranga.", voice: true }
+      responses:
+        "201":
+          description: Stored and delivered
+          content: { application/json: { schema: { $ref: "message.schema.json#/$defs/OutgoingReply" } } }
+        "403":
+          description: Call not claimed by this agent
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/calls/{call_id}/end:
+    parameters:
+      - $ref: "#/components/parameters/CallId"
+    post:
+      tags: [calls]
+      operationId: endCall
+      summary: Agent closes a call
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agent_id]
+              additionalProperties: false
+              properties:
+                agent_id: { type: string }
+                note: { type: string, maxLength: 2000 }
+            example: { agent_id: agent-01, note: "Remboursement des frais validé." }
+      responses:
+        "200":
+          description: Ended (resolved_by=agent). Emits `call.ended` and `stats.updated`.
+          content: { application/json: { schema: { $ref: "ws_events.json#/$defs/Call" } } }
+        "403":
+          description: Not this agent's call
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/agents:
+    get:
+      tags: [agents]
+      operationId: listAgents
+      summary: Demo agents (synthetic)
+      responses:
+        "200":
+          description: Agents
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/Agent" } }
+              example:
+                items:
+                  - { id: agent-01, name: "Agent Aline (demo)", languages: [rn, fr], role: agent }
+                  - { id: supervisor-01, name: "Superviseur Pacifique (demo)", languages: [fr, en, rn], role: supervisor }
+
+  /v1/stats:
+    get:
+      tags: [stats]
+      operationId: getStats
+      summary: Supervisor stats (F12) — same shape as the stats.updated event
+      responses:
+        "200":
+          description: Stats
+          content: { application/json: { schema: { $ref: "ws_events.json#/$defs/Stats" } } }
+
+  /v1/channels/{channel}/inbound:
+    post:
+      tags: [channels]
+      operationId: channelInbound
+      summary: Standard message from any channel adapter
+      description: |
+        Adapters (USSD in backend/channels, sms-gateway, whatsapp-bridge) convert their channel to the
+        standard `InboundMessage` and post it here; the backend replies synchronously with an
+        `OutgoingReply`. `channel` in the path must equal `channel` in the body (else 422).
+        Duplicate `id` → the stored reply is returned again (idempotent).
+        For `sms`, adapters send `short_text`; for `ussd`, `text` is the menu screen and
+        `end_session` tells the simulator to show END.
+      parameters:
+        - { name: channel, in: path, required: true, schema: { $ref: "message.schema.json#/$defs/Channel" } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "message.schema.json#/$defs/InboundMessage" }
+            example:
+              id: 3b0e7f0c-9a51-4c7e-8d2a-1f6e5b4c3a21
+              channel: sms
+              phone: "+25779000101"
+              session_id: "+25779000101"
+              lang: null
+              text: "Ishami rya Ngozi ryugurura ryari?"
+              attachments: []
+              ts: "2026-11-02T08:15:30Z"
+      responses:
+        "200":
+          description: Reply
+          content: { application/json: { schema: { $ref: "message.schema.json#/$defs/OutgoingReply" } } }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /v1/documents/extract:
+    post:
+      tags: [documents]
+      operationId: extractDocument
+      summary: OCR a document photo (F17) — proxies the OCR service
+      description: |
+        Fields under 0.8 confidence have `needs_review=true`; if any field needs review and a
+        conversation is given, the call is handed to an agent (reason agent_review).
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, format: binary }
+                doc_type: { type: string, description: "Registry id (cni, loan_application, coffee_receipt, complaint_photo); omitted = auto-detect" }
+                conversation_id: { $ref: "#/components/schemas/Uuid" }
+                lang: { $ref: "message.schema.json#/$defs/Lang" }
+      responses:
+        "200":
+          description: Extraction result (same shape as ocr_api.yaml ExtractResult)
+          content: { application/json: { schema: { $ref: "ocr_api.yaml#/components/schemas/ExtractResult" } } }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "503":
+          description: OCR service unavailable
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+components:
+  parameters:
+    ConversationId:
+      name: conversation_id
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/Uuid" }
+    CallId:
+      name: call_id
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/Uuid" }
+    Lang:
+      name: lang
+      in: query
+      schema: { $ref: "message.schema.json#/$defs/Lang" }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+    Offset:
+      name: offset
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { code: not_found, message: "Conversation not found", details: {} }
+    ValidationError:
+      description: Invalid request
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { code: validation_error, message: "text, image, audio or attachments is required", details: { field: text } }
+
+  schemas:
+    Uuid:
+      $ref: "message.schema.json#/$defs/Uuid"
+
+    Error:
+      type: object
+      required: [code, message]
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          description: Stable machine code
+          enum: [validation_error, not_found, conflict, already_claimed, identity_failed, locked, expired, out_of_range, too_large, unsupported_media_type, service_unavailable, forbidden, internal_error]
+        message: { type: string, description: "Human-readable, in the request language when known" }
+        details: { type: object }
+
+    Health:
+      type: object
+      required: [status, version, dependencies, ts]
+      properties:
+        status: { type: string, enum: [ok, degraded] }
+        version: { type: string }
+        dependencies:
+          type: object
+          additionalProperties: { type: string, enum: [ok, down, disabled] }
+        ts: { $ref: "message.schema.json#/$defs/Timestamp" }
+
+    Capability:
+      type: string
+      description: As reported by Ollama /api/show. Unknown future values are passed through.
+      examples: [completion, vision, audio, tools, embedding, thinking]
+
+    Model:
+      type: object
+      required: [name, family, parameter_size, quantization, size_bytes, capabilities, selectable, is_default]
+      properties:
+        name: { type: string, examples: [gemma4:e2b] }
+        family: { type: [string, "null"] }
+        parameter_size: { type: [string, "null"] }
+        quantization: { type: [string, "null"] }
+        size_bytes: { type: [integer, "null"] }
+        capabilities: { type: array, items: { $ref: "#/components/schemas/Capability" } }
+        selectable: { type: boolean, description: "false for embedding-only models" }
+        is_default: { type: boolean }
+
+    ModelList:
+      type: object
+      required: [default_model, preference_order, models]
+      properties:
+        default_model: { type: string, description: "DEFAULT_MODEL if installed, else the first installed model of preference_order" }
+        preference_order: { type: array, items: { type: string }, description: "From MODEL_PREFERENCE / config" }
+        models: { type: array, items: { $ref: "#/components/schemas/Model" } }
+
+    ConversationCreate:
+      type: object
+      required: [channel]
+      additionalProperties: false
+      properties:
+        channel: { type: string, enum: [phone, web], description: "App conversations only; other channels go through /v1/channels/{channel}/inbound" }
+        phone: { oneOf: [{ $ref: "message.schema.json#/$defs/Phone" }, { type: "null" }] }
+        lang: { oneOf: [{ $ref: "message.schema.json#/$defs/Lang" }, { type: "null" }] }
+        model: { type: [string, "null"], description: "Chosen model; null = default" }
+
+    ConversationUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        model: { type: string }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+
+    Conversation:
+      type: object
+      required: [id, channel, phone, lang, model, status, started_at]
+      properties:
+        id: { $ref: "#/components/schemas/Uuid" }
+        channel: { $ref: "message.schema.json#/$defs/Channel" }
+        phone: { oneOf: [{ $ref: "message.schema.json#/$defs/Phone" }, { type: "null" }] }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+        model: { type: string }
+        status: { $ref: "ws_events.json#/$defs/CallStatus" }
+        started_at: { $ref: "message.schema.json#/$defs/Timestamp" }
+        greeting: { $ref: "message.schema.json#/$defs/OutgoingReply", description: "Only in the 201 response of createConversation" }
+
+    MessageUpload:
+      type: object
+      properties:
+        text: { type: string, maxLength: 4000 }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+        model: { type: string, description: "Override the session model for this turn only" }
+        voice: { type: boolean, default: false, description: "Synthesise TTS audio for the reply (phone calls)" }
+        image: { type: string, format: binary }
+        audio: { type: string, format: binary }
+
+    MessageJson:
+      type: object
+      additionalProperties: false
+      properties:
+        text: { type: string, maxLength: 4000 }
+        lang: { oneOf: [{ $ref: "message.schema.json#/$defs/Lang" }, { type: "null" }] }
+        model: { type: [string, "null"] }
+        voice: { type: boolean, default: false }
+        attachments: { type: array, maxItems: 5, items: { $ref: "message.schema.json#/$defs/Attachment" } }
+
+    StreamEvent:
+      description: One SSE event. `event` is the SSE event name; `data` is the JSON payload on the data line.
+      oneOf:
+        - type: object
+          required: [event, data]
+          properties:
+            event: { const: turn }
+            data: { $ref: "ws_events.json#/$defs/Turn" }
+        - type: object
+          required: [event, data]
+          properties:
+            event: { const: model.switched }
+            data: { $ref: "ws_events.json#/$defs/ModelSwitch" }
+        - type: object
+          required: [event, data]
+          properties:
+            event: { const: token }
+            data:
+              type: object
+              required: [delta]
+              properties: { delta: { type: string } }
+        - type: object
+          required: [event, data]
+          properties:
+            event: { const: sentence }
+            data:
+              type: object
+              required: [index, text, audio_url]
+              properties:
+                index: { type: integer, minimum: 0 }
+                text: { type: string }
+                audio_url: { type: [string, "null"], description: "/v1/files/{id} WAV of this sentence when voice=true" }
+        - type: object
+          required: [event, data]
+          properties:
+            event: { const: done }
+            data: { $ref: "message.schema.json#/$defs/OutgoingReply" }
+        - type: object
+          required: [event, data]
+          properties:
+            event: { const: error }
+            data: { $ref: "#/components/schemas/Error" }
+
+    FileRef:
+      type: object
+      required: [id, url, type, mime, size_bytes, created_at]
+      properties:
+        id: { $ref: "#/components/schemas/Uuid" }
+        url: { type: string, examples: [/v1/files/7d1f6a52-3c1e-4f0b-9a7e-2b6f0d4c8e11] }
+        type: { type: string, enum: [image, audio, pdf] }
+        mime: { type: string }
+        size_bytes: { type: integer }
+        created_at: { $ref: "message.schema.json#/$defs/Timestamp" }
+
+    CallDetail:
+      type: object
+      required: [call, transcript, tickets, model_events]
+      properties:
+        call: { $ref: "ws_events.json#/$defs/Call" }
+        transcript: { type: array, items: { $ref: "ws_events.json#/$defs/Turn" } }
+        tickets: { type: array, items: { $ref: "ws_events.json#/$defs/Ticket" } }
+        model_events: { type: array, items: { $ref: "ws_events.json#/$defs/ModelSwitch" } }
+
+    CardInfo:
+      type: object
+      required: [last4, type, status]
+      properties:
+        last4: { type: string, pattern: "^[0-9]{4}$" }
+        type: { type: string, enum: [visa_debit, local_debit, prepaid] }
+        status: { type: string, enum: [active, blocked, expired] }
+
+    CardBlockRequest:
+      type: object
+      required: [account_number, reason, lang]
+      additionalProperties: false
+      description: Exactly one of pin / date_of_birth must be non-null.
+      properties:
+        conversation_id: { oneOf: [{ $ref: "#/components/schemas/Uuid" }, { type: "null" }] }
+        account_number: { type: string, pattern: "^[0-9]{11}$" }
+        pin: { type: [string, "null"], pattern: "^[0-9]{4}$", writeOnly: true }
+        date_of_birth: { type: [string, "null"], format: date, writeOnly: true }
+        card_last4: { type: [string, "null"], pattern: "^[0-9]{4}$", description: "Which card, when the customer has several" }
+        reason: { type: string, enum: [lost, stolen, blocked, damaged, swallowed_by_atm, fraud_suspected] }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+
+    CardBlockPending:
+      type: object
+      required: [confirmation_id, expires_at, card, message]
+      properties:
+        confirmation_id: { $ref: "#/components/schemas/Uuid" }
+        expires_at: { $ref: "message.schema.json#/$defs/Timestamp" }
+        card: { $ref: "#/components/schemas/CardInfo" }
+        message: { type: string }
+
+    CardBlockResult:
+      type: object
+      required: [reference, card, blocked_at, message]
+      properties:
+        reference: { type: string, pattern: "^BLK-[0-9]{4}-[0-9]{5}$" }
+        card: { $ref: "#/components/schemas/CardInfo" }
+        blocked_at: { $ref: "message.schema.json#/$defs/Timestamp" }
+        message: { type: string }
+
+    LoanProduct:
+      type: object
+      required: [id, name, description, annual_rate_pct, min_amount, max_amount, min_term_months, max_term_months, requirements, fictional]
+      properties:
+        id: { type: string, examples: [business_loan] }
+        name: { type: string, description: "In the requested language" }
+        description: { type: string }
+        annual_rate_pct: { type: number }
+        min_amount: { type: integer }
+        max_amount: { type: integer }
+        min_term_months: { type: integer }
+        max_term_months: { type: integer }
+        requirements: { type: array, items: { type: string } }
+        fictional: { type: boolean, const: true }
+
+    LoanSimulationRequest:
+      type: object
+      required: [product_id, amount, term_months, lang]
+      additionalProperties: false
+      properties:
+        product_id: { type: string }
+        amount: { type: integer, minimum: 1 }
+        term_months: { type: integer, minimum: 1, maximum: 360 }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+        pdf: { type: boolean, default: false }
+        conversation_id: { oneOf: [{ $ref: "#/components/schemas/Uuid" }, { type: "null" }] }
+
+    LoanSimulation:
+      type: object
+      required: [product_id, product_name, amount, term_months, annual_rate_pct, monthly_payment, total_payment, total_interest, explanation, lang, pdf]
+      properties:
+        product_id: { type: string }
+        product_name: { type: string }
+        amount: { type: integer }
+        term_months: { type: integer }
+        annual_rate_pct: { type: number }
+        monthly_payment: { type: integer }
+        total_payment: { type: integer, description: "monthly_payment × term_months" }
+        total_interest: { type: integer, description: "total_payment − amount" }
+        explanation: { type: string }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+        pdf: { oneOf: [{ $ref: "#/components/schemas/FileRef" }, { type: "null" }] }
+
+    TicketCreate:
+      type: object
+      required: [category, urgency, description, lang]
+      additionalProperties: false
+      properties:
+        conversation_id: { oneOf: [{ $ref: "#/components/schemas/Uuid" }, { type: "null" }] }
+        phone: { oneOf: [{ $ref: "message.schema.json#/$defs/Phone" }, { type: "null" }] }
+        category: { type: string, enum: [fees, card, loan, account, service_quality, mobile_banking, atm, other] }
+        urgency: { $ref: "ws_events.json#/$defs/Urgency" }
+        description: { type: string, minLength: 3, maxLength: 4000, description: "Customer's words; the backend writes the summary" }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+        attachments: { type: array, items: { $ref: "message.schema.json#/$defs/Attachment" } }
+
+    TicketUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        status: { type: string, enum: [open, in_progress, resolved, closed] }
+        urgency: { $ref: "ws_events.json#/$defs/Urgency" }
+        assigned_to: { type: [string, "null"] }
+
+    DayHours:
+      oneOf:
+        - type: object
+          required: [open, close]
+          properties:
+            open: { type: string, pattern: "^[0-2][0-9]:[0-5][0-9]$" }
+            close: { type: string, pattern: "^[0-2][0-9]:[0-5][0-9]$" }
+        - type: "null"
+          description: Closed
+
+    Branch:
+      type: object
+      required: [id, name, province, town, address, phone, hours, hours_text, services, is_open_now, fictional]
+      properties:
+        id: { type: string, examples: [br-ngozi] }
+        name: { type: string }
+        province: { type: string }
+        town: { type: string }
+        address: { type: string }
+        phone: { $ref: "message.schema.json#/$defs/Phone" }
+        hours:
+          type: object
+          required: [mon, tue, wed, thu, fri, sat, sun]
+          properties:
+            mon: { $ref: "#/components/schemas/DayHours" }
+            tue: { $ref: "#/components/schemas/DayHours" }
+            wed: { $ref: "#/components/schemas/DayHours" }
+            thu: { $ref: "#/components/schemas/DayHours" }
+            fri: { $ref: "#/components/schemas/DayHours" }
+            sat: { $ref: "#/components/schemas/DayHours" }
+            sun: { $ref: "#/components/schemas/DayHours" }
+        hours_text: { type: string, description: "Hours as a sentence in the requested language" }
+        services: { type: array, items: { type: string, enum: [cash, accounts, loans, cards, atm, forex, mobile_banking] } }
+        is_open_now: { type: boolean, description: "Africa/Bujumbura local time" }
+        fictional: { type: boolean, const: true }
+
+    KbHit:
+      type: object
+      required: [id, article_id, lang, title, text, score]
+      properties:
+        id: { type: string, examples: [kb-loan-business-fr-0] }
+        article_id: { type: string }
+        lang: { $ref: "message.schema.json#/$defs/Lang" }
+        title: { type: string }
+        text: { type: string }
+        score: { type: number }
+
+    Agent:
+      type: object
+      required: [id, name, languages, role]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        languages: { type: array, items: { $ref: "message.schema.json#/$defs/Lang" } }
+        role: { type: string, enum: [agent, supervisor] }
+
+    AgentRef:
+      type: object
+      required: [agent_id]
+      additionalProperties: false
+      properties:
+        agent_id: { type: string }
