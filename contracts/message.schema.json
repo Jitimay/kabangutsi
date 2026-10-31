@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kabangutsi.local/contracts/message.schema.json",
+  "title": "Kabangutsi standard message",
+  "description": "Channel-agnostic message format. Every adapter (app, USSD, SMS, WhatsApp) converts its channel to an InboundMessage and posts it to the backend (POST /v1/channels/{channel}/inbound). The backend answers with an OutgoingReply. All data in examples is fictional.",
+  "oneOf": [
+    { "$ref": "#/$defs/InboundMessage" },
+    { "$ref": "#/$defs/OutgoingReply" }
+  ],
+  "$defs": {
+    "Lang": {
+      "type": "string",
+      "enum": ["fr", "en", "rn"],
+      "description": "fr = French, en = English, rn = Kirundi."
+    },
+    "Channel": {
+      "type": "string",
+      "enum": ["phone", "ussd", "sms", "whatsapp", "web"],
+      "description": "phone = simulated voice call in the app; web = text chat in the app (web or Android); ussd = USSD simulator; sms = GSM modem; whatsapp = WhatsApp bridge."
+    },
+    "Phone": {
+      "type": "string",
+      "pattern": "^\\+257[0-9]{8}$",
+      "description": "Burundi phone number, normalised to +257XXXXXXXX.",
+      "examples": ["+25779000101"]
+    },
+    "Uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "UUID v4, lowercase."
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601, UTC, with Z suffix.",
+      "examples": ["2026-11-02T08:15:30Z"]
+    },
+    "LocalizedText": {
+      "type": "object",
+      "description": "The same text in the three languages. All three are required.",
+      "required": ["fr", "en", "rn"],
+      "additionalProperties": false,
+      "properties": {
+        "fr": { "type": "string" },
+        "en": { "type": "string" },
+        "rn": { "type": "string" }
+      }
+    },
+    "Attachment": {
+      "type": "object",
+      "required": ["type", "url", "mime"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["image", "audio", "pdf"] },
+        "url": {
+          "type": "string",
+          "description": "Where the backend (or adapter) can fetch the file. Files stored by the backend use the relative form /v1/files/{id}. Never a public internet URL at runtime.",
+          "examples": ["/v1/files/7d1f6a52-3c1e-4f0b-9a7e-2b6f0d4c8e11"]
+        },
+        "mime": {
+          "type": "string",
+          "examples": ["image/jpeg", "audio/wav", "audio/webm", "application/pdf"]
+        },
+        "name": { "type": "string", "description": "Optional file name shown to users.", "examples": ["simulation_pret.pdf"] },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "duration_ms": { "type": "integer", "minimum": 0, "description": "Audio only." }
+      }
+    },
+    "InboundMessage": {
+      "type": "object",
+      "title": "InboundMessage",
+      "description": "One customer turn from any channel.",
+      "required": ["id", "channel", "phone", "session_id", "lang", "text", "attachments", "ts"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "channel": { "$ref": "#/$defs/Channel" },
+        "phone": {
+          "description": "Caller phone. Null only for anonymous web chat.",
+          "oneOf": [{ "$ref": "#/$defs/Phone" }, { "type": "null" }]
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Adapter-side session key. Web/phone: the conversation id. USSD: the USSD session id from the simulator. SMS/WhatsApp: the phone number (the backend reuses an open conversation for that phone, or opens one)."
+        },
+        "lang": {
+          "description": "Language hint from the channel (UI language, previous turn, USSD menu choice). Null = unknown; the backend detects it.",
+          "oneOf": [{ "$ref": "#/$defs/Lang" }, { "type": "null" }]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 4000,
+          "description": "Message text. Empty string allowed when the turn is only an attachment. For USSD it is the raw menu input (e.g. \"2\", or \"\" for the initial *123# dial)."
+        },
+        "attachments": {
+          "type": "array",
+          "maxItems": 5,
+          "items": { "$ref": "#/$defs/Attachment" }
+        },
+        "ts": { "$ref": "#/$defs/Timestamp" }
+      },
+      "examples": [
+        {
+          "id": "3b0e7f0c-9a51-4c7e-8d2a-1f6e5b4c3a21",
+          "channel": "sms",
+          "phone": "+25779000101",
+          "session_id": "+25779000101",
+          "lang": null,
+          "text": "Ishami rya Ngozi ryugurura ryari?",
+          "attachments": [],
+          "ts": "2026-11-02T08:15:30Z"
+        },
+        {
+          "id": "c2a8d4e6-5f71-4b3a-9e0d-7a1b2c3d4e5f",
+          "channel": "whatsapp",
+          "phone": "+25779000102",
+          "session_id": "+25779000102",
+          "lang": "fr",
+          "text": "Voici ma carte d'identité pour la demande de prêt",
+          "attachments": [
+            { "type": "image", "url": "/v1/files/7d1f6a52-3c1e-4f0b-9a7e-2b6f0d4c8e11", "mime": "image/jpeg", "size_bytes": 284311 }
+          ],
+          "ts": "2026-11-02T09:02:11Z"
+        },
+        {
+          "id": "e4f5a6b7-c8d9-4e0f-a1b2-c3d4e5f6a7b8",
+          "channel": "ussd",
+          "phone": "+25779000103",
+          "session_id": "ussd-5f2c9a",
+          "lang": "en",
+          "text": "2",
+          "attachments": [],
+          "ts": "2026-11-02T10:20:00Z"
+        }
+      ]
+    },
+    "Action": {
+      "type": "object",
+      "description": "Something the backend did in code during this turn (never decided by the LLM).",
+      "required": ["type", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["card_block", "loan_simulation", "ticket_created", "handoff", "document_extracted", "pdf_generated", "identity_check"]
+        },
+        "status": { "type": "string", "enum": ["pending", "done", "failed"] },
+        "reference": {
+          "type": ["string", "null"],
+          "description": "Reference read back to the caller: card block reference (BLK-YYYY-NNNNN) or ticket number (TCK-YYYY-NNNNN).",
+          "examples": ["BLK-2026-00017", "TCK-2026-00042"]
+        },
+        "data": {
+          "type": "object",
+          "description": "Action-specific data (e.g. loan simulation result, ticket id). Never contains a PIN or date of birth."
+        }
+      }
+    },
+    "OutgoingReply": {
+      "type": "object",
+      "title": "OutgoingReply",
+      "description": "The backend's answer to one InboundMessage (or a message pushed later, e.g. by a human agent).",
+      "required": ["id", "conversation_id", "in_reply_to", "channel", "phone", "session_id", "lang", "text", "short_text", "speaker", "intent", "actions", "attachments", "expected_input", "handoff", "end_session", "model_used", "model_notice", "ts"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "conversation_id": { "$ref": "#/$defs/Uuid", "description": "Backend conversation (= call) id." },
+        "in_reply_to": {
+          "description": "Id of the InboundMessage answered. Null for messages pushed later (agent replies).",
+          "oneOf": [{ "$ref": "#/$defs/Uuid" }, { "type": "null" }]
+        },
+        "channel": { "$ref": "#/$defs/Channel" },
+        "phone": { "oneOf": [{ "$ref": "#/$defs/Phone" }, { "type": "null" }] },
+        "session_id": { "type": "string" },
+        "lang": { "$ref": "#/$defs/Lang" },
+        "text": { "type": "string", "description": "Full reply (2–3 sentences for voice). For USSD: the menu screen text." },
+        "short_text": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "SMS-safe version, at most 160 characters. Always present."
+        },
+        "speaker": { "type": "string", "enum": ["ai", "agent", "system"] },
+        "intent": {
+          "description": "Intent detected for the customer turn (see intent.schema.json). Null for pushed messages.",
+          "oneOf": [
+            { "type": "string", "enum": ["product_info", "account_opening", "card_block", "loan_info", "complaint", "branch_info", "handoff", "other"] },
+            { "type": "null" }
+          ]
+        },
+        "actions": { "type": "array", "items": { "$ref": "#/$defs/Action" } },
+        "attachments": {
+          "type": "array",
+          "description": "Files to show or send: PDFs (loan simulation, ticket receipt), TTS audio of the reply when voice was requested.",
+          "items": { "$ref": "#/$defs/Attachment" }
+        },
+        "expected_input": {
+          "type": "string",
+          "enum": ["text", "pin", "date_of_birth", "account_number", "confirmation", "menu_choice", "none"],
+          "description": "What the orchestrator waits for next. UIs mask the field when pin; adapters never log a turn answering pin or date_of_birth."
+        },
+        "handoff": { "type": "boolean", "description": "True when the conversation was put in the human agent queue." },
+        "end_session": { "type": "boolean", "description": "True when the session is over (USSD: END screen; phone: hang up)." },
+        "model_used": {
+          "type": ["string", "null"],
+          "description": "Ollama model that produced the reply. Null when no LLM was used (template, USSD menu, agent message).",
+          "examples": ["gemma4:e4b"]
+        },
+        "model_notice": {
+          "type": ["string", "null"],
+          "description": "Text shown when the router switched model or used a non-LLM path (F20/F21), in the reply language.",
+          "examples": ["Switched to gemma4:e4b: gemma:2b cannot read images."]
+        },
+        "ts": { "$ref": "#/$defs/Timestamp" }
+      },
+      "examples": [
+        {
+          "id": "9f8e7d6c-5b4a-4392-8170-6f5e4d3c2b1a",
+          "conversation_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+          "in_reply_to": "3b0e7f0c-9a51-4c7e-8d2a-1f6e5b4c3a21",
+          "channel": "sms",
+          "phone": "+25779000101",
+          "session_id": "+25779000101",
+          "lang": "rn",
+          "text": "Ishami rya Ngozi rikora kuva ku wa mbere gushika ku wa gatanu, saa mbiri za mu gitondo gushika saa kumi n'imwe. Ku wa gatandatu rikora saa mbiri gushika saa sita. Terefone: +25779000201.",
+          "short_text": "Ngozi: ku wa 1-5 8:00-17:00, ku wa 6 8:00-12:00. Tel +25779000201",
+          "speaker": "ai",
+          "intent": "branch_info",
+          "actions": [],
+          "attachments": [],
+          "expected_input": "text",
+          "handoff": false,
+          "end_session": false,
+          "model_used": "gemma:2b",
+          "model_notice": null,
+          "ts": "2026-11-02T08:15:33Z"
+        },
+        {
+          "id": "0a1b2c3d-4e5f-4a6b-9c8d-7e6f5a4b3c2d",
+          "conversation_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+          "in_reply_to": "5d6e7f8a-9b0c-4d1e-a2f3-4a5b6c7d8e9f",
+          "channel": "web",
+          "phone": "+25779000104",
+          "session_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+          "lang": "fr",
+          "text": "Pour un crédit commerce de 5 000 000 FBu sur 24 mois au taux de 16 % par an, la mensualité est de 244 816 FBu. Le coût total du crédit est de 875 584 FBu. Voulez-vous la simulation en PDF ?",
+          "short_text": "Credit commerce 5 000 000 FBu/24 mois a 16%: 244 816 FBu par mois.",
+          "speaker": "ai",
+          "intent": "loan_info",
+          "actions": [
+            {
+              "type": "loan_simulation",
+              "status": "done",
+              "reference": null,
+              "data": { "product_id": "business_loan", "amount": 5000000, "term_months": 24, "annual_rate_pct": 16.0, "monthly_payment": 244816, "total_interest": 875584 }
+            }
+          ],
+          "attachments": [],
+          "expected_input": "text",
+          "handoff": false,
+          "end_session": false,
+          "model_used": "gemma:2b",
+          "model_notice": null,
+          "ts": "2026-11-02T09:31:05Z"
+        },
+        {
+          "id": "6c7d8e9f-0a1b-4c2d-8e3f-4a5b6c7d8e9f",
+          "conversation_id": "3c4d5e6f-7a8b-4c9d-8e1f-2a3b4c5d6e7f",
+          "in_reply_to": "7e8f9a0b-1c2d-4e3f-a4b5-c6d7e8f9a0b1",
+          "channel": "phone",
+          "phone": "+25779000105",
+          "session_id": "3c4d5e6f-7a8b-4c9d-8e1f-2a3b4c5d6e7f",
+          "lang": "en",
+          "text": "Thank you. To block the card ending in 4821, please enter your 4-digit PIN.",
+          "short_text": "To block card ending 4821, enter your 4-digit PIN.",
+          "speaker": "ai",
+          "intent": "card_block",
+          "actions": [{ "type": "identity_check", "status": "pending", "reference": null, "data": {} }],
+          "attachments": [{ "type": "audio", "url": "/v1/files/8a9b0c1d-2e3f-4a4b-9c5d-6e7f8a9b0c1d", "mime": "audio/wav", "duration_ms": 4200 }],
+          "expected_input": "pin",
+          "handoff": false,
+          "end_session": false,
+          "model_used": null,
+          "model_notice": null,
+          "ts": "2026-11-02T10:05:12Z"
+        }
+      ]
+    }
+  }
+}

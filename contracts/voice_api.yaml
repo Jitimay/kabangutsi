@@ -1,0 +1,176 @@
+openapi: 3.1.0
+info:
+  title: Kabangutsi voice service (STT + TTS)
+  version: 1.0.0
+  description: |
+    Internal FastAPI service owned by T3, port 8001, called only by the backend over HTTP
+    (`VOICE_URL`, default `http://voice:8001`). Runs offline: every model is on disk before start
+    (image build or the `voice-models` volume). Models are loaded once at startup.
+
+    Sentence-by-sentence streaming is done by the backend: it splits the LLM reply into sentences
+    and calls `POST /tts` once per sentence, so the first sentence plays while the rest is generated.
+    Target: STT < 1 s for 5 s of audio, first TTS sentence < 0.7 s.
+
+    Languages: `fr`, `en`, `rn`. If Kirundi TTS is not good enough (decision recorded in
+    status/T3.md), `/tts` with `lang=rn` still returns 200: either a pre-recorded phrase (exact text
+    match in the phrase cache) or synthesised audio, and `X-Voice-Fallback` tells which.
+servers:
+  - url: http://voice:8001
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: Up, with loaded models
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, models]
+                properties:
+                  status: { type: string, enum: [ok, degraded] }
+                  models:
+                    type: object
+                    description: Loaded model per role and language
+                    additionalProperties: { type: string }
+              example:
+                status: ok
+                models:
+                  stt_fr: faster-whisper-small-int8
+                  stt_en: faster-whisper-small-int8
+                  stt_rn: mms-1b-all/run
+                  tts_fr: piper/fr_FR-siwis-medium
+                  tts_en: piper/en_US-lessac-medium
+                  tts_rn: mms-tts-run
+
+  /voices:
+    get:
+      operationId: listVoices
+      responses:
+        "200":
+          description: Voices per language
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [voices]
+                properties:
+                  voices:
+                    type: array
+                    items: { $ref: "#/components/schemas/Voice" }
+              example:
+                voices:
+                  - { id: fr_FR-siwis-medium, lang: fr, engine: piper, gender: female, default: true, sample_rate: 22050 }
+                  - { id: en_US-lessac-medium, lang: en, engine: piper, gender: male, default: true, sample_rate: 22050 }
+                  - { id: mms-tts-run, lang: rn, engine: mms, gender: male, default: true, sample_rate: 16000 }
+
+  /stt:
+    post:
+      operationId: speechToText
+      summary: Audio → text
+      description: |
+        Accepts wav, webm (opus), ogg (opus), m4a/mp4 (aac), mp3. Max 60 s / 20 MB.
+        Without `lang`, the language is detected (fr / en / rn); `lang_detected` says how.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [audio]
+              properties:
+                audio: { type: string, format: binary }
+                lang:
+                  type: string
+                  enum: [fr, en, rn]
+                  description: Hint; omit to auto-detect
+      responses:
+        "200":
+          description: Transcript
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SttResult" }
+              examples:
+                rn:
+                  value: { text: "Ishami rya Ngozi ryugurura ryari?", lang: rn, confidence: 0.78, duration_ms: 2900, processing_ms: 840, lang_detected: true, model: "mms-1b-all/run" }
+                fr:
+                  value: { text: "Je voudrais bloquer ma carte, je l'ai perdue.", lang: fr, confidence: 0.93, duration_ms: 3100, processing_ms: 620, lang_detected: false, model: faster-whisper-small-int8 }
+                en:
+                  value: { text: "I lost my card, please block it.", lang: en, confidence: 0.95, duration_ms: 2400, processing_ms: 510, lang_detected: true, model: faster-whisper-small-int8 }
+        "413": { $ref: "#/components/responses/Error" }
+        "415": { $ref: "#/components/responses/Error" }
+        "422": { $ref: "#/components/responses/Error" }
+
+  /tts:
+    post:
+      operationId: textToSpeech
+      summary: Text → WAV
+      description: One sentence or a short paragraph (max 600 characters). Returns 16-bit PCM mono WAV.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, lang]
+              additionalProperties: false
+              properties:
+                text: { type: string, minLength: 1, maxLength: 600 }
+                lang: { type: string, enum: [fr, en, rn] }
+                voice: { type: [string, "null"], description: "Voice id from /voices; null = default for lang" }
+                speed: { type: number, minimum: 0.5, maximum: 2.0, default: 1.0 }
+            examples:
+              fr: { value: { text: "Votre carte se terminant par 4821 est bloquée.", lang: fr, voice: null } }
+              en: { value: { text: "Your reference is BLK-2026-00017.", lang: en, voice: null } }
+              rn: { value: { text: "Murakaza neza kuri BancoBu. Nobafasha iki?", lang: rn, voice: null } }
+      responses:
+        "200":
+          description: WAV audio
+          headers:
+            X-Voice-Id: { schema: { type: string }, description: Voice used }
+            X-Voice-Fallback:
+              schema: { type: string, enum: [none, phrase_cache, other_lang_voice] }
+              description: none = synthesised in the requested language; phrase_cache = pre-recorded/pre-generated phrase; other_lang_voice = agreed fallback voice
+            X-Duration-Ms: { schema: { type: integer } }
+            X-Processing-Ms: { schema: { type: integer } }
+          content:
+            audio/wav:
+              schema: { type: string, format: binary }
+        "422": { $ref: "#/components/responses/Error" }
+
+components:
+  responses:
+    Error:
+      description: Error (same shape as the backend Error)
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [code, message]
+            properties:
+              code: { type: string, enum: [validation_error, too_large, unsupported_media_type, unsupported_language, internal_error] }
+              message: { type: string }
+              details: { type: object }
+  schemas:
+    Voice:
+      type: object
+      required: [id, lang, engine, default, sample_rate]
+      properties:
+        id: { type: string }
+        lang: { type: string, enum: [fr, en, rn] }
+        engine: { type: string, examples: [piper, mms, prerecorded] }
+        gender: { type: [string, "null"], enum: [female, male, null] }
+        default: { type: boolean }
+        sample_rate: { type: integer }
+    SttResult:
+      type: object
+      required: [text, lang, confidence, duration_ms]
+      properties:
+        text: { type: string }
+        lang: { type: string, enum: [fr, en, rn] }
+        confidence: { type: number, minimum: 0, maximum: 1, description: "Mean token/segment probability; the backend asks the caller to repeat below 0.4" }
+        duration_ms: { type: integer, description: Audio length }
+        processing_ms: { type: integer }
+        lang_detected: { type: boolean, description: true when no hint was given and the language was detected }
+        model: { type: string }

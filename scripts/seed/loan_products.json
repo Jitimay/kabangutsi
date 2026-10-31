@@ -1,0 +1,95 @@
+{
+  "_notice": "FICTIONAL DEMO DATA: not real BancoBu loan products, rates or conditions.",
+  "items": [
+    {
+      "id": "business_loan",
+      "name": { "fr": "Crédit commerce", "en": "Business loan", "rn": "Ingurane y'ubudandaji" },
+      "description": {
+        "fr": "Pour financer le stock, l'équipement ou le fonds de roulement d'un commerce.",
+        "en": "To finance stock, equipment or working capital for a business.",
+        "rn": "Ifasha kugura ibidandazwa, ibikoresho canke amafaranga yo gukoresha mu budandaji."
+      },
+      "annual_rate_pct": 16.0, "min_amount": 500000, "max_amount": 50000000, "min_term_months": 3, "max_term_months": 36,
+      "requirements": {
+        "fr": ["Compte courant chez nous depuis au moins 6 mois", "Registre de commerce et NIF", "Relevés de compte des 6 derniers mois", "Garantie (matériel, stock ou caution) au-delà de 10 000 000 FBu"],
+        "en": ["Current account with us for at least 6 months", "Trade register certificate and NIF", "Account statements for the last 6 months", "Collateral (equipment, stock or guarantor) above 10,000,000 FBu"],
+        "rn": ["Konti isanzwe iwacu imaze nibura amezi 6", "Icemezo c'iyandikwa mu bucuruzi na NIF", "Impapuro z'ibikorwa vya konti z'amezi 6 aheruka", "Ingwati (ibikoresho, ibidandazwa canke umwishingizi) iyo ingurane irenze 10 000 000 FBu"]
+      }
+    },
+    {
+      "id": "agri_loan",
+      "name": { "fr": "Crédit agricole", "en": "Agricultural loan", "rn": "Ingurane y'uburimyi" },
+      "description": {
+        "fr": "Pour les producteurs de café, de thé et de cultures vivrières : intrants, main-d'œuvre, petit matériel. Remboursement possible en une fois après la récolte.",
+        "en": "For coffee, tea and food crop farmers: inputs, labour, small equipment. Can be repaid in one payment after the harvest.",
+        "rn": "Ku barimyi b'ikawa, icayi n'ibifungurwa: ifumbire, imbuto, abakozi, ibikoresho bito. Irashobora kurihwa rimwe inyuma y'isarura."
+      },
+      "annual_rate_pct": 12.0, "min_amount": 100000, "max_amount": 10000000, "min_term_months": 3, "max_term_months": 18,
+      "requirements": {
+        "fr": ["Compte chez nous", "Attestation de la coopérative ou de la station de lavage", "Reçus de livraison de la dernière récolte"],
+        "en": ["Account with us", "Certificate from the cooperative or washing station", "Delivery receipts from the last harvest"],
+        "rn": ["Konti iwacu", "Icemezo ca koperative canke c'aho bogereza ikawa", "Ivyemezo vyo gutanga umwimbu uheruka"]
+      }
+    },
+    {
+      "id": "salary_advance",
+      "name": { "fr": "Avance sur salaire", "en": "Salary advance", "rn": "Ingurane y'umushahara" },
+      "description": {
+        "fr": "Pour les salariés dont le salaire est versé chez nous : jusqu'à 50 % du salaire net mensuel par mois de remboursement.",
+        "en": "For employees whose salary is paid into an account with us: monthly repayments of up to 50% of net monthly salary.",
+        "rn": "Ku bakozi bahemberwa kuri konti iwacu: ico muriha buri kwezi ntigishobora kurenza 50 % y'umushahara."
+      },
+      "annual_rate_pct": 14.0, "min_amount": 50000, "max_amount": 5000000, "min_term_months": 1, "max_term_months": 24,
+      "requirements": {
+        "fr": ["Salaire domicilié chez nous depuis 3 mois", "Attestation de service de l'employeur", "Trois derniers bulletins de paie"],
+        "en": ["Salary paid into an account with us for 3 months", "Employment certificate from the employer", "Last three payslips"],
+        "rn": ["Umushahara uca iwacu mu mezi 3 aheruka", "Icemezo c'akazi gitangwa n'umukoresha", "Impapuro z'umushahara z'amezi 3 aheruka"]
+      }
+    },
+    {
+      "id": "housing_loan",
+      "name": { "fr": "Crédit habitat", "en": "Housing loan", "rn": "Ingurane yo kwubaka" },
+      "description": {
+        "fr": "Pour construire, acheter ou rénover un logement.",
+        "en": "To build, buy or renovate a home.",
+        "rn": "Ifasha kwubaka, kugura canke gusubiramwo inzu."
+      },
+      "annual_rate_pct": 15.0, "min_amount": 5000000, "max_amount": 150000000, "min_term_months": 12, "max_term_months": 180,
+      "requirements": {
+        "fr": ["Revenus réguliers prouvés", "Titre de propriété ou certificat d'enregistrement de la parcelle", "Devis ou plan de construction", "Apport personnel d'au moins 20 %"],
+        "en": ["Proof of regular income", "Land title or plot registration certificate", "Construction quote or plan", "Own contribution of at least 20%"],
+        "rn": ["Kwerekana amafaranga yinjira buri gihe", "Icemezo c'itongo", "Igiciro canke igishushanyo c'inzu", "Gutanga nibura 20 % y'amafaranga yose"]
+      }
+    },
+    {
+      "id": "school_fees_loan",
+      "name": { "fr": "Crédit scolaire", "en": "School fees loan", "rn": "Ingurane y'amashure" },
+      "description": {
+        "fr": "Pour payer les frais scolaires et universitaires au début de l'année ou du trimestre.",
+        "en": "To pay school or university fees at the start of the year or term.",
+        "rn": "Ifasha kuriha amafaranga y'ishure canke kaminuza mu ntango y'umwaka canke y'igihembwe."
+      },
+      "annual_rate_pct": 13.0, "min_amount": 100000, "max_amount": 3000000, "min_term_months": 3, "max_term_months": 10,
+      "requirements": {
+        "fr": ["Compte chez nous", "Facture ou attestation d'inscription de l'école", "Preuve de revenus"],
+        "en": ["Account with us", "School invoice or enrolment certificate", "Proof of income"],
+        "rn": ["Konti iwacu", "Inyemezamafaranga canke icemezo c'ishure", "Kwerekana amafaranga yinjira"]
+      }
+    },
+    {
+      "id": "women_group_loan",
+      "name": { "fr": "Crédit groupe solidaire de femmes", "en": "Women's solidarity group loan", "rn": "Ingurane y'imigwi y'abagore" },
+      "description": {
+        "fr": "Pour les groupes de 5 à 20 femmes qui se portent caution mutuelle, sans autre garantie.",
+        "en": "For groups of 5 to 20 women who guarantee each other, with no other collateral.",
+        "rn": "Ku migwi y'abagore kuva kuri 5 gushika kuri 20 bishingana, ata yindi ngwati."
+      },
+      "annual_rate_pct": 10.0, "min_amount": 200000, "max_amount": 5000000, "min_term_months": 3, "max_term_months": 24,
+      "requirements": {
+        "fr": ["Groupe de 5 à 20 membres avec un compte de groupe", "CNI de chaque membre", "Procès-verbal de constitution du groupe"],
+        "en": ["Group of 5 to 20 members with a group account", "National ID of each member", "Minutes of the group's founding meeting"],
+        "rn": ["Umugwi w'abantu 5 gushika kuri 20 ufise konti y'umugwi", "Karangamuntu ya buri munywanyi", "Inyandiko yo gushinga umugwi"]
+      }
+    }
+  ]
+}
