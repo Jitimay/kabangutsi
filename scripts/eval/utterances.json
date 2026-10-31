@@ -1,0 +1,62 @@
+{
+  "_notice": "Kabangutsi intent test set (Wave 7). 50 cases x 3 languages = 150 utterances (50 fr, 50 en, 50 rn). Fictional. Kirundi needs native-speaker review. `entities` lists only the keys a correct answer must contain (values compared case-insensitively). `min_frustration` marks callers who should trigger frustration handling (>= FRUSTRATION_THRESHOLD).",
+  "cases": [
+    {"id": "prod-01", "intent": "product_info", "entities": {}, "fr": "Quels types de comptes proposez-vous ?", "en": "What kinds of accounts do you offer?", "rn": "Mufise konti z'ubwoko ki?"},
+    {"id": "prod-02", "intent": "product_info", "entities": {"product": "savings_account"}, "fr": "Le compte d'épargne rapporte combien d'intérêts ?", "en": "How much interest does the savings account pay?", "rn": "Konti yo kuzigama itanga inyungu ingahe?"},
+    {"id": "prod-03", "intent": "product_info", "entities": {"product": "debit_card"}, "fr": "Combien coûte la carte Visa par an ?", "en": "How much is the Visa card per year?", "rn": "Ikarata Visa iriha angahe ku mwaka?"},
+    {"id": "prod-04", "intent": "product_info", "entities": {"product": "mobile_banking"}, "fr": "Comment utiliser le *123# pour voir mon solde ?", "en": "How do I use *123# to check my balance?", "rn": "Nokoresha gute *123# kugira ndabe amafaranga ari kuri konti?"},
+    {"id": "prod-05", "intent": "product_info", "entities": {}, "fr": "Quels sont les frais de tenue de compte courant ?", "en": "What is the monthly fee for a current account?", "rn": "Amafaranga yo kubungabunga konti isanzwe ni angahe ku kwezi?"},
+    {"id": "prod-06", "intent": "product_info", "entities": {"product": "youth_account"}, "fr": "Le compte jeune est-il gratuit ?", "en": "Is the youth account free?", "rn": "Konti y'urwaruka ni ubuntu?"},
+    {"id": "prod-07", "intent": "product_info", "entities": {}, "fr": "Ça coûte combien de retirer dans le guichet d'une autre banque ?", "en": "What does it cost to withdraw at another bank's ATM?", "rn": "Gukura amafaranga ku cuma c'iyindi banki biriha angahe?"},
+
+    {"id": "acc-01", "intent": "account_opening", "entities": {}, "fr": "Quels documents faut-il pour ouvrir un compte ?", "en": "What documents do I need to open an account?", "rn": "Nkeneye impapuro izihe kugira nugurure konti?"},
+    {"id": "acc-02", "intent": "account_opening", "entities": {"product": "savings_account"}, "fr": "Je veux ouvrir un compte d'épargne, quel est le dépôt minimum ?", "en": "I want to open a savings account, what is the minimum deposit?", "rn": "Ndashaka kwugurura konti yo kuzigama, amafaranga make yo gutangura ni angahe?"},
+    {"id": "acc-03", "intent": "account_opening", "entities": {}, "fr": "Comment ouvrir un compte pour ma coopérative ?", "en": "How can I open an account for my cooperative?", "rn": "Nokwugurura gute konti ya koperative yacu?"},
+    {"id": "acc-04", "intent": "account_opening", "entities": {}, "fr": "Je peux ouvrir un compte pour mon enfant de 10 ans ?", "en": "Can I open an account for my 10-year-old child?", "rn": "Noshobora kwugururira konti umwana wanje w'imyaka 10?"},
+    {"id": "acc-05", "intent": "account_opening", "entities": {}, "fr": "Combien de temps pour ouvrir un compte entreprise ?", "en": "How long does it take to open a business account?", "rn": "Kwugurura konti y'ishirahamwe bifata igihe kingana iki?"},
+    {"id": "acc-06", "intent": "account_opening", "entities": {}, "fr": "J'ai seulement mon passeport, je peux ouvrir un compte ?", "en": "I only have my passport, can I open an account?", "rn": "Mfise pasiporo gusa, noshobora kwugurura konti?"},
+
+    {"id": "card-01", "intent": "card_block", "entities": {"card_issue": "lost"}, "fr": "J'ai perdu ma carte bancaire", "en": "I lost my bank card", "rn": "Ikarata yanje ya banki yatakaye"},
+    {"id": "card-02", "intent": "card_block", "entities": {"card_issue": "stolen"}, "fr": "On m'a volé ma carte hier soir, bloquez-la vite", "en": "My card was stolen last night, block it quickly", "rn": "Bibye ikarata yanje ejo ku mugoroba, muyihagarike vuba"},
+    {"id": "card-03", "intent": "card_block", "entities": {"card_issue": "blocked"}, "fr": "Ma carte est bloquée, j'ai tapé un mauvais code trois fois", "en": "My card is blocked, I typed the wrong PIN three times", "rn": "Ikarata yanje yahagaze, ninjije inomero y'ibanga itari yo incuro zitatu"},
+    {"id": "card-04", "intent": "card_block", "entities": {"card_issue": "swallowed_by_atm"}, "fr": "Le guichet automatique a avalé ma carte", "en": "The ATM swallowed my card", "rn": "Icuma ca ATM camize ikarata yanje"},
+    {"id": "card-05", "intent": "card_block", "entities": {"card_last4": "4821"}, "fr": "Je veux bloquer la carte qui finit par 4821", "en": "I want to block the card ending in 4821", "rn": "Ndashaka guhagarika ikarata irangiza na 4821"},
+    {"id": "card-06", "intent": "card_block", "entities": {"card_issue": "fraud_suspected"}, "fr": "Il y a des retraits que je n'ai pas faits avec ma carte, bloquez-la", "en": "There are withdrawals I didn't make with my card, block it", "rn": "Hari amafaranga yakuweko n'ikarata yanje ntayakuyeko, muyihagarike"},
+    {"id": "card-07", "intent": "card_block", "entities": {}, "fr": "Comment faire bloquer ma carte ?", "en": "How do I get my card blocked?", "rn": "Nohagarika gute ikarata yanje?"},
+
+    {"id": "loan-01", "intent": "loan_info", "entities": {}, "fr": "Quels crédits proposez-vous ?", "en": "What loans do you offer?", "rn": "Mutanga ingurane z'ubwoko ki?"},
+    {"id": "loan-02", "intent": "loan_info", "entities": {"product": "business_loan", "loan_amount": 5000000, "term_months": 24}, "fr": "Je voudrais un crédit commerce de 5 millions sur 24 mois", "en": "I'd like a business loan of 5 million over 24 months", "rn": "Ndashaka ingurane y'ubudandaji y'amamiliyoni 5 mu mezi 24"},
+    {"id": "loan-03", "intent": "loan_info", "entities": {"product": "agri_loan"}, "fr": "Quel est le taux du crédit agricole ?", "en": "What is the interest rate of the agricultural loan?", "rn": "Ingurane y'uburimyi ifise inyungu ingahe?"},
+    {"id": "loan-04", "intent": "loan_info", "entities": {"product": "school_fees_loan"}, "fr": "Je peux emprunter pour payer le minerval de mes enfants ?", "en": "Can I borrow to pay my children's school fees?", "rn": "Noshobora gufata ingurane yo kurihira abana banje amashure?"},
+    {"id": "loan-05", "intent": "loan_info", "entities": {"product": "housing_loan"}, "fr": "Quelles conditions pour un crédit pour construire une maison ?", "en": "What are the conditions for a loan to build a house?", "rn": "Ingurane yo kwubaka inzu isaba iki?"},
+    {"id": "loan-06", "intent": "loan_info", "entities": {"product": "salary_advance", "loan_amount": 500000}, "fr": "Je suis fonctionnaire, je voudrais une avance de 500 000 francs", "en": "I'm a civil servant, I'd like an advance of 500,000 francs", "rn": "Ndi umukozi wa leta, ndashaka ingurane y'umushahara y'amafaranga 500 000"},
+    {"id": "loan-07", "intent": "loan_info", "entities": {"product": "women_group_loan"}, "fr": "Notre groupe de femmes peut avoir un crédit sans garantie ?", "en": "Can our women's group get a loan without collateral?", "rn": "Umugwi wacu w'abagore woronka ingurane ata ngwati?"},
+    {"id": "loan-08", "intent": "loan_info", "entities": {"loan_amount": 2000000, "term_months": 12}, "fr": "Combien je paierai par mois pour 2 millions sur 12 mois ?", "en": "How much would I pay per month for 2 million over 12 months?", "rn": "Nzoriha angahe ku kwezi ku mamiliyoni 2 mu mezi 12?"},
+
+    {"id": "cmp-01", "intent": "complaint", "entities": {"complaint_category": "fees"}, "fr": "On m'a prélevé des frais deux fois ce mois-ci", "en": "I was charged fees twice this month", "rn": "Bankuyeko amafaranga kabiri muri uku kwezi"},
+    {"id": "cmp-02", "intent": "complaint", "entities": {"complaint_category": "atm"}, "fr": "Le guichet ne m'a pas donné l'argent mais mon compte est débité", "en": "The ATM didn't give me the money but my account was debited", "rn": "Icuma ca ATM nticampaye amafaranga ariko yakuwe kuri konti yanje"},
+    {"id": "cmp-03", "intent": "complaint", "entities": {"complaint_category": "service_quality"}, "fr": "J'ai attendu trois heures à l'agence, c'est inacceptable", "en": "I waited three hours at the branch, that's unacceptable", "rn": "Nategereje amasaha atatu ku ishami, ntibikwiye"},
+    {"id": "cmp-04", "intent": "complaint", "entities": {"ticket_number": "TCK-2026-00042"}, "fr": "Où en est ma réclamation TCK-2026-00042 ?", "en": "What is the status of my complaint TCK-2026-00042?", "rn": "Ikirego canje TCK-2026-00042 gishitse he?"},
+    {"id": "cmp-05", "intent": "complaint", "entities": {"complaint_category": "fees"}, "min_frustration": 0.7, "fr": "C'est la troisième fois que vous me volez avec vos frais, j'en ai marre !", "en": "This is the third time you've robbed me with your fees, I'm fed up!", "rn": "Ni incuro ya gatatu munyiba n'amafaranga yanyu, ndambiwe!"},
+    {"id": "cmp-06", "intent": "complaint", "entities": {"complaint_category": "mobile_banking"}, "fr": "Le *123# ne marche pas depuis une semaine", "en": "*123# has not been working for a week", "rn": "*123# ntikora kuva hashize indwi"},
+    {"id": "cmp-07", "intent": "complaint", "entities": {}, "fr": "Je veux déposer une plainte", "en": "I want to file a complaint", "rn": "Ndashaka gutanga ikirego"},
+
+    {"id": "br-01", "intent": "branch_info", "entities": {"province": "Ngozi"}, "fr": "L'agence de Ngozi ouvre à quelle heure ?", "en": "What time does the Ngozi branch open?", "rn": "Ishami rya Ngozi ryugurura ryari?"},
+    {"id": "br-02", "intent": "branch_info", "entities": {"province": "Gitega"}, "fr": "L'agence de Gitega est ouverte le samedi ?", "en": "Is the Gitega branch open on Saturday?", "rn": "Ishami rya Gitega rikora ku wa gatandatu?"},
+    {"id": "br-03", "intent": "branch_info", "entities": {"province": "Rumonge"}, "fr": "Donnez-moi le numéro de téléphone de l'agence de Rumonge", "en": "Give me the phone number of the Rumonge branch", "rn": "Mumpe inomero ya terefone y'ishami rya Rumonge"},
+    {"id": "br-04", "intent": "branch_info", "entities": {"province": "Muyinga"}, "fr": "Où se trouve votre agence à Muyinga ?", "en": "Where is your branch in Muyinga?", "rn": "Ishami ryanyu ry'i Muyinga riri he?"},
+    {"id": "br-05", "intent": "branch_info", "entities": {"province": "Bujumbura"}, "fr": "Quelles agences avez-vous à Bujumbura ?", "en": "Which branches do you have in Bujumbura?", "rn": "Mufise amashami ayahe i Bujumbura?"},
+    {"id": "br-06", "intent": "branch_info", "entities": {"province": "Kirundo"}, "fr": "À quelle heure ferme l'agence de Kirundo ?", "en": "What time does the Kirundo branch close?", "rn": "Ishami rya Kirundo ryugara saa ngahe?"},
+    {"id": "br-07", "intent": "branch_info", "entities": {}, "fr": "Les agences sont ouvertes le dimanche ?", "en": "Are the branches open on Sunday?", "rn": "Amashami arakora ku w'iyinga?"},
+
+    {"id": "hand-01", "intent": "handoff", "entities": {}, "fr": "Je veux parler à un conseiller", "en": "I want to talk to an agent", "rn": "Ndashaka kuvugana n'umukozi"},
+    {"id": "hand-02", "intent": "handoff", "entities": {}, "fr": "Passez-moi une vraie personne s'il vous plaît", "en": "Put me through to a real person please", "rn": "Munshikirize umuntu nyawe, ndabinginze"},
+    {"id": "hand-03", "intent": "handoff", "entities": {}, "min_frustration": 0.7, "fr": "Vous ne comprenez rien, je veux un humain tout de suite !", "en": "You understand nothing, I want a human right now!", "rn": "Nta co mutahura, ndashaka umuntu ubu nyene!"},
+    {"id": "hand-04", "intent": "handoff", "entities": {}, "fr": "Est-ce que je peux parler à quelqu'un de l'agence ?", "en": "Can I speak with someone from the branch?", "rn": "Noshobora kuvugana n'umuntu wo ku ishami?"},
+
+    {"id": "oth-01", "intent": "other", "entities": {}, "fr": "Bonjour", "en": "Hello", "rn": "Amahoro"},
+    {"id": "oth-02", "intent": "other", "entities": {}, "fr": "Merci beaucoup, au revoir", "en": "Thank you very much, goodbye", "rn": "Murakoze cane, n'agasaga"},
+    {"id": "oth-03", "intent": "other", "entities": {}, "fr": "Quel temps fera-t-il demain à Bujumbura ?", "en": "What will the weather be like tomorrow in Bujumbura?", "rn": "Ejo i Bujumbura ikirere kizoba kimeze gute?"},
+    {"id": "oth-04", "intent": "other", "entities": {}, "fr": "Qui a gagné le match hier ?", "en": "Who won the match yesterday?", "rn": "Ni nde yatsinze umupira ejo?"}
+  ]
+}
