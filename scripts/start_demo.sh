@@ -53,7 +53,10 @@ echo
 echo "Kabangutsi is up:"
 echo "  Backend API     http://localhost:${BACKEND_HOST_PORT:-8000}/v1/health   (docs: /docs)"
 [[ -f frontend/Dockerfile ]] && echo "  Customer + agent web  http://localhost:${FRONTEND_HOST_PORT:-8080}"
-LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || true)
 [[ -n "${LAN_IP:-}" ]] && echo "  Android app API_URL   http://$LAN_IP:${BACKEND_HOST_PORT:-8000}"
-curl -fsS "http://localhost:${BACKEND_HOST_PORT:-8000}/v1/health" && echo
+for _ in $(seq 1 30); do
+  curl -fsS "http://localhost:${BACKEND_HOST_PORT:-8000}/v1/health" 2>/dev/null && { echo; break; }
+  sleep 1
+done
 [[ $ok -eq 1 ]] || { echo "!! Some services are not healthy: docker compose ps / docker compose logs <svc>"; exit 1; }

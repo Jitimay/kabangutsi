@@ -56,7 +56,8 @@ if [[ $CUT -eq 1 ]]; then
   trap 'nmcli networking on; echo "  network restored"' EXIT
   nmcli networking off && echo "  network off"
   docker compose "${PROFILES[@]}" down >/dev/null
-  if scripts/start_demo.sh; then pass "stack healthy offline"; else bad "stack not healthy offline"; fi
+  if scripts/start_demo.sh > /tmp/kabangutsi_offline_start.log 2>&1; then pass "stack healthy offline"; else bad "stack not healthy offline (see /tmp/kabangutsi_offline_start.log)"; fi
+  grep -E "^   |status" /tmp/kabangutsi_offline_start.log
 fi
 
 echo

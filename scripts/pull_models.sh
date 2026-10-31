@@ -70,8 +70,10 @@ done
 
 echo
 echo "==> Installed models and capabilities"
-for m in $(docker compose exec -T ollama ollama list | awk 'NR>1 {print $1}'); do
-  caps=$(docker compose exec -T ollama ollama show "$m" | awk '/Capabilities/{f=1;next} f&&NF==0{exit} f{print $1}' | paste -sd, -)
+installed=$(docker compose exec -T ollama ollama list </dev/null | awk 'NR>1 {print $1}')
+for m in $installed; do
+  # capability names are indented 4 spaces; deeper lines (e.g. thinking levels) are options, not capabilities
+  caps=$(docker compose exec -T ollama ollama show "$m" </dev/null | awk '/^  Capabilities/{f=1;next} f&&NF==0{exit} f&&/^    [a-z]/&&!/^      /{print $1}' | paste -sd, -)
   printf "  %-28s %s\n" "$m" "$caps"
 done
 
