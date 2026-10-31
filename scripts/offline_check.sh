@@ -25,7 +25,7 @@ for img in $(docker compose "${PROFILES[@]}" config --images); do
 done
 
 echo "==> 2. Ollama models present"
-REQUIRED="${PULL_MODELS:-gemma4:e2b,gemma4:e4b,gemma:2b,nomic-embed-text}"
+REQUIRED="${PULL_MODELS:-gemma4:e4b,gemma:2b,nomic-embed-text}"
 docker compose up -d ollama >/dev/null
 sleep 3
 installed=$(docker compose exec -T ollama ollama list 2>/dev/null | awk 'NR>1 {print $1}')

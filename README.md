@@ -11,7 +11,7 @@ It runs **100% locally**: the only part that needs the internet is the WhatsApp 
 ```bash
 cp .env.example .env
 docker compose build                 # online: builds images, installs packages
-scripts/pull_models.sh               # online: pulls gemma4:e2b, gemma4:e4b, gemma:2b, nomic-embed-text
+scripts/pull_models.sh               # online: gemma4:e4b (default), gemma:2b, nomic-embed-text; add --from-host to reuse host models
 scripts/start_demo.sh --reset        # works offline from here on
 scripts/offline_check.sh             # images and models present, no container calls out
 ```

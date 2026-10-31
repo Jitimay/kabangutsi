@@ -206,7 +206,7 @@
         "model_used": {
           "type": ["string", "null"],
           "description": "Ollama model that produced the reply. Null when no LLM was used (template, USSD menu, agent message).",
-          "examples": ["gemma4:e2b"]
+          "examples": ["gemma4:e4b"]
         },
         "model_notice": {
           "type": ["string", "null"],
@@ -233,7 +233,7 @@
           "expected_input": "text",
           "handoff": false,
           "end_session": false,
-          "model_used": "gemma4:e2b",
+          "model_used": "gemma4:e4b",
           "model_notice": null,
           "ts": "2026-11-02T08:15:33Z"
         },
@@ -261,7 +261,7 @@
           "expected_input": "text",
           "handoff": false,
           "end_session": false,
-          "model_used": "gemma4:e2b",
+          "model_used": "gemma4:e4b",
           "model_notice": null,
           "ts": "2026-11-02T09:31:05Z"
         },

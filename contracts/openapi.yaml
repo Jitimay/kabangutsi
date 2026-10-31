@@ -101,11 +101,10 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ModelList" }
               example:
-                default_model: gemma4:e2b
-                preference_order: [gemma4:e2b, gemma4:e4b, gemma:2b]
+                default_model: gemma4:e4b
+                preference_order: [gemma4:e4b, gemma4:e2b, gemma:2b]
                 models:
-                  - { name: gemma4:e2b, family: gemma4, parameter_size: 5.1B, quantization: Q4_K_M, size_bytes: 7162394016, capabilities: [completion, vision, audio, tools, thinking], selectable: true, is_default: true }
-                  - { name: gemma4:e4b, family: gemma4, parameter_size: 7.5B, quantization: Q4_K_M, size_bytes: 9608350718, capabilities: [completion, vision, audio, tools, thinking], selectable: true, is_default: false }
+                  - { name: gemma4:e4b, family: gemma4, parameter_size: 7.5B, quantization: Q4_K_M, size_bytes: 9608350718, capabilities: [completion, vision, audio, tools, thinking], selectable: true, is_default: true }
                   - { name: gemma:2b, family: gemma, parameter_size: 3B, quantization: Q4_0, size_bytes: 1678456656, capabilities: [completion], selectable: true, is_default: false }
                   - { name: nomic-embed-text:latest, family: nomic-bert, parameter_size: 137M, quantization: F16, size_bytes: 274302450, capabilities: [embedding], selectable: false, is_default: false }
         "503":
@@ -124,7 +123,7 @@ paths:
           application/json:
             schema: { $ref: "#/components/schemas/ConversationCreate" }
             examples:
-              phone_rn: { value: { channel: phone, phone: "+25779000101", lang: rn, model: gemma4:e2b } }
+              phone_rn: { value: { channel: phone, phone: "+25779000101", lang: rn, model: gemma4:e4b } }
               chat_fr: { value: { channel: web, phone: null, lang: fr, model: null } }
       responses:
         "201":
@@ -137,7 +136,7 @@ paths:
                 channel: phone
                 phone: "+25779000101"
                 lang: rn
-                model: gemma4:e2b
+                model: gemma4:e4b
                 status: active
                 started_at: "2026-11-02T08:15:28Z"
                 greeting:
@@ -241,7 +240,7 @@ paths:
               schema: { $ref: "#/components/schemas/StreamEvent" }
               example: |
                 event: turn
-                data: {"id":"7e8f9a0b-1c2d-4e3f-a4b5-c6d7e8f9a0b1","call_id":"2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e","speaker":"customer","agent_id":null,"text":"Je voudrais un crédit commerce de 5 millions sur 24 mois","lang":"fr","intent":"loan_info","confidence":0.88,"frustration":0.1,"attachments":[],"model_used":"gemma4:e2b","ts":"2026-11-02T09:31:01Z"}
+                data: {"id":"7e8f9a0b-1c2d-4e3f-a4b5-c6d7e8f9a0b1","call_id":"2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e","speaker":"customer","agent_id":null,"text":"Je voudrais un crédit commerce de 5 millions sur 24 mois","lang":"fr","intent":"loan_info","confidence":0.88,"frustration":0.1,"attachments":[],"model_used":"gemma4:e4b","ts":"2026-11-02T09:31:01Z"}
 
                 event: token
                 data: {"delta":"Pour un crédit"}
@@ -931,7 +930,7 @@ components:
       type: object
       required: [name, family, parameter_size, quantization, size_bytes, capabilities, selectable, is_default]
       properties:
-        name: { type: string, examples: [gemma4:e2b] }
+        name: { type: string, examples: [gemma4:e4b] }
         family: { type: [string, "null"] }
         parameter_size: { type: [string, "null"] }
         quantization: { type: [string, "null"] }
