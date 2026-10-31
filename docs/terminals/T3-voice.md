@@ -1,6 +1,8 @@
 # T3 — Voice service (STT + TTS): Wave 3
 
-Read `CLAUDE.md` and `contracts/voice_api.yaml` first. Start only after **G0**.
+Read `CLAUDE.md` first. **Start Step 1 now** (no contract needed). Do Step 2 only after G0: run
+`git merge main` in your worktree and read `contracts/voice_api.yaml` before building the service.
+Keep test scripts and results in `voice/experiments/` and summarise them in `status/T3.md`.
 
 - Branch / worktree: `t3-voice` → `../kabangutsi-t3`
 - You own: `voice/` and `status/T3.md`

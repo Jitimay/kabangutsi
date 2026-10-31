@@ -1,6 +1,18 @@
 # T2 — Flutter frontend (BLoC): Waves 1, 2, 4, then the call screen
 
-Read `CLAUDE.md` and the contracts in `contracts/` first. Start only after **G0**.
+Read `CLAUDE.md` first.
+
+## Before G0 — start now (setup only)
+- `flutter create` the project in `frontend/` (org `bi.kabangutsi`, platforms android + web), two entry
+  points `lib/main_customer.dart` and `lib/main_agent.dart`.
+- Folder structure below, theme, bundled fonts, l10n files (fr, en, rn) with the main UI strings,
+  DI (get_it), router (go_router), empty screens for every feature, `frontend/Dockerfile`
+  (build Flutter web with `--no-web-resources-cdn`, serve with nginx on port 80 → host 8080).
+- **No API, DTO or repository code yet** — that comes from the contracts.
+- Update `status/T2.md`. Then wait for G0.
+
+## After G0
+Run `git merge main` in your worktree, read everything in `contracts/`, then start Wave 1.
 
 - Branch / worktree: `t2-flutter` → `../kabangutsi-t2`
 - You own: `frontend/` and `status/T2.md`

@@ -1,6 +1,8 @@
 # T1 — Backend (FastAPI): Waves 1, 2, 4
 
-Read `CLAUDE.md` and the contracts in `contracts/` first. Start only after **G0**.
+Read `CLAUDE.md` first. **Do not start before G0.** When `status/T0.md` says G0 is reached, run
+`git merge main` in your worktree, read everything in `contracts/`, then begin Wave 1.
+You take over the backend placeholder T0 created (`backend/Dockerfile`, `/health`).
 
 - Branch / worktree: `t1-backend` → `../kabangutsi-t1`
 - You own: `backend/` **except** `backend/channels/` (T4), plus `status/T1.md`

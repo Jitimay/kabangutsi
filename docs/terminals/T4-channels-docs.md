@@ -1,7 +1,22 @@
 # T4 — Channels (USSD, SMS, WhatsApp) + Documents (OCR, PDF): Waves 5, 6
 
-Read `CLAUDE.md`, `contracts/message.schema.json`, `contracts/openapi.yaml` (channel inbound) and
-`contracts/ocr_api.yaml` first. Start only after **G0**.
+Read `CLAUDE.md` first.
+
+## Before G0 — start now (tests only, no adapter code)
+Record every result in `status/T4.md`; keep scripts in `sms/experiments/`, `whatsapp/experiments/`,
+`ocr/experiments/`.
+- **GSM modem:** plug it in, find the device (`/dev/ttyUSB*`), send and receive one SMS with gammu or AT
+  commands. Note the modem model, SIM operator, any permission fix (`dialout` group).
+- **WhatsApp bridge:** on the team hardware with a dedicated test SIM, receive and send one text and one
+  image. Note the tool used and its limits.
+- **OCR:** install PaddleOCR (and Tesseract as a backup), run it on 3 fictional documents (fake CNI,
+  loan form, coffee receipt); record accuracy and time per image on this CPU. Make sure models can be
+  downloaded ahead of time (no download at runtime).
+- **PDF:** render one HTML template to PDF with WeasyPrint.
+
+## After G0
+Run `git merge main` in your worktree, read `contracts/message.schema.json`, `contracts/openapi.yaml`
+(channel inbound) and `contracts/ocr_api.yaml`, then start Wave 5.
 
 - Branch / worktree: `t4-channels` → `../kabangutsi-t4`
 - You own: `backend/channels/`, `sms/`, `whatsapp/`, `ocr/` and `status/T4.md`

@@ -1,10 +1,14 @@
 # T0 — Lead: Wave 0 (foundations + contracts)
 
-Read `CLAUDE.md` first. You run **before** everyone else. T1–T4 cannot start until you reach **G0**.
+Read `CLAUDE.md` first. You are the critical path: T1 waits for you, and T2–T4 only do setup and tests
+until you reach **G0**.
 
-- Branch: `main`
+- Branch: `main` (worktree: `kabangutsi/`)
 - You own: `docker-compose.yml`, `.env.example`, `contracts/`, `scripts/`, `docs/`, root files, `status/T0.md`
-- You also create the empty skeleton folders for the others (they own them after G0).
+- T2, T3 and T4 are already working in their worktrees. **Do not create or edit anything in `frontend/`,
+  `voice/`, `sms/`, `whatsapp/`, `ocr/` or `backend/channels/`.** Their Dockerfiles are theirs.
+- `backend/` (outside `backend/channels/`): T1 has not started, so you may add a minimal placeholder
+  (`backend/Dockerfile` + `/health` app) to get the stack running; T1 takes it over after G0.
 
 ## Goal
 A stack that starts with one command, offline, and a set of frozen contracts that let four terminals work
@@ -12,10 +16,9 @@ in parallel without talking to each other.
 
 ## Tasks
 
-### 1. Repository
-- `git init`, `.gitignore` (Python, Flutter, `.env`, `*.db`, model caches, `node_modules`, `build/`).
-- Skeleton folders, each with a short `README.md`: `backend/`, `backend/channels/`, `frontend/`, `voice/`,
-  `sms/`, `whatsapp/`, `ocr/`, `contracts/`, `scripts/`, `status/`.
+### 1. Repository (already done)
+- Git repo, `.gitignore`, branches `t1-backend`, `t2-flutter`, `t3-voice`, `t4-channels` and their
+  worktrees exist. Create `contracts/`, `scripts/`, `status/` (with `T0.md`).
 - `backend/requirements.txt` and `backend/requirements-dev.txt` already exist; keep them.
 
 ### 2. Contracts (`contracts/`) — the most important deliverable
@@ -35,7 +38,10 @@ Include realistic examples in every schema (fr, en, rn). Get the inspector to re
 ### 3. Docker Compose
 - Services: `postgres` (`pgvector/pgvector:pg16`), `ollama` (`ollama/ollama`), `backend`, `voice`, `ocr`,
   `frontend` (nginx serving Flutter web build), `sms-gateway`, `whatsapp-bridge`. Ports as in `CLAUDE.md`.
-- Placeholder Dockerfiles + a minimal `/health` app for each service so the whole stack starts on day one.
+- Each service builds from its own folder's `Dockerfile` (written by its owner). Until a folder has one,
+  mark that service with a Compose profile (e.g. `profiles: ["voice"]`) so `docker compose up` still starts
+  postgres, ollama and the backend placeholder. List in `status/T0.md` which Dockerfiles each terminal must
+  provide (port, `/health`).
 - Named volumes: postgres data, ollama models, voice models, ocr models, whatsapp session.
 - Health checks on postgres and ollama; backend `depends_on` them (condition: service_healthy).
 - `sms-gateway`: `devices: ["/dev/ttyUSB0:/dev/ttyUSB0"]` behind a Compose profile `hardware` so the
@@ -59,20 +65,21 @@ complaint process, fees). Mark everything clearly as fictional.
 - `ollama show <model>` for each Gemma model: list capabilities (vision? audio?).
 - Quick test: Kirundi STT/TTS model availability (Meta MMS) — hand detailed work to T3.
 
-### 7. Worktrees for the other terminals (after G0)
+### 7. Announce G0
+Commit everything on `main`, then write in `status/T0.md`: "G0 reached — run `git merge main`".
+The worktrees already exist:
 ```
-git branch t1-backend && git worktree add ../kabangutsi-t1 t1-backend
-git branch t2-flutter && git worktree add ../kabangutsi-t2 t2-flutter
-git branch t3-voice   && git worktree add ../kabangutsi-t3 t3-voice
-git branch t4-channels && git worktree add ../kabangutsi-t4 t4-channels
+../kabangutsi-t1  (t1-backend)    ../kabangutsi-t2  (t2-flutter)
+../kabangutsi-t3  (t3-voice)      ../kabangutsi-t4  (t4-channels)
 ```
 
 ## G0 exit checklist
-- [ ] `docker compose up` starts every service; all `/health` return 200 — with Wi-Fi off
+- [ ] `docker compose up` starts postgres, ollama and the backend placeholder with Wi-Fi off; other
+      services start as soon as their owners add a Dockerfile
 - [ ] All contract files present, with examples, reviewed by the inspector
 - [ ] Seed data loads into PostgreSQL
 - [ ] Model capability results recorded
-- [ ] Worktrees created; `status/T1.md` … `status/T4.md` created from the template
+- [ ] Inspector approved; G0 announced in `status/T0.md`
 
 ## Later: Wave 7 (with everyone)
 150-utterance test set (50 fr, 50 en, 50 rn) in `scripts/eval/`, offline rehearsal, backup video, pitch.

@@ -19,7 +19,25 @@ human agent with a summary when needed, and runs **100% locally**.
 | T3 Voice | `t3-voice` | `voice/` |
 | T4 Channels + docs | `t4-channels` | `backend/channels/`, `sms/`, `whatsapp/`, `ocr/` |
 
-Every terminal also owns its own status file: `status/T<n>.md`.
+Every terminal also owns its own status file: `status/T<n>.md`, and its own `Dockerfile`
+inside its folders (T0 only writes `docker-compose.yml`, which references them).
+
+## Start order and worktrees
+
+| Terminal | Worktree | Before G0 | After G0 |
+|---|---|---|---|
+| T0 Lead | `kabangutsi/` (main) | Wave 0 | Wave 7 + support |
+| T1 Backend | `../kabangutsi-t1` | **Wait** | Waves 1, 2, 4 |
+| T2 Flutter | `../kabangutsi-t2` | Project setup only (no API work) | Waves 1, 2, 4, call screen |
+| T3 Voice | `../kabangutsi-t3` | Step 1: voice model tests | Voice service, call wiring |
+| T4 Channels + docs | `../kabangutsi-t4` | Hardware + OCR model tests | Waves 5, 6 |
+
+When T0 announces G0 (contracts frozen on `main`), every terminal runs `git merge main` in its worktree
+to get `contracts/`, `docker-compose.yml` and the seed data, then starts its post-G0 work.
+Later updates from `main` arrive the same way. The inspector merges branches into `main` at G1 and G2.
+
+The machine is CPU only with 16 GB RAM: avoid running heavy model tests (T3, T4) at the same time as
+large builds; say in your status file when you run something heavy.
 
 ## Hard rules
 
