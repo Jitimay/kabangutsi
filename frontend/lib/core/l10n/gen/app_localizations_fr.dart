@@ -362,6 +362,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ussdInvalidCode => 'Code inconnu. Composez *123#';
 
   @override
+  String get cardChooseCard =>
+      'Vous avez plusieurs cartes actives. Choisissez la carte à bloquer, puis saisissez à nouveau votre code PIN.';
+
+  @override
   String get agentPickerLabel => 'Agent';
 
   @override

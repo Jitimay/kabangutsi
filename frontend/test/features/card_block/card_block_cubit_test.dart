@@ -158,6 +158,24 @@ void main() {
     const r = CardBlockRequest(accountNumber: '40012345678', pin: pin, reason: 'lost', lang: 'fr');
     expect(r.toString().contains(pin), isFalse);
   });
+
+  blocTest<CardBlockCubit, CardBlockState>(
+    'several active cards (422 details.cards) → choose a card, then verify again',
+    setUp: () {
+      when(() => repo.verify(any())).thenThrow(const ApiError(
+        code: 'validation_error',
+        message: 'Which card?',
+        details: {'field': 'card_last4', 'cards': ['4821', '1907']},
+        status: 422,
+      ));
+    },
+    build: () => CardBlockCubit(repo),
+    act: (c) => c.verify(accountNumber: '40012345678', secret: pin, lang: 'en'),
+    expect: () => [
+      const CardBlockState(step: CardBlockStep.verifying),
+      const CardBlockState(failure: CardBlockFailure.chooseCard, cardChoices: ['4821', '1907']),
+    ],
+  );
 }
 
 CardBlockRequest verify_(MockCardRepository repo) =>

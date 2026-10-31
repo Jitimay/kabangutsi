@@ -108,5 +108,6 @@
   "ussdInputHint": "Répondez par un numéro",
   "ussdErrNetwork": "Problème de connexion. Veuillez réessayer.",
   "ussdRunning": "Code USSD en cours…",
-  "ussdInvalidCode": "Code inconnu. Composez *123#"
+  "ussdInvalidCode": "Code inconnu. Composez *123#",
+  "cardChooseCard": "Vous avez plusieurs cartes actives. Choisissez la carte à bloquer, puis saisissez à nouveau votre code PIN."
 }

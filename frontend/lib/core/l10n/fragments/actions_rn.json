@@ -108,5 +108,6 @@
   "ussdInputHint": "Ishura n'inomero",
   "ussdErrNetwork": "Hari ingorane y'umuhora. Subira ugerageze.",
   "ussdRunning": "Kode ya USSD iriko irakora…",
-  "ussdInvalidCode": "Kode ntizwi. Kanda *123#"
+  "ussdInvalidCode": "Kode ntizwi. Kanda *123#",
+  "cardChooseCard": "Mufise amakarata menshi akora. Muhitemwo ikarata mushaka guhagarika, maze mwongere mwandike PIN yanyu."
 }

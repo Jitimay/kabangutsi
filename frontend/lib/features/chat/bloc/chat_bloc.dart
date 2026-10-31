@@ -156,6 +156,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final messages = [for (final m in state.messages) if (m.id != _pendingId) m];
     if (err.status == 409 || err.code == 'conflict') {
       // With (or waiting for) a human agent: the message was forwarded.
+      // The backend puts its system reply in `details.reply` (OutgoingReply).
+      final system = _conflictReply(err);
+      if (system != null) messages.add(ChatMessage.fromReply(system));
       return state.copyWith(
         messages: messages,
         sending: false,
@@ -163,6 +166,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
     }
     return state.copyWith(messages: messages, sending: false, error: () => err);
+  }
+
+  OutgoingReply? _conflictReply(ApiError err) {
+    final r = err.details['reply'];
+    if (r is! Map<String, dynamic>) return null;
+    try {
+      final reply = OutgoingReply.fromJson(r);
+      return reply.text.isEmpty ? null : reply;
+    } catch (_) {
+      return null;
+    }
   }
 
   ChatMessage _notice(String text) => ChatMessage(id: _localId('n'), author: ChatAuthor.notice, text: text);

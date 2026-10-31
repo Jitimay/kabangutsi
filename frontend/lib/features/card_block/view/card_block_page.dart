@@ -169,6 +169,19 @@ class _IdentityFormState extends State<_IdentityForm> {
               ),
             ),
           const SizedBox(height: 16),
+          if (state.cardChoices.isNotEmpty) ...[
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              for (final c in state.cardChoices)
+                ChoiceChip(
+                  key: Key('card_choice_$c'),
+                  avatar: const Icon(Icons.credit_card, size: 18),
+                  label: Text(l10n.cardEnding(c)),
+                  selected: _last4.text == c,
+                  onSelected: busy ? null : (_) => setState(() => _last4.text = c),
+                ),
+            ]),
+            const SizedBox(height: 16),
+          ],
           TextFormField(
             key: const Key('card_last4'),
             controller: _last4,

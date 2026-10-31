@@ -241,6 +241,25 @@ void main() {
     );
 
     blocTest<ChatBloc, ChatState>(
+      '409 with details.reply → the backend system message is shown',
+      build: () {
+        final system = reply(id: '9a9a9a9a-0000-4000-8000-000000000001', text: 'Votre message a été transmis au conseiller.', speaker: 'system');
+        when(() => repo.sendMessage(any(), any())).thenAnswer((_) => Stream.error(
+            ApiError(code: 'conflict', message: 'with agent', details: {'reply': system.toJson()})));
+        return started();
+      },
+      act: (b) async {
+        await Future<void>.delayed(Duration.zero);
+        b.add(const ChatTextSent('Allô ?'));
+      },
+      verify: (b) {
+        expect(b.state.messages.last.text, 'Votre message a été transmis au conseiller.');
+        expect(b.state.handoff, HandoffStatus.waiting);
+        expect(b.state.error, isNull);
+      },
+    );
+
+    blocTest<ChatBloc, ChatState>(
       'end_session disables input; restart opens a new conversation',
       build: () {
         when(() => repo.sendMessage(any(), any()))

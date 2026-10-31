@@ -760,6 +760,12 @@ abstract class AppLocalizations {
   /// **'Unknown code. Dial *123#'**
   String get ussdInvalidCode;
 
+  /// No description provided for @cardChooseCard.
+  ///
+  /// In en, this message translates to:
+  /// **'You have several active cards. Choose the card to block, then enter your PIN again.'**
+  String get cardChooseCard;
+
   /// No description provided for @agentPickerLabel.
   ///
   /// In en, this message translates to:

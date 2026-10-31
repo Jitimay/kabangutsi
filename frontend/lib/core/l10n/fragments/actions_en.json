@@ -108,5 +108,6 @@
   "ussdInputHint": "Reply with a number",
   "ussdErrNetwork": "Connection problem. Please try again.",
   "ussdRunning": "USSD code running…",
-  "ussdInvalidCode": "Unknown code. Dial *123#"
+  "ussdInvalidCode": "Unknown code. Dial *123#",
+  "cardChooseCard": "You have several active cards. Choose the card to block, then enter your PIN again."
 }

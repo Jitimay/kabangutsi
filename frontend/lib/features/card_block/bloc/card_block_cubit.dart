@@ -6,7 +6,7 @@ import '../../../data/repositories/repositories.dart';
 
 enum CardBlockStep { form, verifying, confirm, confirming, done, locked }
 
-enum CardBlockFailure { identityFailed, expired, notFound, network, generic }
+enum CardBlockFailure { identityFailed, expired, notFound, network, chooseCard, generic }
 
 /// F5 state. Never contains the PIN or the date of birth: they are passed to
 /// [CardBlockCubit.verify] and forwarded to the repository only.
@@ -19,6 +19,7 @@ class CardBlockState extends Equatable {
     this.result,
     this.failure,
     this.attemptsLeft,
+    this.cardChoices = const [],
   });
 
   final CardBlockStep step;
@@ -29,6 +30,9 @@ class CardBlockState extends Equatable {
   final CardBlockFailure? failure;
   final int? attemptsLeft;
 
+  /// Last 4 digits offered when the customer has several active cards (422 `details.cards`).
+  final List<String> cardChoices;
+
   CardBlockState copyWith({
     CardBlockStep? step,
     bool? useDateOfBirth,
@@ -37,6 +41,7 @@ class CardBlockState extends Equatable {
     CardBlockResult? Function()? result,
     CardBlockFailure? Function()? failure,
     int? Function()? attemptsLeft,
+    List<String>? cardChoices,
   }) => CardBlockState(
     step: step ?? this.step,
     useDateOfBirth: useDateOfBirth ?? this.useDateOfBirth,
@@ -45,10 +50,11 @@ class CardBlockState extends Equatable {
     result: result != null ? result() : this.result,
     failure: failure != null ? failure() : this.failure,
     attemptsLeft: attemptsLeft != null ? attemptsLeft() : this.attemptsLeft,
+    cardChoices: cardChoices ?? this.cardChoices,
   );
 
   @override
-  List<Object?> get props => [step, useDateOfBirth, reason, pending, result, failure, attemptsLeft];
+  List<Object?> get props => [step, useDateOfBirth, reason, pending, result, failure, attemptsLeft, cardChoices];
 }
 
 class CardBlockCubit extends Cubit<CardBlockState> {
@@ -84,7 +90,7 @@ class CardBlockCubit extends Cubit<CardBlockState> {
           lang: lang,
         ),
       );
-      emit(state.copyWith(step: CardBlockStep.confirm, pending: () => pending, attemptsLeft: () => null));
+      emit(state.copyWith(step: CardBlockStep.confirm, pending: () => pending, attemptsLeft: () => null, cardChoices: const []));
     } on ApiError catch (e) {
       _fail(e);
     }
@@ -109,6 +115,16 @@ class CardBlockCubit extends Cubit<CardBlockState> {
   void _fail(ApiError e) {
     if (e.status == 423 || e.code == 'locked') {
       emit(state.copyWith(step: CardBlockStep.locked, pending: () => null, failure: () => null));
+      return;
+    }
+    final cards = e.details['cards'];
+    if (e.status == 422 && cards is List && cards.isNotEmpty) {
+      emit(state.copyWith(
+        step: CardBlockStep.form,
+        failure: () => CardBlockFailure.chooseCard,
+        cardChoices: [for (final c in cards) '$c'],
+        pending: () => null,
+      ));
       return;
     }
     final (failure, step) = switch (e) {

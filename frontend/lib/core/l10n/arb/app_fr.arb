@@ -110,6 +110,7 @@
   "ussdErrNetwork": "Problème de connexion. Veuillez réessayer.",
   "ussdRunning": "Code USSD en cours…",
   "ussdInvalidCode": "Code inconnu. Composez *123#",
+  "cardChooseCard": "Vous avez plusieurs cartes actives. Choisissez la carte à bloquer, puis saisissez à nouveau votre code PIN.",
   "agentPickerLabel": "Agent",
   "agentRetry": "Réessayer",
   "agentLoadError": "Impossible de charger les données.",

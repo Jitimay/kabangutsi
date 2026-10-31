@@ -357,6 +357,10 @@ class AppLocalizationsRn extends AppLocalizations {
   String get ussdInvalidCode => 'Kode ntizwi. Kanda *123#';
 
   @override
+  String get cardChooseCard =>
+      'Mufise amakarata menshi akora. Muhitemwo ikarata mushaka guhagarika, maze mwongere mwandike PIN yanyu.';
+
+  @override
   String get agentPickerLabel => 'Umukozi';
 
   @override

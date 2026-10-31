@@ -23,5 +23,6 @@ String cardFailureText(AppLocalizations l10n, CardBlockFailure f, int? attemptsL
   CardBlockFailure.expired => l10n.cardErrExpired,
   CardBlockFailure.notFound => l10n.cardErrNotFound,
   CardBlockFailure.network => l10n.cardErrNetwork,
+  CardBlockFailure.chooseCard => l10n.cardChooseCard,
   CardBlockFailure.generic => l10n.cardErrGeneric,
 };
