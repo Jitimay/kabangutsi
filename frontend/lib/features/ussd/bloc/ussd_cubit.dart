@@ -9,7 +9,7 @@ enum UssdPhase { idle, loading, menu, ended, invalidCode, error }
 
 /// F14 (UI) state of the USSD simulator.
 class UssdState extends Equatable {
-  const UssdState({this.phase = UssdPhase.idle, this.screen = '', this.sessionId});
+  const UssdState({this.phase = UssdPhase.idle, this.screen = '', this.sessionId, this.expectedInput = 'menu_choice'});
 
   final UssdPhase phase;
 
@@ -17,10 +17,15 @@ class UssdState extends Equatable {
   final String screen;
   final String? sessionId;
 
+  /// `expected_input` of the last reply: `text` means a free question (letters allowed).
+  final String expectedInput;
+
+  bool get expectsText => inSession && expectedInput == 'text';
+
   bool get inSession => sessionId != null && (phase == UssdPhase.menu || phase == UssdPhase.loading);
 
   @override
-  List<Object?> get props => [phase, screen, sessionId];
+  List<Object?> get props => [phase, screen, sessionId, expectedInput];
 }
 
 class UssdCubit extends Cubit<UssdState> {
@@ -57,7 +62,7 @@ class UssdCubit extends Cubit<UssdState> {
   void cancel() => emit(const UssdState());
 
   Future<void> _send(String session, String text, String lang) async {
-    emit(UssdState(phase: UssdPhase.loading, screen: state.screen, sessionId: session));
+    emit(UssdState(phase: UssdPhase.loading, screen: state.screen, sessionId: session, expectedInput: state.expectedInput));
     try {
       final r = await _repo.send(
         InboundMessage(
@@ -75,6 +80,7 @@ class UssdCubit extends Cubit<UssdState> {
           phase: r.endSession ? UssdPhase.ended : UssdPhase.menu,
           screen: r.text,
           sessionId: r.endSession ? null : session,
+          expectedInput: r.expectedInput,
         ),
       );
     } on ApiError {
