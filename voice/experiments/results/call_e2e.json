@@ -1,0 +1,167 @@
+{
+  "machine_before": {
+    "loadavg_1m": 3.58,
+    "mem_available_gb": 4.2
+  },
+  "runs": [
+    {
+      "lang": "fr",
+      "conversation_id": "d20de105-cec1-4622-a799-81caaa4368d8",
+      "sentences": [
+        {
+          "t": 5.761,
+          "text": "Pour bloquer votre carte, donnez-moi votre numéro de compte à 11 chiffres.",
+          "audio_url": "/v1/files/07d5f833-54a5-4021-b35c-dc2a25641f1e"
+        }
+      ],
+      "stt_s": 5.754,
+      "transcript": "Ma carte bancaire est bloquée depuis ce matin.",
+      "first_sentence_s": 5.761,
+      "first_audio_url": "/v1/files/07d5f833-54a5-4021-b35c-dc2a25641f1e",
+      "playable_at_sentence": false,
+      "http_at_sentence": 404,
+      "done_s": 5.781,
+      "intent": "card_block",
+      "model_used": "gemma:2b",
+      "first_audio_s": 5.791,
+      "first_audio_bytes": 181292,
+      "first_audio_type": "audio/wav",
+      "round": 1
+    },
+    {
+      "lang": "en",
+      "conversation_id": "ae1e71e0-4ddf-435f-89f5-4d2291785d95",
+      "sentences": [
+        {
+          "t": 6.458,
+          "text": "Opening a personal account.",
+          "audio_url": "/v1/files/d43c2e2d-fd13-4812-86ec-94d9e0ca955a"
+        },
+        {
+          "t": 7.407,
+          "text": "To open a personal current or savings account, visit any branch with: your valid national ID card (CNI) or passport, two recent passport photos and a certificate of residence from your commune.",
+          "audio_url": "/v1/files/2aabdc69-ae44-4931-a0c1-894fe0cd26cd"
+        },
+        {
+          "t": 7.74,
+          "text": "The account is opened the same day and the debit card is ready in 5 working days.",
+          "audio_url": "/v1/files/8a796a76-c2fe-4f41-b9a1-c7bcd963102f"
+        }
+      ],
+      "stt_s": 6.125,
+      "transcript": "My bank card has been blocked since this morning.",
+      "first_sentence_s": 6.458,
+      "first_audio_url": "/v1/files/d43c2e2d-fd13-4812-86ec-94d9e0ca955a",
+      "playable_at_sentence": false,
+      "http_at_sentence": 404,
+      "done_s": 7.744,
+      "intent": "account_opening",
+      "model_used": "gemma:2b",
+      "first_audio_s": 7.747,
+      "first_audio_bytes": 64556,
+      "first_audio_type": "audio/wav",
+      "round": 1
+    },
+    {
+      "lang": "rn",
+      "conversation_id": "d3a09819-7efa-4dab-b87c-1ae6414fbbfe",
+      "sentences": [
+        {
+          "t": 6.873,
+          "text": "Kugira ngo duhagarike ikarata yanyu, nimumpe inomero ya konti yanyu y'ibiharuro 11.",
+          "audio_url": "/v1/files/847e3e2f-d784-4b09-b3ad-11a7c88958ce"
+        }
+      ],
+      "stt_s": 6.867,
+      "transcript": "ikarata yanje ryafunzwe kuva muri iki gitono",
+      "first_sentence_s": 6.873,
+      "first_audio_url": "/v1/files/847e3e2f-d784-4b09-b3ad-11a7c88958ce",
+      "playable_at_sentence": true,
+      "first_audio_s": 6.878,
+      "done_s": 6.878,
+      "intent": "card_block",
+      "model_used": "gemma:2b",
+      "round": 1
+    },
+    {
+      "lang": "fr",
+      "conversation_id": "d46c5c3a-697a-4632-8567-2216b1ce7f09",
+      "sentences": [
+        {
+          "t": 5.533,
+          "text": "Pour bloquer votre carte, donnez-moi votre numéro de compte à 11 chiffres.",
+          "audio_url": "/v1/files/765994a1-3a25-404f-9a6d-087dbbab333d"
+        }
+      ],
+      "stt_s": 5.526,
+      "transcript": "Ma carte bancaire est bloquée depuis ce matin.",
+      "first_sentence_s": 5.533,
+      "first_audio_url": "/v1/files/765994a1-3a25-404f-9a6d-087dbbab333d",
+      "playable_at_sentence": true,
+      "first_audio_s": 5.547,
+      "done_s": 5.547,
+      "intent": "card_block",
+      "model_used": "gemma:2b",
+      "round": 2
+    },
+    {
+      "lang": "en",
+      "conversation_id": "996f1b21-3074-42be-b855-ea614bce785a",
+      "sentences": [
+        {
+          "t": 6.48,
+          "text": "Opening a personal account.",
+          "audio_url": "/v1/files/b5070def-ede7-4978-adc1-209ef1fe8533"
+        },
+        {
+          "t": 7.829,
+          "text": "To open a personal current or savings account, visit any branch with: your valid national ID card (CNI) or passport, two recent passport photos and a certificate of residence from your commune.",
+          "audio_url": "/v1/files/4fad5dec-4737-406a-b0a5-e1859513e5e5"
+        },
+        {
+          "t": 8.369,
+          "text": "The account is opened the same day and the debit card is ready in 5 working days.",
+          "audio_url": "/v1/files/7741a269-fa49-492d-83b8-5af0e672f492"
+        }
+      ],
+      "stt_s": 6.06,
+      "transcript": "My bank card has been blocked since this morning.",
+      "first_sentence_s": 6.48,
+      "first_audio_url": "/v1/files/b5070def-ede7-4978-adc1-209ef1fe8533",
+      "playable_at_sentence": false,
+      "http_at_sentence": 404,
+      "done_s": 8.378,
+      "intent": "account_opening",
+      "model_used": "gemma:2b",
+      "first_audio_s": 8.385,
+      "first_audio_bytes": 65068,
+      "first_audio_type": "audio/wav",
+      "round": 2
+    },
+    {
+      "lang": "rn",
+      "conversation_id": "8f89b168-0686-4fca-b76f-ddce300ed9eb",
+      "sentences": [
+        {
+          "t": 6.721,
+          "text": "Kugira ngo duhagarike ikarata yanyu, nimumpe inomero ya konti yanyu y'ibiharuro 11.",
+          "audio_url": "/v1/files/d5e7dbcb-418c-4db5-b88b-a15fcf50ed76"
+        }
+      ],
+      "stt_s": 6.715,
+      "transcript": "ikarata yanje ryafunzwe kuva muri iki gitono",
+      "first_sentence_s": 6.721,
+      "first_audio_url": "/v1/files/d5e7dbcb-418c-4db5-b88b-a15fcf50ed76",
+      "playable_at_sentence": true,
+      "first_audio_s": 6.726,
+      "done_s": 6.726,
+      "intent": "card_block",
+      "model_used": "gemma:2b",
+      "round": 2
+    }
+  ],
+  "machine_after": {
+    "loadavg_1m": 4.29,
+    "mem_available_gb": 3.6
+  }
+}

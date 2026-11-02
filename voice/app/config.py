@@ -26,6 +26,8 @@ class Settings:
         e.strip() for e in _env("VOICE_ENGINES", "whisper,mms_stt,piper,mms_tts").split(",") if e.strip()))
     phrases_file: Path = field(default_factory=lambda: Path(
         _env("VOICE_PHRASES_FILE", str(Path(__file__).resolve().parent.parent / "phrases" / "phrases.json"))))
+    # Generated phrase audio survives restarts here (inside the voice-models volume); "" = memory only
+    phrase_cache_dir: str = field(default_factory=lambda: _env("VOICE_PHRASE_CACHE_DIR", ""))
     # Pre-recorded human audio overrides generated phrases: <dir>/<lang>/<id>.wav
     prerecorded_dir: Path = field(default_factory=lambda: Path(
         _env("VOICE_PRERECORDED_DIR", str(Path(__file__).resolve().parent.parent / "phrases"))))

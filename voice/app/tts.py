@@ -1,4 +1,5 @@
 """Text-to-speech: Piper (fr, en) and Meta MMS-TTS (rn), plus a phrase cache for frequent replies."""
+import hashlib
 import json
 import re
 import threading
@@ -8,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .audio import read_wav
+from .audio import read_wav, to_wav
 
 SENTENCE_END = re.compile(r"(?<=[.!?…])\s+")
 
@@ -86,16 +87,24 @@ def phrase_key(text: str) -> str:
 
 
 class PhraseCache:
-    """Frequent replies, kept in memory as int16 audio.
+    """Frequent replies, kept in memory as int16 audio (phrases.json = the backend's fixed sentences).
 
-    Source per phrase: a pre-recorded WAV (<prerecorded_dir>/<lang>/<id>.wav, human voice) if present,
-    otherwise generated once at startup with the default voice of that language.
+    Source per phrase, first match wins:
+      1. pre-recorded human voice: <prerecorded_dir>/<lang>/<id>.wav
+      2. generated earlier: <cache_dir>/<lang>/<hash of voice + text>.wav (in the models volume)
+      3. generated now with the default voice of the language, then written to <cache_dir>
+    `load` does 1 and 2 (fast) and returns what is still missing; `warm` generates those (~65 s for all
+    phrases on first start), meant to run in a background thread so the service is up immediately.
     """
 
     def __init__(self):
         self.items: dict[tuple[str, str], tuple[np.ndarray, int, str]] = {}
+        self.pending: list[tuple[str, str]] = []
+        self.cache_dir: Path | None = None
 
-    def load(self, phrases_file: Path, prerecorded_dir: Path, voices: dict[str, list]) -> None:
+    def load(self, phrases_file: Path, prerecorded_dir: Path, voices: dict[str, list],
+             cache_dir: Path | None = None, warm: bool = True) -> None:
+        self.cache_dir = cache_dir
         if not phrases_file.exists():
             return
         data = json.loads(phrases_file.read_text(encoding="utf-8"))
@@ -105,10 +114,46 @@ class PhraseCache:
                 if rec.exists():
                     audio, sr = read_wav(rec)
                     self.items[(lang, phrase_key(text))] = (audio, sr, f"prerecorded/{lang}/{pid}")
-                elif voices.get(lang):
-                    eng = voices[lang][0]
-                    self.items[(lang, phrase_key(text))] = (eng.synth(text, 1.0), eng.voice.sample_rate,
-                                                            eng.voice.id)
+                    continue
+                if not voices.get(lang):
+                    continue
+                cached = self._cache_path(lang, text, voices[lang][0].voice.id)
+                if cached is not None and cached.exists():
+                    try:
+                        audio, sr = read_wav(cached)
+                        self.items[(lang, phrase_key(text))] = (audio, sr, voices[lang][0].voice.id)
+                        continue
+                    except (ValueError, EOFError, OSError):
+                        pass  # corrupt file: regenerate
+                self.pending.append((lang, text))
+        if warm:
+            self.warm(voices)
+
+    def warm(self, voices: dict[str, list]) -> int:
+        """Generate the pending phrases (and store them on disk when possible). Returns how many."""
+        done = 0
+        while self.pending:
+            lang, text = self.pending.pop(0)
+            eng = voices[lang][0]
+            audio = eng.synth(text, 1.0)
+            self.items[(lang, phrase_key(text))] = (audio, eng.voice.sample_rate, eng.voice.id)
+            path = self._cache_path(lang, text, eng.voice.id)
+            if path is not None:
+                try:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    tmp = path.with_suffix(".tmp")
+                    tmp.write_bytes(to_wav(audio, eng.voice.sample_rate))
+                    tmp.replace(path)
+                except OSError:
+                    self.cache_dir = None  # read-only volume: keep in memory only
+            done += 1
+        return done
+
+    def _cache_path(self, lang: str, text: str, voice_id: str) -> Path | None:
+        if self.cache_dir is None:
+            return None
+        h = hashlib.sha1(f"{voice_id}\n{phrase_key(text)}".encode()).hexdigest()[:20]
+        return self.cache_dir / lang / f"{h}.wav"
 
     def get(self, lang: str, text: str):
         return self.items.get((lang, phrase_key(text)))

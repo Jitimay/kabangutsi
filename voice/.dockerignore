@@ -3,3 +3,4 @@ experiments/
 tests/
 **/__pycache__/
 **/.venv/
+scripts/sync_phrases.py

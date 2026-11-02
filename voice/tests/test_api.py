@@ -96,7 +96,8 @@ def test_tts_wav_and_headers(fake_client):
 def test_tts_phrase_cache(fake_client):
     synth = fake_client.engines.tts["rn"][0]
     before = synth.calls
-    r = fake_client.post("/tts", json={"text": "murakaza neza kuri BancoBu.  Nobafasha iki", "lang": "rn"})
+    # first sentence of the backend greeting, case/space/final punctuation ignored
+    r = fake_client.post("/tts", json={"text": "murakaza  neza kuri BancoBu", "lang": "rn"})
     assert r.status_code == 200 and r.headers["X-Voice-Fallback"] == "phrase_cache"
     assert synth.calls == before  # served from memory
 

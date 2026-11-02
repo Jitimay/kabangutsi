@@ -1,27 +1,412 @@
 {
-  "greeting": {
-    "fr": "Bienvenue chez BancoBu. Comment puis-je vous aider ?",
-    "en": "Welcome to BancoBu. How can I help you?",
-    "rn": "Murakaza neza kuri BancoBu. Nobafasha iki?"
+  "greeting.1": {
+    "fr": "Bienvenue chez BancoBu.",
+    "en": "Welcome to BancoBu.",
+    "rn": "Murakaza neza kuri BancoBu."
+  },
+  "greeting.2": {
+    "fr": "Je suis Kabangutsi, votre assistant.",
+    "en": "I am Kabangutsi, your assistant.",
+    "rn": "Ndi Kabangutsi, umufasha wanyu."
+  },
+  "greeting.3": {
+    "fr": "Comment puis-je vous aider ?",
+    "en": "How can I help you?",
+    "rn": "Nobafasha iki?"
+  },
+  "greeting_short.1": {
+    "fr": "Bienvenue chez BancoBu.",
+    "en": "Welcome to BancoBu.",
+    "rn": "Murakaza neza kuri BancoBu."
+  },
+  "greeting_short.2": {
+    "fr": "Comment puis-je vous aider ?",
+    "en": "How can I help you?",
+    "rn": "Nobafasha iki?"
+  },
+  "notice_ocr": {
+    "fr": "Aucun modèle installé ne peut lire les images : le texte a été lu par le lecteur de documents (OCR).",
+    "en": "No installed model can read images: the text was read by the document reader (OCR).",
+    "rn": "Nta modeli yashizwemwo ishobora gusoma amafoto: inyandiko yasomwe n'igisoma-nyandiko (OCR)."
+  },
+  "notice_stt": {
+    "fr": "Aucun modèle installé ne peut écouter l'audio : la reconnaissance vocale a été utilisée.",
+    "en": "No installed model can listen to audio: speech recognition was used instead.",
+    "rn": "Nta modeli yashizwemwo ishobora kwumviriza amajwi: twakoresheje igihindura ijwi mu nyandiko."
+  },
+  "image_unreadable.1": {
+    "fr": "Je n'arrive pas à lire cette image pour le moment.",
+    "en": "I cannot read this image right now.",
+    "rn": "Sinshoboye gusoma iyi foto ubu."
+  },
+  "image_unreadable.2": {
+    "fr": "Pouvez-vous écrire votre question ?",
+    "en": "Could you type your question?",
+    "rn": "Mwokwandika ikibazo canyu?"
+  },
+  "audio_unclear.1": {
+    "fr": "Je n'ai pas bien entendu.",
+    "en": "I did not hear that well.",
+    "rn": "Sinumvise neza."
+  },
+  "audio_unclear.2": {
+    "fr": "Pouvez-vous répéter, s'il vous plaît ?",
+    "en": "Could you repeat, please?",
+    "rn": "Mwosubiramwo, mubigiranye ikigongwe?"
+  },
+  "dont_know.1": {
+    "fr": "Je n'ai pas cette information.",
+    "en": "I do not have that information.",
+    "rn": "Ntafise iyo nkuru."
+  },
+  "dont_know.2": {
+    "fr": "Voulez-vous parler à un conseiller ?",
+    "en": "Would you like to talk to an agent?",
+    "rn": "Murashaka kuvugana n'umukozi wacu?"
+  },
+  "handoff_queued.1": {
+    "fr": "Je vous transfère à un conseiller.",
+    "en": "I am transferring you to an agent.",
+    "rn": "Ndabashikiriza umukozi wacu."
+  },
+  "handoff_queued.2": {
+    "fr": "Merci de patienter, il vous répondra bientôt.",
+    "en": "Please wait, an agent will answer you shortly.",
+    "rn": "Mwihangane gato, aragaruka vuba."
+  },
+  "handoff_frustration.1": {
+    "fr": "Je comprends votre mécontentement.",
+    "en": "I understand you are upset.",
+    "rn": "Ndumva ko mutanezerewe."
+  },
+  "handoff_frustration.2": {
+    "fr": "Je vous transfère en priorité à un conseiller.",
+    "en": "I am transferring you to an agent as a priority.",
+    "rn": "Ndabashikiriza umukozi wacu bwangu."
+  },
+  "with_agent_wait": {
+    "fr": "Votre message a été transmis au conseiller.",
+    "en": "Your message has been passed to the agent.",
+    "rn": "Ubutumwa bwanyu bwashikirijwe umukozi."
+  },
+  "queued_wait.1": {
+    "fr": "Vous êtes en attente d'un conseiller.",
+    "en": "You are waiting for an agent.",
+    "rn": "Muriko murarindira umukozi."
+  },
+  "queued_wait.2": {
+    "fr": "Votre message lui sera transmis.",
+    "en": "Your message will be passed on.",
+    "rn": "Ubutumwa bwanyu buzomushikirizwa."
+  },
+  "ended": {
+    "fr": "Cette conversation est terminée.",
+    "en": "This conversation has ended.",
+    "rn": "Iki kiganiro carangiye."
+  },
+  "ask_account": {
+    "fr": "Pour bloquer votre carte, donnez-moi votre numéro de compte à 11 chiffres.",
+    "en": "To block your card, please give me your 11-digit account number.",
+    "rn": "Kugira ngo duhagarike ikarata yanyu, nimumpe inomero ya konti yanyu y'ibiharuro 11."
+  },
+  "bad_account.1": {
+    "fr": "Ce numéro de compte n'est pas valide.",
+    "en": "That account number is not valid.",
+    "rn": "Iyo nomero ya konti si yo."
+  },
+  "bad_account.2": {
+    "fr": "Donnez les 11 chiffres, s'il vous plaît.",
+    "en": "Please give the 11 digits.",
+    "rn": "Nimutange ibiharuro 11."
+  },
+  "ask_pin.1": {
+    "fr": "Merci.",
+    "en": "Thank you.",
+    "rn": "Murakoze."
+  },
+  "ask_pin.2": {
+    "fr": "Entrez votre code PIN à 4 chiffres.",
+    "en": "Please enter your 4-digit PIN.",
+    "rn": "Nimwinjize PIN yanyu y'ibiharuro 4."
+  },
+  "ask_pin.3": {
+    "fr": "Si vous l'avez oublié, tapez votre date de naissance (AAAA-MM-JJ).",
+    "en": "If you forgot it, type your date of birth (YYYY-MM-DD).",
+    "rn": "Nimba mwayibagiye, nimwandike itariki y'amavuka (YYYY-MM-DD)."
+  },
+  "ask_dob": {
+    "fr": "Entrez votre date de naissance au format AAAA-MM-JJ.",
+    "en": "Please enter your date of birth as YYYY-MM-DD.",
+    "rn": "Nimwandike itariki y'amavuka yanyu nk'iyi: YYYY-MM-DD."
+  },
+  "pin_format.1": {
+    "fr": "Je n'ai pas compris.",
+    "en": "I did not understand.",
+    "rn": "Sinatahuye."
+  },
+  "pin_format.2": {
+    "fr": "Entrez les 4 chiffres de votre PIN, ou votre date de naissance (AAAA-MM-JJ).",
+    "en": "Enter the 4 digits of your PIN, or your date of birth (YYYY-MM-DD).",
+    "rn": "Nimwinjize ibiharuro 4 vya PIN, canke itariki y'amavuka (YYYY-MM-DD)."
+  },
+  "pin_format.3": {
+    "fr": "Dites « annuler » pour arrêter.",
+    "en": "Say \"cancel\" to stop.",
+    "rn": "Muvuge « hagarika » kugira muhagarike."
+  },
+  "identity_locked.1": {
+    "fr": "Trop d'essais incorrects.",
+    "en": "Too many failed attempts.",
+    "rn": "Mwagerageje kenshi bidakunze."
+  },
+  "identity_locked.2": {
+    "fr": "Pour votre sécurité, je vous transfère à un conseiller.",
+    "en": "For your security, I am transferring you to an agent.",
+    "rn": "Ku bw'umutekano wanyu, ndabashikiriza umukozi wacu."
+  },
+  "no_active_card": {
+    "fr": "Je ne trouve aucune carte active sur ce compte.",
+    "en": "I cannot find an active card on this account.",
+    "rn": "Nta karata ikora mbonye kuri iyi konti."
+  },
+  "block_cancelled.1": {
+    "fr": "D'accord, la carte n'a pas été bloquée.",
+    "en": "All right, the card was not blocked.",
+    "rn": "Ni vyiza, ikarata ntiyahagaritswe."
+  },
+  "block_cancelled.2": {
+    "fr": "Que puis-je faire d'autre pour vous ?",
+    "en": "What else can I do for you?",
+    "rn": "Ni iki kindi nobafasha?"
+  },
+  "confirm_expired.1": {
+    "fr": "La demande de confirmation a expiré.",
+    "en": "The confirmation request has expired.",
+    "rn": "Igihe co kwemeza carenze."
+  },
+  "confirm_expired.2": {
+    "fr": "Recommençons si vous voulez toujours bloquer la carte.",
+    "en": "Let us start again if you still want to block the card.",
+    "rn": "Dusubire dutangure nimba mukishaka guhagarika ikarata."
+  },
+  "yes_no": {
+    "fr": "Répondez par oui ou par non, s'il vous plaît.",
+    "en": "Please answer yes or no.",
+    "rn": "Nimwishure ego canke oya."
+  },
+  "loan_ask_amount_term": {
+    "fr": "Dites-moi le montant et la durée en mois pour calculer votre mensualité.",
+    "en": "Tell me the amount and the term in months to calculate your monthly payment.",
+    "rn": "Mumbwire amafaranga n'amezi kugira ngo mbaharurire ivyo muzokwishura ku kwezi."
+  },
+  "ask_complaint_details.1": {
+    "fr": "Je suis désolé.",
+    "en": "I am sorry about that.",
+    "rn": "Mutubabarire."
+  },
+  "ask_complaint_details.2": {
+    "fr": "Décrivez le problème en quelques mots, s'il vous plaît.",
+    "en": "Please describe the problem in a few words.",
+    "rn": "Nimudondore ikibazo mu majambo makeyi."
+  },
+  "delay_urgent": {
+    "fr": "en priorité aujourd'hui",
+    "en": "as a priority today",
+    "rn": "bwangu uyu munsi"
+  },
+  "delay_normal": {
+    "fr": "sous 48 heures",
+    "en": "within 48 hours",
+    "rn": "mu masaha 48"
+  },
+  "status_open": {
+    "fr": "ouvert",
+    "en": "open",
+    "rn": "iracuguruye"
+  },
+  "status_in_progress": {
+    "fr": "en cours de traitement",
+    "en": "being handled",
+    "rn": "iriko irakurikiranwa"
+  },
+  "status_resolved": {
+    "fr": "résolu",
+    "en": "resolved",
+    "rn": "yatorewe inyishu"
+  },
+  "status_closed": {
+    "fr": "fermé",
+    "en": "closed",
+    "rn": "yugaranye"
+  },
+  "open_now": {
+    "fr": "Ouverte maintenant",
+    "en": "Open now",
+    "rn": "Irakora ubu"
+  },
+  "closed_now": {
+    "fr": "Fermée maintenant",
+    "en": "Closed now",
+    "rn": "Yugaye ubu"
+  },
+  "other.1": {
+    "fr": "Je peux vous aider pour les produits, l'ouverture de compte, les cartes, les crédits, les réclamations et les horaires des agences.",
+    "en": "I can help with products, account opening, cards, loans, complaints and branch hours.",
+    "rn": "Nshobora kubafasha ku bijanye n'ibicuruzwa, kwugurura konti, amakarata, ingurane, ibirego n'amasaha y'amashami."
+  },
+  "other.2": {
+    "fr": "Que voulez-vous savoir ?",
+    "en": "What would you like to know?",
+    "rn": "Mushaka kumenya iki?"
+  },
+  "about_me.1": {
+    "fr": "Je suis Kabangutsi, l'assistant virtuel de BancoBu.",
+    "en": "I am Kabangutsi, BancoBu's virtual assistant.",
+    "rn": "Ndi Kabangutsi, umufasha wa BancoBu ukoresha ubuhinga."
+  },
+  "about_me.2": {
+    "fr": "Je réponds sur les produits, l'ouverture de compte, les cartes, les crédits, les réclamations et les agences, et je peux vous passer un conseiller.",
+    "en": "I can help with products, account opening, cards, loans, complaints and branches, and I can put you through to an agent.",
+    "rn": "Nshobora kubafasha ku bicuruzwa, kwugurura konti, amakarata, ingurane, ibirego n'amashami, kandi nshobora kubashikiriza umukozi."
+  },
+  "about_me.3": {
+    "fr": "Que puis-je faire pour vous ?",
+    "en": "What can I do for you?",
+    "rn": "Nobafasha iki?"
+  },
+  "hello.1": {
+    "fr": "Bonjour !",
+    "en": "Hello!",
+    "rn": "Amahoro!"
+  },
+  "hello.2": {
+    "fr": "Comment puis-je vous aider ?",
+    "en": "How can I help you?",
+    "rn": "Nobafasha iki?"
+  },
+  "thanks.1": {
+    "fr": "Avec plaisir.",
+    "en": "You are welcome.",
+    "rn": "Ni ugushimwa."
+  },
+  "thanks.2": {
+    "fr": "Puis-je vous aider pour autre chose ?",
+    "en": "Can I help you with anything else?",
+    "rn": "Hari ikindi nobafasha?"
+  },
+  "goodbye.1": {
+    "fr": "Merci d'avoir contacté BancoBu.",
+    "en": "Thank you for contacting BancoBu.",
+    "rn": "Murakoze kuvugana na BancoBu."
+  },
+  "goodbye.2": {
+    "fr": "Au revoir !",
+    "en": "Goodbye!",
+    "rn": "Mugire amahoro!"
+  },
+  "ok_else.1": {
+    "fr": "D'accord.",
+    "en": "All right.",
+    "rn": "Ni vyiza."
+  },
+  "ok_else.2": {
+    "fr": "Que puis-je faire d'autre pour vous ?",
+    "en": "What else can I do for you?",
+    "rn": "Ni iki kindi nobafasha?"
+  },
+  "error.1": {
+    "fr": "Désolé, un problème technique est survenu.",
+    "en": "Sorry, a technical problem occurred.",
+    "rn": "Mutubabarire, habaye ingorane y'ubuhinga."
+  },
+  "error.2": {
+    "fr": "Pouvez-vous reformuler ?",
+    "en": "Could you rephrase?",
+    "rn": "Mwosubiramwo mu yandi majambo?"
+  },
+  "intent_product_info": {
+    "fr": "produits et frais",
+    "en": "products and fees",
+    "rn": "ibicuruzwa n'amafaranga"
+  },
+  "intent_account_opening": {
+    "fr": "ouverture de compte",
+    "en": "account opening",
+    "rn": "kwugurura konti"
+  },
+  "intent_card_block": {
+    "fr": "blocage de carte",
+    "en": "card block",
+    "rn": "guhagarika ikarata"
+  },
+  "intent_loan_info": {
+    "fr": "crédit",
+    "en": "loan",
+    "rn": "ingurane"
+  },
+  "intent_complaint": {
+    "fr": "réclamation",
+    "en": "complaint",
+    "rn": "ikirego"
+  },
+  "intent_branch_info": {
+    "fr": "agences et horaires",
+    "en": "branches and hours",
+    "rn": "amashami n'amasaha"
+  },
+  "intent_handoff": {
+    "fr": "parler à un conseiller",
+    "en": "talk to an agent",
+    "rn": "kuvugana n'umukozi"
+  },
+  "intent_other": {
+    "fr": "autre",
+    "en": "other",
+    "rn": "ibindi"
+  },
+  "conversation_ended.1": {
+    "fr": "Cette conversation est terminée.",
+    "en": "This conversation has ended.",
+    "rn": "Iki kiganiro carangiye."
+  },
+  "conversation_ended.2": {
+    "fr": "Envoyez un nouveau message pour en commencer une autre.",
+    "en": "Send a new message to start another one.",
+    "rn": "Rungika ubundi butumwa kugira mutangure ikindi."
+  },
+  "already_queued.1": {
+    "fr": "Votre demande est déjà transmise.",
+    "en": "Your request has already been passed on.",
+    "rn": "Ivyo musaba vyamaze gushikirizwa."
+  },
+  "already_queued.2": {
+    "fr": "Un conseiller va vous répondre.",
+    "en": "An agent will answer you.",
+    "rn": "Umukozi agiye kubishura."
+  },
+  "stray_digits.1": {
+    "fr": "Pour votre sécurité, n'envoyez jamais votre code PIN dans un message.",
+    "en": "For your security, never send your PIN in a message.",
+    "rn": "Ku bw'umutekano wanyu, ntimurungike PIN yanyu mu butumwa."
+  },
+  "stray_digits.2": {
+    "fr": "Que puis-je faire pour vous ?",
+    "en": "What can I do for you?",
+    "rn": "Nobafasha iki?"
+  },
+  "doc_review.1": {
+    "fr": "J'ai lu votre document.",
+    "en": "I have read your document.",
+    "rn": "Nasomye urupapuro rwanyu."
+  },
+  "doc_review.2": {
+    "fr": "Certaines informations doivent être vérifiées par un conseiller ; je vous transfère.",
+    "en": "Some details must be checked by an agent; I am transferring you.",
+    "rn": "Hari ivyo umukozi akwiye gusuzuma; ndabamushikiriza."
   },
   "please_wait": {
     "fr": "Un instant, s'il vous plaît.",
     "en": "One moment, please.",
     "rn": "Mutegereze gato."
-  },
-  "transferring": {
-    "fr": "Je vous transfère à un conseiller.",
-    "en": "I am transferring you to an agent.",
-    "rn": "Ndabahuza n'umukozi wa banki."
-  },
-  "repeat": {
-    "fr": "Je n'ai pas bien compris. Pouvez-vous répéter ?",
-    "en": "I did not understand. Could you repeat, please?",
-    "rn": "Sinumvise neza. Mwosubiramwo?"
-  },
-  "goodbye": {
-    "fr": "Merci d'avoir appelé BancoBu. Au revoir.",
-    "en": "Thank you for calling BancoBu. Goodbye.",
-    "rn": "Murakoze guhamagara BancoBu. Mugire amahoro."
   }
 }

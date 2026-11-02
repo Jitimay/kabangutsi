@@ -1,7 +1,9 @@
 """Kabangutsi voice service (STT + TTS). Contract: contracts/voice_api.yaml. Port 8001, internal."""
 import logging
+import threading
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, File, Form, Response, UploadFile
@@ -59,8 +61,25 @@ class Engines:
             eng = self._try("mms_tts", lambda: MmsTts(s.models_dir, s.threads))
             if eng:
                 self.tts["rn"].insert(0, eng)
-        self._try("phrase_cache", lambda: self.phrases.load(s.phrases_file, s.prerecorded_dir, self.tts))
+        cache_dir = Path(s.phrase_cache_dir) if s.phrase_cache_dir else s.models_dir / "phrase-cache"
+        self._try("phrase_cache", lambda: self.phrases.load(s.phrases_file, s.prerecorded_dir, self.tts,
+                                                             cache_dir, warm=False))
+        log.info("phrase cache: %d ready, %d to generate in background",
+                 len(self.phrases.items), len(self.phrases.pending))
         return self
+
+    def warm_phrases_in_background(self) -> None:
+        def run():
+            t0 = time.perf_counter()
+            try:
+                n = self.phrases.warm(self.tts)
+                log.info("phrase cache: generated %d in %.0fs (%d total)", n, time.perf_counter() - t0,
+                         len(self.phrases.items))
+            except Exception:
+                log.exception("phrase cache warm-up failed (phrases will be synthesised per request)")
+
+        if self.phrases.pending:
+            threading.Thread(target=run, name="phrase-warmup", daemon=True).start()
 
     def models(self) -> dict[str, str]:
         m = {}
@@ -87,6 +106,7 @@ def create_app(engines: Engines | None = None) -> FastAPI:
         if engines is None:
             logging.basicConfig(level=logging.INFO)
             app.state.engines = Engines(Settings()).load()
+            app.state.engines.warm_phrases_in_background()
         else:
             app.state.engines = engines
         yield
