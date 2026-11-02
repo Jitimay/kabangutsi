@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}{% endblock %}</title>
+<style>
+  /* Fonts come from fontconfig (fonts-liberation / fonts-dejavu-core in the image): no web fonts. */
+  @page {
+    size: A4; margin: 2cm 2cm 2.2cm;
+    @bottom-left { content: element(foot); }
+    @bottom-right { content: counter(page) " / " counter(pages); font-family: "Liberation Sans", "DejaVu Sans", sans-serif; font-size: 8pt; color: #667; }
+  }
+  body { font-family: "Liberation Sans", "DejaVu Sans", sans-serif; color: #1b2a3a; font-size: 11pt; }
+  header { border-bottom: 3px solid #0b4f8a; padding-bottom: 8px; margin-bottom: 18px; }
+  header .brand { color: #0b4f8a; font-weight: bold; font-size: 10pt; letter-spacing: .5px; }
+  h1 { color: #0b4f8a; font-size: 20pt; margin: 4px 0 0; }
+  table { border-collapse: collapse; width: 100%; }
+  td { padding: 8px 6px; border-bottom: 1px solid #d5dbe5; vertical-align: top; }
+  td.k { color: #4a5a6e; width: 45%; }
+  td.v { text-align: right; font-weight: bold; }
+  tr.hl td { background: #eef4fb; font-size: 13pt; }
+  .box { margin-top: 18px; padding: 10px 12px; background: #f6f8fb; border-left: 4px solid #0b4f8a; }
+  .note { margin-top: 22px; font-size: 9pt; color: #4a5a6e; }
+  .foot { position: running(foot); font-size: 8pt; color: #a33; }
+  .gen { margin-top: 6px; font-size: 8pt; color: #8090a0; }
+</style>
+</head>
+<body>
+<div class="foot">{{ t.fictional }}</div>
+<header>
+  <div class="brand">BANCOBU · KABANGUTSI</div>
+  <h1>{% block heading %}{% endblock %}</h1>
+</header>
+{% block content %}{% endblock %}
+<p class="gen">{{ t.generated }} {{ generated }}</p>
+</body>
+</html>

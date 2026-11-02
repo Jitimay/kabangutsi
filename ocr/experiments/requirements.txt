@@ -1,0 +1,10 @@
+# Pre-G0 OCR/PDF experiments, Python 3.12 (project standard; host python is 3.14, so a uv-managed 3.12 venv was used).
+# paddlepaddle 3.2.2, NOT 3.3.x: 3.3.1 crashes on CPU with oneDNN
+# ("ConvertPirAttribute2RuntimeAttribute not support"), and disabling oneDNN is ~5x slower.
+paddlepaddle==3.2.2
+paddleocr==3.7.0
+paddlex==3.7.2
+# opencv-contrib-python==4.10.0.84 comes with paddlex (non-headless: Docker image needs libgl1 + libglib2.0-0)
+pillow==13.0.0
+pytesseract==0.3.13
+weasyprint==70.0

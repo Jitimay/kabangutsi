@@ -1,0 +1,30 @@
+# Coffee cherry delivery receipt from a washing station (fictional samples only).
+id: coffee_receipt
+name:
+  fr: "Reçu de livraison de café"
+  en: "Coffee delivery receipt"
+  rn: "Icemezo co gutanga ikawa"
+route_to: loan_info
+detect:
+  keywords: ["station de lavage", "cerise", "producteur", "recu", "prix/kg", "kawa", "coffee"]
+fields:
+  - name: farmer_name
+    type: string
+    required: true
+    labels: ["Producteur", "Nom du producteur", "Farmer"]
+    validate: { regex: "^[A-Za-zÀ-ÿ' .-]{2,80}$" }
+  - name: weight_kg
+    type: number
+    required: true
+    labels: ["Poids (kg)", "Cerise (kg)", "Weight (kg)"]
+    validate: { min: 0.1, max: 100000 }
+  - name: amount
+    type: integer
+    required: true
+    labels: ["Total (FBu)", "Montant (FBu)", "Total", "Amount (FBu)"]
+    validate: { min: 1, max: 1000000000 }
+  - name: date
+    type: date
+    required: true
+    labels: ["Date", "Itariki"]
+    validate: { min: "2000-01-01", max: "2100-12-31" }

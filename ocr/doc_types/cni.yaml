@@ -1,0 +1,33 @@
+# National ID card (fictional samples only). Fields and route_to: contracts/ocr_api.yaml.
+id: cni
+name:
+  fr: "Carte nationale d'identité"
+  en: "National ID card"
+  rn: "Ikarata y'ibiranga umuntu"
+route_to: account_opening
+detect:
+  keywords: ["republique du burundi", "carte nationale", "identite", "lieu de naissance", "date de naissance", "no cni", "date de delivrance"]
+fields:
+  - name: full_name
+    type: string
+    required: true
+    # composite: values found under each label group are joined with a space
+    parts:
+      - labels: ["Nom", "Izina", "Surname"]
+      - labels: ["Prénoms", "Prénom", "Amazina", "Given names"]
+    validate: { regex: "^[A-Za-zÀ-ÿ' .-]{2,80}$" }
+  - name: id_number
+    type: string
+    required: true
+    labels: ["No CNI", "N° CNI", "Numéro CNI", "No de la carte", "ID number"]
+    validate: { regex: "^[0-9A-Z][0-9A-Z./ -]{4,30}$" }
+  - name: date_of_birth
+    type: date
+    required: true
+    labels: ["Date de naissance", "Itariki y'amavuko", "Date of birth"]
+    validate: { min: "1900-01-01", max: "2015-12-31" }
+  - name: place_of_birth
+    type: string
+    required: false
+    labels: ["Lieu de naissance", "Aho yavukiye", "Place of birth"]
+    validate: { regex: "^[A-Za-zÀ-ÿ' .-]{2,60}$" }

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ t.ticket_title }} {{ d.number }}{% endblock %}
+{% block heading %}{{ t.ticket_title }}{% endblock %}
+{% block content %}
+<table>
+  <tr class="hl"><td class="k">{{ t.ticket_number }}</td><td class="v">{{ d.number }}</td></tr>
+  {% if d.customer_name %}<tr><td class="k">{{ t.customer }}</td><td class="v">{{ d.customer_name }}</td></tr>{% endif %}
+  <tr><td class="k">{{ t.phone }}</td><td class="v">{{ d.phone | mask_phone }}</td></tr>
+  <tr><td class="k">{{ t.category }}</td><td class="v">{{ category }}</td></tr>
+  <tr><td class="k">{{ t.urgency }}</td><td class="v">{{ urgency }}</td></tr>
+  <tr><td class="k">{{ t.status }}</td><td class="v">{{ status }}</td></tr>
+  <tr><td class="k">{{ t.created }}</td><td class="v">{{ d.created_at | local_time }}</td></tr>
+  <tr><td class="k">{{ t.updated }}</td><td class="v">{{ d.updated_at | local_time }}</td></tr>
+  {% if d.attachments %}<tr><td class="k">{{ t.attachments }}</td><td class="v">{{ d.attachments | length }}</td></tr>{% endif %}
+</table>
+<div class="box"><strong>{{ t.summary }}</strong><br>{{ d.summary }}</div>
+<p class="note">{{ t.ticket_note }}</p>
+{% endblock %}

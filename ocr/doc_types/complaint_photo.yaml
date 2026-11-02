@@ -1,0 +1,16 @@
+# Any photo attached to a complaint (ATM screen, receipt, letter). Only the visible text is read.
+id: complaint_photo
+name:
+  fr: "Photo jointe à une réclamation"
+  en: "Complaint photo"
+  rn: "Ifoto y'ikirego"
+route_to: complaint
+detect:
+  keywords: ["erreur", "error", "transaction", "guichet", "atm", "echec", "failed"]
+  # used when no other type is recognised
+  fallback: true
+fields:
+  - name: visible_text
+    type: string
+    required: false
+    source: all_text

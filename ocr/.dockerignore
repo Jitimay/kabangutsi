@@ -1,0 +1,9 @@
+**/__pycache__
+**/*.pyc
+.pytest_cache
+experiments/
+tests/
+samples/
+scripts/*.sh
+*.pdf
+# models/ IS sent: optional local copy of the models for an offline rebuild (git-ignored)

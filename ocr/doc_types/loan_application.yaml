@@ -1,0 +1,29 @@
+# Paper loan application form (fictional samples only).
+id: loan_application
+name:
+  fr: "Demande de crédit"
+  en: "Loan application"
+  rn: "Isaba ry'ingurane"
+route_to: loan_info
+detect:
+  keywords: ["demande de credit", "loan application", "montant demande", "duree", "objet du credit", "revenu mensuel"]
+fields:
+  - name: applicant_name
+    type: string
+    required: true
+    labels: ["Nom complet", "Nom du demandeur", "Applicant name", "Full name"]
+    validate: { regex: "^[A-Za-zÀ-ÿ' .-]{2,80}$" }
+  - name: amount
+    type: integer
+    required: true
+    labels: ["Montant demandé (FBu)", "Montant demandé", "Montant (FBu)", "Amount (FBu)", "Amount"]
+    validate: { min: 10000, max: 10000000000 }
+  - name: term_months
+    type: integer
+    required: true
+    labels: ["Durée (mois)", "Durée", "Term (months)", "Igihe (amezi)"]
+    validate: { min: 1, max: 360 }
+  - name: product
+    type: string
+    required: false
+    labels: ["Type de crédit", "Produit", "Loan type", "Product"]
