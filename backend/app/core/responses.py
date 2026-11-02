@@ -264,6 +264,11 @@ T: dict[str, dict[str, str]] = {
         "en": "I can help with products, account opening, cards, loans, complaints and branch hours. What would you like to know?",
         "rn": "Nshobora kubafasha ku bijanye n'ibicuruzwa, kwugurura konti, amakarata, ingurane, ibirego n'amasaha y'amashami. Mushaka kumenya iki?",
     },
+    "about_me": {
+        "fr": "Je suis Kabangutsi, l'assistant virtuel de BancoBu. Je réponds sur les produits, l'ouverture de compte, les cartes, les crédits, les réclamations et les agences, et je peux vous passer un conseiller. Que puis-je faire pour vous ?",
+        "en": "I am Kabangutsi, BancoBu's virtual assistant. I can help with products, account opening, cards, loans, complaints and branches, and I can put you through to an agent. What can I do for you?",
+        "rn": "Ndi Kabangutsi, umufasha wa BancoBu ukoresha ubuhinga. Nshobora kubafasha ku bicuruzwa, kwugurura konti, amakarata, ingurane, ibirego n'amashami, kandi nshobora kubashikiriza umukozi. Nobafasha iki?",
+    },
     "hello": {
         "fr": "Bonjour ! Comment puis-je vous aider ?",
         "en": "Hello! How can I help you?",

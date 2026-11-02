@@ -200,7 +200,12 @@ async def understand(
     llm_it: Intent | None = None
     used: str | None = None
     attempts: list[str] = []
-    casual = keywords.is_greeting(text) or keywords.is_thanks(text) or keywords.is_goodbye(text)
+    casual = (
+        keywords.is_greeting(text)
+        or keywords.is_thanks(text)
+        or keywords.is_goodbye(text)
+        or keywords.is_who_are_you(text)
+    )
     trusted = kw["confidence"] >= s.keyword_trust  # "other" is only that sure for explicit off-topic
     if casual or is_number_only(text) or (trusted and s.skip_llm_when_trusted):
         use_llm = False

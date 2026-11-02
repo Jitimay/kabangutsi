@@ -34,6 +34,30 @@ class OllamaClient:
             r.raise_for_status()
             return r.json().get("models", [])
 
+    async def make_room(self, model: str) -> None:
+        """OLLAMA_EXCLUSIVE: unload every other loaded chat model before using `model` (the embedding model
+        stays). On this 16 GB CPU machine two chat models do not fit next to a desktop: the G1 check saw the
+        kernel OOM killer stop gemma4:e2b while gemma:2b was loaded, and 3/3 successes once it was unloaded.
+        Best effort: any error is ignored and the call goes ahead."""
+        s = get_settings()
+        if not s.ollama_exclusive:
+            return
+
+        def norm(x: str) -> str:
+            return x if ":" in x else f"{x}:latest"
+
+        try:
+            async with self._client(10) as c:
+                r = await c.get("/api/ps")
+                r.raise_for_status()
+                for m in r.json().get("models", []):
+                    name = m.get("name") or m.get("model") or ""
+                    if norm(name) in (norm(model), norm(s.embed_model)):
+                        continue
+                    await c.post("/api/generate", json={"model": name, "keep_alive": 0})
+        except (httpx.HTTPError, ValueError):
+            pass
+
     async def show(self, name: str) -> dict[str, Any]:
         async with self._client(10) as c:
             r = await c.post("/api/show", json={"model": name})
@@ -80,6 +104,7 @@ class OllamaClient:
         body = self._body(
             model, messages, stream=False, format=format, temperature=temperature, num_predict=num_predict, think=think
         )
+        await self.make_room(model)
         try:
             async with self._client(timeout) as c:
                 r = await c.post("/api/chat", json=body)
@@ -105,6 +130,7 @@ class OllamaClient:
         body = self._body(
             model, messages, stream=True, format=None, temperature=temperature, num_predict=num_predict, think=think
         )
+        await self.make_room(model)
         try:
             async with self._client(timeout) as c:
                 async with c.stream("POST", "/api/chat", json=body) as r:

@@ -346,6 +346,8 @@ def _handler_for(intent: Intent, txt: str) -> Callable[[TurnContext], Awaitable[
 
 async def _other(ctx: TurnContext) -> HandlerResult:
     lang, txt = ctx.lang, ctx.text
+    if keywords.is_who_are_you(txt):
+        return HandlerResult(text=t("about_me", lang))
     if keywords.is_greeting(txt):
         return HandlerResult(text=t("hello", lang))
     if keywords.is_thanks(txt):
@@ -508,6 +510,10 @@ async def _turn(
             if r.notice:
                 notices.append(r.notice)
         llm_for_turn = r.model
+        if med.model_used:
+            # The model that read the image / audio also handles this turn: it can chat, it is loaded, and
+            # swapping back to the session model mid-turn would reload it (one chat model fits in memory).
+            llm_for_turn = med.model_used
         nlu_text = txt + (f"\n[image: {med.image_text}]" if med.image_text else "")
         if nlu_text.strip():
             nlu = await understand(nlu_text, llm_for_turn, hint=hint, previous=call["lang"])

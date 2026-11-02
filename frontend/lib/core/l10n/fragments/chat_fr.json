@@ -44,5 +44,32 @@
         "type": "String"
       }
     }
-  }
+  },
+  "chatWorking": "{model} réfléchit… {seconds} s",
+  "chatAnsweredBy": "{model} · {seconds} s",
+  "chatNoModel": "sans modèle (règles)",
+  "@chatWorking": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatAnsweredBy": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "chatCallNumber": "Appeler",
+  "chatCopyNumber": "Copier le numéro",
+  "chatNumberCopied": "Numéro copié",
+  "chatCannotCall": "Cet appareil ne peut pas appeler : le numéro a été copié."
 }

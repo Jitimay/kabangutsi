@@ -265,6 +265,11 @@ WORDS: dict[str, set[str]] = {
         "bingahe",
         "gushika",
         "kuva",
+        "uri",
+        "nde",
+        "witwa",
+        "mwitwa",
+        "izina",
     },
 }
 

@@ -276,6 +276,33 @@
       }
     }
   },
+  "chatWorking": "{model} is working… {seconds} s",
+  "chatAnsweredBy": "{model} · {seconds} s",
+  "chatNoModel": "no model (rules)",
+  "@chatWorking": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatAnsweredBy": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "chatCallNumber": "Call",
+  "chatCopyNumber": "Copy number",
+  "chatNumberCopied": "Number copied",
+  "chatCannotCall": "This device cannot place calls: the number was copied.",
   "appTitleCustomer": "Kabangutsi",
   "appTitleAgent": "Kabangutsi Agent",
   "welcome": "Hello! How can I help you today?",

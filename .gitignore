@@ -32,6 +32,7 @@ node_modules/
 *.dump
 *.sql.gz
 models/
+!frontend/lib/data/models/   # the app's data classes (DTOs), not model files
 **/model_cache/
 voice/models/
 ocr/models/

@@ -115,10 +115,13 @@ services:
     ports:
       - "127.0.0.1:${OCR_HOST_PORT:-8002}:8002"
 
-  frontend:                  # T2 — frontend/Dockerfile, nginx on 80 serving the Flutter web build
+  frontend:                  # T2 — frontend/Dockerfile, nginx on 80 serving the Flutter web build (merged at G1)
     <<: *common
-    profiles: ["frontend", "full"]
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        API_URL: ${FRONTEND_API_URL:-http://localhost:${BACKEND_HOST_PORT:-8000}}   # as seen by the browser
+        USE_MOCK: ${FRONTEND_USE_MOCK:-false}                                     # true = offline UI demo
     image: kabangutsi/frontend:dev
     ports:
       - "${FRONTEND_HOST_PORT:-8080}:80"
