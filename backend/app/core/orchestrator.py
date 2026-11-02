@@ -346,6 +346,8 @@ def _handler_for(intent: Intent, txt: str) -> Callable[[TurnContext], Awaitable[
 
 async def _other(ctx: TurnContext) -> HandlerResult:
     lang, txt = ctx.lang, ctx.text
+    if keywords.is_who_are_you(txt):
+        return HandlerResult(text=t("about_me", lang))
     if keywords.is_greeting(txt):
         return HandlerResult(text=t("hello", lang))
     if keywords.is_thanks(txt):

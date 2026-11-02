@@ -726,6 +726,39 @@ def is_thanks(text: str) -> bool:
     return any(_has(tf, w) for w in THANKS) and len(tokens(text)) <= 6
 
 
+WHO_ARE_YOU = [
+    "who are you",
+    "what are you",
+    "your name",
+    "are you a robot",
+    "are you human",
+    "are you a bot",
+    "qui êtes-vous",
+    "qui etes-vous",
+    "qui es-tu",
+    "qui es tu",
+    "tu es qui",
+    "vous êtes qui",
+    "vous etes qui",
+    "votre nom",
+    "ton nom",
+    "comment tu t'appelles",
+    "comment vous appelez-vous",
+    "es-tu un robot",
+    "uri nde",
+    "muri nde",
+    "witwa nde",
+    "mwitwa nde",
+    "izina ryawe",
+    "izina ryanyu",
+]
+
+
+def is_who_are_you(text: str) -> bool:
+    tf = fold(text)
+    return any(_has(tf, w) for w in WHO_ARE_YOU) and len(tokens(text)) <= 8
+
+
 def is_goodbye(text: str) -> bool:
     tf = fold(text)
     return any(_has(tf, w) for w in GOODBYES) and len(tokens(text)) <= 6

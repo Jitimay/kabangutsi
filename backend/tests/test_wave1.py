@@ -360,3 +360,18 @@ async def test_make_room_unloads_other_chat_models(monkeypatch):
     )
     await c.make_room("gemma4:e2b")
     assert unloaded == ["gemma:2b"]
+
+
+@pytest.mark.parametrize(
+    "lang,text,expect",
+    [
+        ("en", "who are you", "I am Kabangutsi"),
+        ("fr", "Qui êtes-vous ?", "Je suis Kabangutsi"),
+        ("rn", "Uri nde?", "Ndi Kabangutsi"),
+    ],
+)
+async def test_who_are_you(client, fake_llm, lang, text, expect):
+    conv = await new_conv(client, lang)
+    r = await say(client, conv["id"], text)
+    assert r["text"].startswith(expect) and r["lang"] == lang
+    assert not [c for c in fake_llm.calls if c.get("format")]  # answered without a model call
