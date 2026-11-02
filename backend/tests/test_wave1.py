@@ -368,6 +368,7 @@ async def test_make_room_unloads_other_chat_models(monkeypatch):
         ("en", "who are you", "I am Kabangutsi"),
         ("fr", "Qui êtes-vous ?", "Je suis Kabangutsi"),
         ("rn", "Uri nde?", "Ndi Kabangutsi"),
+    ("rn", "Muri nde?", "Ndi Kabangutsi"),
     ],
 )
 async def test_who_are_you(client, fake_llm, lang, text, expect):
