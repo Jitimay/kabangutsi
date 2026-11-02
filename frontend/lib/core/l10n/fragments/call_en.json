@@ -1,0 +1,30 @@
+{
+  "callStatusIdle": "Press call to talk to Kabangutsi",
+  "callStatusConnecting": "Connecting…",
+  "callStatusReady": "Tap the microphone and speak",
+  "callStatusListening": "Listening…",
+  "callStatusThinking": "Thinking…",
+  "callStatusSpeaking": "Kabangutsi is speaking",
+  "callStatusHandedOff": "Waiting for an agent",
+  "callStatusEnded": "Call ended",
+  "callStatusError": "The call could not be connected",
+  "callAgentJoined": "{name} joined the call",
+  "callTapToTalk": "Tap to talk",
+  "callTapToSend": "Tap to send",
+  "callCancelRecording": "Cancel",
+  "callNewCall": "New call",
+  "callRetry": "Try again",
+  "callMicDenied": "Microphone access is needed for the call",
+  "callTurnFailed": "Your message was not sent. Please try again.",
+  "callTranscriptEmpty": "The conversation will appear here",
+  "callSpeakerYou": "You",
+  "callSpeakerAgent": "Agent",
+  "callSpeakerSystem": "Info",
+  "@callAgentJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}

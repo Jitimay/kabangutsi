@@ -1,0 +1,48 @@
+{
+  "chatStarting": "Connecting…",
+  "chatStartFailed": "Could not start the conversation.",
+  "chatRetry": "Try again",
+  "chatNewConversation": "New conversation",
+  "chatSessionEnded": "This conversation has ended.",
+  "chatWaitingAgent": "Waiting for an agent…",
+  "chatWithAgent": "You are talking to an agent",
+  "chatAgentJoined": "{name} joined the conversation",
+  "chatAgentLabel": "Agent",
+  "chatAssistantLabel": "Kabangutsi",
+  "chatPinHint": "Enter your 4-digit PIN (hidden)",
+  "chatDobHint": "Date of birth YYYY-MM-DD (hidden)",
+  "chatErrorGeneric": "Something went wrong. Please try again.",
+  "chatErrorNetwork": "Cannot reach the server.",
+  "chatModelInUse": "Model: {model}",
+  "chatModelDefault": "Default model",
+  "chatLinkCopied": "Link copied",
+  "chatImageTooLarge": "The image is too large (max 10 MB).",
+  "chatHandoffConfirm": "Talk to a human agent?",
+  "chatCancel": "Cancel",
+  "chatConfirm": "Yes",
+  "modelPickerRefresh": "Refresh",
+  "modelDefaultBadge": "Default",
+  "modelCapCompletion": "Text",
+  "modelCapVision": "Images",
+  "modelCapAudio": "Audio",
+  "modelCapTools": "Tools",
+  "modelCapThinking": "Reasoning",
+  "modelCapEmbedding": "Search",
+  "modelNotSelectable": "Not available for chat",
+  "modelLoadFailed": "Could not load the models.",
+  "modelNone": "No model installed.",
+  "@chatAgentJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatModelInUse": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      }
+    }
+  }
+}

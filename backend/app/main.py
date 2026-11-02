@@ -1,53 +1,63 @@
-"""Kabangutsi backend — PLACEHOLDER written by T0 for G0.
+"""Kabangutsi backend (FastAPI). REST under /v1, WebSocket /v1/ws — contracts/openapi.yaml.
 
-T1 owns this file after G0 and replaces it with the real app (contracts/openapi.yaml).
-It only shows that the stack starts and can reach PostgreSQL and Ollama.
+Routers are auto-included: every module in app/api/ that defines `router` is mounted.
 """
 
 from __future__ import annotations
 
 import asyncio
-import os
-from datetime import UTC, datetime
-from urllib.parse import urlparse
+import contextlib
+import importlib
+import logging
+import pkgutil
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
-import httpx
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Kabangutsi backend (placeholder)", version="0.0.1")
+from app import api, errors
+from app.config import VERSION, get_settings
+from app.db.session import dispose
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://kabangutsi:kabangutsi_dev@postgres:5432/kabangutsi")
-
-
-async def _postgres_ok() -> str:
-    u = urlparse(DATABASE_URL.replace("+asyncpg", ""))
-    try:
-        _, writer = await asyncio.wait_for(asyncio.open_connection(u.hostname, u.port or 5432), timeout=2)
-        writer.close()
-        await writer.wait_closed()
-        return "ok"
-    except (OSError, TimeoutError):
-        return "down"
+log = logging.getLogger("kabangutsi")
 
 
-async def _ollama_ok() -> str:
-    try:
-        async with httpx.AsyncClient(timeout=2) as client:
-            r = await client.get(f"{OLLAMA_URL}/api/tags")
-        return "ok" if r.status_code == 200 else "down"
-    except httpx.HTTPError:
-        return "down"
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    s = get_settings()
+    tasks: list[asyncio.Task] = []
+    if s.realtime_enabled:
+        from app.realtime.hub import hub
+
+        await hub.start()
+    if s.embed_on_startup:
+        with contextlib.suppress(ImportError):
+            from app.rag.embed import fill_missing_embeddings_background
+
+            tasks.append(asyncio.create_task(fill_missing_embeddings_background()))
+    yield
+    for t in tasks:
+        t.cancel()
+    if s.realtime_enabled:
+        from app.realtime.hub import hub
+
+        await hub.stop()
+    await dispose()
 
 
-@app.get("/health")
-@app.get("/v1/health")
-async def health() -> dict:
-    pg, ol = await asyncio.gather(_postgres_ok(), _ollama_ok())
-    deps = {"postgres": pg, "ollama": ol, "voice": "disabled", "ocr": "disabled"}
-    return {
-        "status": "ok" if pg == ol == "ok" else "degraded",
-        "version": "0.0.1-placeholder",
-        "dependencies": deps,
-        "ts": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-    }
+def create_app() -> FastAPI:
+    s = get_settings()
+    app = FastAPI(title="Kabangutsi backend", version=VERSION, lifespan=lifespan)
+    app.add_middleware(
+        CORSMiddleware, allow_origins=s.cors_origins, allow_credentials=False, allow_methods=["*"], allow_headers=["*"]
+    )
+    errors.install(app)
+    for mod in sorted(pkgutil.iter_modules(api.__path__), key=lambda m: m.name):
+        m = importlib.import_module(f"app.api.{mod.name}")
+        if hasattr(m, "router"):
+            app.include_router(m.router)
+    return app
+
+
+app = create_app()

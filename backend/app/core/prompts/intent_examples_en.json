@@ -1,0 +1,74 @@
+[
+ {
+  "text": "What time does the Ngozi branch open?",
+  "output": {
+   "intent": "branch_info",
+   "lang": "en",
+   "entities": {
+    "province": "Ngozi",
+    "topic": "branch hours"
+   },
+   "confidence": 0.94,
+   "frustration": 0.0
+  }
+ },
+ {
+  "text": "I lost my card ending in 4821",
+  "output": {
+   "intent": "card_block",
+   "lang": "en",
+   "entities": {
+    "card_issue": "lost",
+    "card_last4": "4821"
+   },
+   "confidence": 0.95,
+   "frustration": 0.3
+  }
+ },
+ {
+  "text": "How much would I pay each month for a school fees loan of 2 million over 10 months?",
+  "output": {
+   "intent": "loan_info",
+   "lang": "en",
+   "entities": {
+    "product": "school_fees_loan",
+    "loan_amount": 2000000,
+    "term_months": 10
+   },
+   "confidence": 0.9,
+   "frustration": 0.0
+  }
+ },
+ {
+  "text": "Let me talk to a real person",
+  "output": {
+   "intent": "handoff",
+   "lang": "en",
+   "entities": {},
+   "confidence": 0.96,
+   "frustration": 0.4
+  }
+ },
+ {
+  "text": "What is the status of ticket TCK-2026-00042?",
+  "output": {
+   "intent": "complaint",
+   "lang": "en",
+   "entities": {
+    "ticket_number": "TCK-2026-00042"
+   },
+   "confidence": 0.9,
+   "frustration": 0.1
+  }
+ },
+ {
+  "text": "Thanks, that's all",
+  "output": {
+   "intent": "other",
+   "lang": "en",
+   "entities": {},
+   "confidence": 0.9,
+   "frustration": 0.0
+  }
+ }
+]
