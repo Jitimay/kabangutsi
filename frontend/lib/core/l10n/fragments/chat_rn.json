@@ -44,5 +44,28 @@
         "type": "String"
       }
     }
+  },
+  "chatWorking": "{model} iriko irakora… {seconds} s",
+  "chatAnsweredBy": "{model} · {seconds} s",
+  "chatNoModel": "ata modeli (amategeko)",
+  "@chatWorking": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatAnsweredBy": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
   }
 }

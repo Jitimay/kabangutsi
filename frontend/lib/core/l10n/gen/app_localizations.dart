@@ -1630,6 +1630,24 @@ abstract class AppLocalizations {
   /// **'No model installed.'**
   String get modelNone;
 
+  /// No description provided for @chatWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'{model} is working… {seconds} s'**
+  String chatWorking(String model, String seconds);
+
+  /// No description provided for @chatAnsweredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{model} · {seconds} s'**
+  String chatAnsweredBy(String model, String seconds);
+
+  /// No description provided for @chatNoModel.
+  ///
+  /// In en, this message translates to:
+  /// **'no model (rules)'**
+  String get chatNoModel;
+
   /// No description provided for @appTitleCustomer.
   ///
   /// In en, this message translates to:

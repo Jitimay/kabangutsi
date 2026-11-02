@@ -276,6 +276,29 @@
       }
     }
   },
+  "chatWorking": "{model} iriko irakora… {seconds} s",
+  "chatAnsweredBy": "{model} · {seconds} s",
+  "chatNoModel": "ata modeli (amategeko)",
+  "@chatWorking": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatAnsweredBy": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
   "appTitleCustomer": "Kabangutsi",
   "appTitleAgent": "Kabangutsi Umukozi",
   "welcome": "Bwakeye! Nobafasha iki uyu musi?",

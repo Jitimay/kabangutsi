@@ -276,6 +276,29 @@
       }
     }
   },
+  "chatWorking": "{model} réfléchit… {seconds} s",
+  "chatAnsweredBy": "{model} · {seconds} s",
+  "chatNoModel": "sans modèle (règles)",
+  "@chatWorking": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatAnsweredBy": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
   "appTitleCustomer": "Kabangutsi",
   "appTitleAgent": "Kabangutsi Agent",
   "welcome": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
