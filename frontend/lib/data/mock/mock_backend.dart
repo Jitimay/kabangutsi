@@ -22,6 +22,7 @@ void registerMockRepositories(GetIt sl) {
     ..registerLazySingleton<ConversationRepository>(() => MockConversationRepository(b))
     ..registerLazySingleton<FileRepository>(() => MockFileRepository(b, env))
     ..registerLazySingleton<CardRepository>(() => MockCardRepository(b))
+    ..registerLazySingleton<DocumentRepository>(() => MockDocumentRepository(b))
     ..registerLazySingleton<LoanRepository>(() => MockLoanRepository(b))
     ..registerLazySingleton<TicketRepository>(() => MockTicketRepository(b))
     ..registerLazySingleton<BranchRepository>(() => MockBranchRepository(b))
@@ -344,6 +345,38 @@ class MockBackend {
       productId: p.id, productName: p.name, amount: amount, termMonths: term, annualRatePct: p.annualRatePct, monthlyPayment: m,
       totalPayment: total, totalInterest: total - amount, lang: lang,
       explanation: fill(pick(kLoanExplanation, lang), {'amount': formatFbu(amount), 'term': term, 'rate': rate, 'monthly': formatFbu(m), 'interest': formatFbu(total - amount)}),
+    );
+  }
+
+  // ---------------------------------------------------------------- documents (F17)
+  /// Fixed fictional extraction per doc type (same shape as ocr_api.yaml ExtractResult).
+  /// The CNI has one low-confidence field, so it shows "to be checked" and hands off.
+  /// A file name containing `ocr-down` simulates the OCR service being down (503).
+  ExtractResult extractDocument({required FileUpload image, String? docType, String? conversationId}) {
+    if (image.filename.contains('ocr-down')) {
+      throw const ApiError(code: 'service_unavailable', message: 'OCR service unavailable', status: 503);
+    }
+    if (!kDocImageMimes.contains(image.mime)) {
+      throw ApiError(code: 'unsupported_media_type', message: 'Unsupported image type: ${image.mime}', status: 415);
+    }
+    if (image.bytes.length > kDocMaxBytes) throw const ApiError(code: 'too_large', message: 'Image larger than 10 MB', status: 413);
+    if (image.bytes.isEmpty) throw const ApiError(code: 'validation_error', message: 'image is required', details: {'field': 'image'}, status: 422);
+    final name = image.filename.toLowerCase();
+    final type = docType ??
+        (name.contains('loan') ? 'loan_application' : name.contains('coffee') ? 'coffee_receipt' : name.contains('complaint') ? 'complaint_photo' : 'cni');
+    ExtractedField f(String n, Object? v, double c) => ExtractedField(name: n, value: v, confidence: c, valid: true, needsReview: c < 0.8);
+    final (fields, route) = switch (type) {
+      'cni' => ([f('full_name', 'NIYONZIMA Claudine', 0.94), f('id_number', '0000/DEMO/123', 0.71), f('date_of_birth', '1990-03-14', 0.88)], 'account_opening'),
+      'loan_application' => ([f('applicant_name', 'NDIKUMANA Jean-Bosco', 0.92), f('amount', 5000000, 0.9), f('term_months', 24, 0.95), f('product', 'Crédit commerce', 0.85)], 'loan_info'),
+      'coffee_receipt' => ([f('farmer_name', 'IRAKOZE Divine', 0.9), f('weight_kg', 182.5, 0.86), f('amount', 638750, 0.83), f('date', '2026-10-28', 0.91)], 'loan_info'),
+      _ => ([f('visible_text', 'DAB indisponible — carte retenue', 0.82)], 'complaint'),
+    };
+    final review = fields.any((x) => x.needsReview);
+    final c = conversationId == null ? null : _convs[conversationId];
+    if (review && c != null) _handoff(c, 'agent_review', null);
+    return ExtractResult(
+      docType: type, docTypeConfidence: docType == null ? 0.87 : 1.0, fields: fields, needsReview: review, routeTo: route,
+      processingMs: 1200 + _rnd.nextInt(900), engine: 'paddleocr',
     );
   }
 
@@ -883,6 +916,17 @@ class MockConversationRepository implements ConversationRepository {
 
   @override
   Stream<WsEvent> events(String conversationId) => b.customerEvents(conversationId);
+}
+
+class MockDocumentRepository implements DocumentRepository {
+  MockDocumentRepository(this.b);
+  final MockBackend b;
+
+  @override
+  Future<ExtractResult> extract({required FileUpload image, String? docType, required String lang, String? conversationId}) async {
+    await b.wait();
+    return b.extractDocument(image: image, docType: docType, conversationId: conversationId);
+  }
 }
 
 class MockFileRepository implements FileRepository {

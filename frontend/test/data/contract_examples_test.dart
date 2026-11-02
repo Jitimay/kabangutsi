@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kabangutsi/data/models/models.dart';
+import 'package:yaml/yaml.dart';
 
 /// Every example embedded in contracts/ws_events.json and message.schema.json
 /// must parse with our DTOs (contracts are law).
@@ -30,5 +31,25 @@ void main() {
       expect(OutgoingReply.fromJson(r.toJson()), r);
       expect(r.shortText.length, lessThanOrEqualTo(160));
     }
+  });
+
+  test('ocr_api.yaml ExtractResult example parses and round-trips', () {
+    final doc = loadYaml(File('../contracts/ocr_api.yaml').readAsStringSync()) as YamlMap;
+    final ex = jsonDecode(jsonEncode(
+      doc['paths']['/ocr/extract']['post']['responses']['200']['content']['application/json']['example'],
+    )) as Map<String, dynamic>;
+    final r = ExtractResult.fromJson(ex);
+    expect(r.docType, 'cni');
+    expect(r.needsReview, isTrue);
+    expect(r.fields.where((f) => f.needsReview).map((f) => f.name), ['id_number']);
+    expect(ExtractResult.fromJson(r.toJson()), r);
+  });
+
+  test('openapi /v1/documents/extract returns ExtractResult and documents 503', () {
+    final doc = loadYaml(File('../contracts/openapi.yaml').readAsStringSync()) as YamlMap;
+    final op = doc['paths']['/v1/documents/extract']['post'] as YamlMap;
+    final props = op['requestBody']['content']['multipart/form-data']['schema']['properties'] as YamlMap;
+    expect(props.keys, containsAll(['image', 'doc_type', 'conversation_id', 'lang']));
+    expect((op['responses'] as YamlMap).keys.map((k) => '$k'), containsAll(['200', '422', '503']));
   });
 }

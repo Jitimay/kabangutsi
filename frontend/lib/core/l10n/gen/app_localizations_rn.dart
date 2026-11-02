@@ -934,4 +934,140 @@ class AppLocalizationsRn extends AppLocalizations {
 
   @override
   String get statsTitle => 'Ibiharuro';
+
+  @override
+  String get docScanTitle => 'Gusikana urupapuro';
+
+  @override
+  String get docScanIntro =>
+      'Fata ifoto y\'urupapuro rwa banki: turabasomera amakuru ariko.';
+
+  @override
+  String get docScanType => 'Ubwoko bw\'urupapuro';
+
+  @override
+  String get docTypeAuto => 'Bimenyekane ubwabyo';
+
+  @override
+  String get docTypeCni => 'Ikarata y\'ibiranga umuntu';
+
+  @override
+  String get docTypeLoanApplication => 'Isaba ry\'ingurane';
+
+  @override
+  String get docTypeCoffeeReceipt => 'Icemezo co gutanga ikawa';
+
+  @override
+  String get docTypeComplaintPhoto => 'Ifoto y\'ikirego';
+
+  @override
+  String get docScanTakePhoto => 'Fata ifoto';
+
+  @override
+  String get docScanChooseFile => 'Hitamwo idosiye';
+
+  @override
+  String get docScanFormats =>
+      'Amafoto gusa: JPEG, PNG canke WebP, ntarenze 10 MB.';
+
+  @override
+  String get docScanSend => 'Soma urupapuro';
+
+  @override
+  String get docScanReading => 'Turiko turasoma urupapuro…';
+
+  @override
+  String get docScanResultTitle => 'Amakuru yasomwe';
+
+  @override
+  String docScanDetected(Object type) {
+    return 'Ubwoko bwabonetse: $type';
+  }
+
+  @override
+  String get docScanToCheck => 'Bikwiye gusuzumwa';
+
+  @override
+  String get docScanNotRead => '(ntivyasomwe)';
+
+  @override
+  String get docScanNoFields => 'Nta makuru yashoboye gusomwa.';
+
+  @override
+  String docScanTime(Object seconds) {
+    return 'Vyasomwe mu masegonda $seconds';
+  }
+
+  @override
+  String get docScanAgentReview =>
+      'Amakuru amwe akwiye gusuzumwa: umukozi araraba uru rupapuro maze abishure muri iki kiganiro.';
+
+  @override
+  String get docScanNeedsReview =>
+      'Amakuru amwe ntiyasomwe neza. Muyasuzume imbere yo kuyakoresha.';
+
+  @override
+  String get docScanAnother => 'Sikana urundi rupapuro';
+
+  @override
+  String get docScanErrPdf =>
+      'Ubu dushobora gusoma amafoto y\'impapuro gusa. Fata ifoto y\'urupapuro canke muhitemwo ishusho ya JPEG, PNG canke WebP.';
+
+  @override
+  String get docScanErrUnsupported =>
+      'Ubu bwoko bw\'idosiye ntibushobora gusomwa. Muhitemwo ifoto ya JPEG, PNG canke WebP.';
+
+  @override
+  String get docScanErrTooLarge =>
+      'Ifoto irenze 10 MB. Muyisubiremwo ari ntoyi.';
+
+  @override
+  String get docScanErrInvalid =>
+      'Ifoto ntiyashoboye gusomwa. Musubire mugerageze n\'ifoto ibona neza.';
+
+  @override
+  String get docScanErrUnavailable =>
+      'Gusoma impapuro ntibishoboka muri iki gihe.';
+
+  @override
+  String get docScanErrNetwork => 'Hari ingorane y\'umuhora. Subira ugerageze.';
+
+  @override
+  String get docScanErrGeneric => 'Hari ikitagenze neza. Subira ugerageze.';
+
+  @override
+  String get docFieldFullName => 'Izina ryose';
+
+  @override
+  String get docFieldIdNumber => 'Inomero y\'ikarata';
+
+  @override
+  String get docFieldDateOfBirth => 'Itariki y\'amavuka';
+
+  @override
+  String get docFieldPlaceOfBirth => 'Aho yavukiye';
+
+  @override
+  String get docFieldApplicantName => 'Izina ry\'usaba';
+
+  @override
+  String get docFieldAmount => 'Amafaranga';
+
+  @override
+  String get docFieldTermMonths => 'Igihe (amezi)';
+
+  @override
+  String get docFieldProduct => 'Igicuruzwa';
+
+  @override
+  String get docFieldFarmerName => 'Izina ry\'umurimyi';
+
+  @override
+  String get docFieldWeightKg => 'Uburemere (kg)';
+
+  @override
+  String get docFieldDate => 'Itariki';
+
+  @override
+  String get docFieldVisibleText => 'Inyandiko ibonetse';
 }

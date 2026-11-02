@@ -10,6 +10,7 @@ import '../../../data/repositories/repositories.dart';
 import '../../model_picker/bloc/model_picker_cubit.dart';
 import '../../model_picker/view/model_picker_session.dart';
 import '../../model_picker/widgets/model_picker_view.dart';
+import '../../document_scan/view/document_scan_page.dart';
 import '../bloc/chat_bloc.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/message_bubble.dart';
@@ -220,6 +221,7 @@ class _ChatViewState extends State<ChatView> {
                     expectedInput: s.expectedInput,
                     onSend: (t) => context.read<ChatBloc>().add(ChatTextSent(t)),
                     onImage: (img, text) => context.read<ChatBloc>().add(ChatImageSent(img, text: text)),
+                    onScanDocument: s.conversationId == null ? null : () => _openScanner(context, s.conversationId!),
                   ),
               ],
             );
@@ -228,4 +230,16 @@ class _ChatViewState extends State<ChatView> {
       ),
     );
   }
+}
+
+/// F17 from the chat: the scan is linked to this conversation, so fields to check
+/// hand it to an agent; the chat then waits for the agent like any handoff.
+void _openScanner(BuildContext context, String conversationId) {
+  final bloc = context.read<ChatBloc>();
+  Navigator.of(context).push(MaterialPageRoute<void>(
+    builder: (ctx) => DocumentScanPage(
+      conversationId: conversationId,
+      onAgentReview: () => bloc.add(ChatAgentReviewStarted(ctx.l10n.docScanAgentReview)),
+    ),
+  ));
 }

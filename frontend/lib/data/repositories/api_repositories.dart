@@ -112,6 +112,23 @@ class ApiFileRepository implements FileRepository {
   String resolve(String url) => api.resolve(url);
 }
 
+class ApiDocumentRepository implements DocumentRepository {
+  ApiDocumentRepository(this.api);
+  final ApiClient api;
+
+  @override
+  Future<ExtractResult> extract({required FileUpload image, String? docType, required String lang, String? conversationId}) async {
+    final form = FormData.fromMap({
+      // The backend checks the part's content type (415 if not jpeg/png/webp).
+      'image': MultipartFile.fromBytes(image.bytes, filename: image.filename, contentType: DioMediaType.parse(image.mime)),
+      'lang': lang,
+      'doc_type': ?docType,
+      'conversation_id': ?conversationId,
+    });
+    return ExtractResult.fromJson(await api.post('/v1/documents/extract', body: form));
+  }
+}
+
 class ApiCardRepository implements CardRepository {
   ApiCardRepository(this.api);
   final ApiClient api;

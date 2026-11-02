@@ -6,6 +6,7 @@ import '../../features/call/view/call_page.dart';
 import '../../features/card_block/view/card_block_page.dart';
 import '../../features/chat/view/chat_page.dart';
 import '../../features/complaint/view/complaint_page.dart';
+import '../../features/document_scan/view/document_scan_page.dart';
 import '../../features/loan_simulator/view/loan_simulator_page.dart';
 import '../../features/model_picker/view/model_picker_page.dart';
 import '../../features/services/view/services_page.dart';
@@ -43,6 +44,7 @@ GoRouter buildCustomerRouter() => GoRouter(
                   GoRoute(path: 'loan', builder: (_, _) => const LoanSimulatorPage()),
                   GoRoute(path: 'complaint', builder: (_, _) => const ComplaintPage()),
                   GoRoute(path: 'branches', builder: (_, _) => const BranchFinderPage()),
+                  GoRoute(path: 'scan', builder: (_, _) => const DocumentScanPage()),
                 ],
               ),
             ]),

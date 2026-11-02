@@ -9,6 +9,7 @@ abstract final class CustomerRoutes {
   static const loanSimulator = '/services/loan';
   static const complaint = '/services/complaint';
   static const branchFinder = '/services/branches';
+  static const scanDocument = '/services/scan';
 }
 
 abstract final class AgentRoutes {

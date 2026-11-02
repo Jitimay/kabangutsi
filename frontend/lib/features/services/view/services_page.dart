@@ -17,6 +17,7 @@ class ServicesPage extends StatelessWidget {
       (Icons.calculate_outlined, l10n.loanSimulatorTitle, CustomerRoutes.loanSimulator),
       (Icons.report_problem_outlined, l10n.complaintTitle, CustomerRoutes.complaint),
       (Icons.location_on_outlined, l10n.branchFinderTitle, CustomerRoutes.branchFinder),
+      (Icons.document_scanner_outlined, l10n.docScanTitle, CustomerRoutes.scanDocument),
     ];
     return Scaffold(
       appBar: AppBar(

@@ -8,6 +8,7 @@
 library;
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kabangutsi/core/env/env.dart';
@@ -180,6 +181,23 @@ void main() {
       expect(page.items.map((x) => x.id), contains(t.id));
       final updated = await repo.update(t.id, status: 'in_progress');
       expect(updated.status, 'in_progress');
+    });
+
+    test('documents: jpeg → result (OCR up) or 503 (OCR down); PDF → 415', () async {
+      final docs = ApiDocumentRepository(api);
+      final jpeg = Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0, 0x10, 0x4A, 0x46, 0x49, 0x46, 0, 1]);
+      try {
+        final r = await docs.extract(image: FileUpload(bytes: jpeg, filename: 'cni.jpg', mime: 'image/jpeg'), docType: 'cni', lang: 'fr');
+        expect(r.docType, isNotEmpty);
+      } on ApiError catch (e) {
+        expect(e.status, anyOf(503, 422), reason: '$e'); // OCR down, or OCR rejects the tiny test image
+      }
+      try {
+        await docs.extract(image: FileUpload(bytes: Uint8List.fromList('%PDF-1.7'.codeUnits), filename: 'a.pdf', mime: 'application/pdf'), lang: 'en');
+        fail('PDF accepted');
+      } on ApiError catch (e) {
+        expect(e.status, 415);
+      }
     });
 
     test('USSD: *123# menu', () async {
