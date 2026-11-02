@@ -52,7 +52,10 @@ async def test_handoff_on_request_with_summary_and_transcript(client, contract, 
     assert hand, [e["type"] for e in ev.events]
     contract.event(hand[0])
     d = hand[0]["data"]
-    assert d["reason"] == "customer_request" and d["summary"] == fake_llm.answer
+    assert d["reason"] == "customer_request" and d["summary"].startswith("Motif : le client demande un conseiller")
+    # the AI summary replaces the code summary on the call once the model answers
+    call = (await client.get(f"/v1/calls/{conv['id']}")).json()["call"]
+    assert call["summary"] == fake_llm.answer
     assert [x["speaker"] for x in d["transcript"]][:2] == ["ai", "customer"]
     for e in ev.events:
         contract.event(e)
@@ -297,3 +300,23 @@ async def test_code_summary_has_the_intent(client, fake_llm):
     await say(client, conv["id"], "Je veux parler à un conseiller")
     call = (await client.get(f"/v1/calls/{conv['id']}")).json()["call"]
     assert "Demande : parler à un conseiller" in call["summary"]
+
+
+async def test_handoff_event_does_not_wait_for_the_model(client, fake_llm, monkeypatch):
+    """G1 check finding: a cold gemma4:e4b delayed call.handoff_requested by 55 s."""
+    from app.agents import handoff
+
+    async def slow_summary(*a, **k):
+        await asyncio.sleep(30)
+
+    monkeypatch.setattr(handoff, "ai_summary", slow_summary)
+    monkeypatch.setattr(handoff.get_settings(), "summary_in_background", True)
+    conv = await new_conv(client, "en")
+    async with Listener() as ev:
+        t0 = time.monotonic()
+        r = await client.post(f"/v1/conversations/{conv['id']}/handoff", json={})
+        assert r.status_code == 200
+        await asyncio.sleep(0.3)
+    assert ev.of("call.handoff_requested") and time.monotonic() - t0 < 3
+    for t in list(handoff._tasks):
+        t.cancel()

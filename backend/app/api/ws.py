@@ -55,9 +55,12 @@ async def websocket(ws: WebSocket) -> None:
                 await ws.receive_text()  # pings / ignored; raises on disconnect
 
         tasks = [asyncio.create_task(pump()), asyncio.create_task(drain_incoming())]
-        _, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+        done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         for tk in pending:
             tk.cancel()
+        for tk in done:
+            if not tk.cancelled():
+                tk.exception()  # disconnects end a task with WebSocketDisconnect: expected, mark it retrieved
     except WebSocketDisconnect:
         pass
     finally:

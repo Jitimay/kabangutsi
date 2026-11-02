@@ -1,8 +1,10 @@
 """F9 Handoff to a human agent, with an AI summary for the agent.
 
-`queue_call` runs inside the turn's transaction: status → queued, code summary, urgency raised.
-`finish_handoff` runs after commit: AI summary on HARD_TASK_MODEL (time-boxed; the code summary stays when
-the model is slow or down), then emits `call.handoff_requested` and `stats.updated`.
+`queue_call` runs inside the turn's transaction: status → queued, code summary, urgency raised, and emits
+`call.handoff_requested` + `stats.updated` (delivered on commit), so agents see the call at once.
+`finish_handoff` runs after commit: AI summary on HARD_TASK_MODEL (time-boxed); when it arrives it replaces the
+code summary on the call (GET /v1/calls/{id}). The event never waits for a model: in the G1 check a cold
+gemma4:e4b on a busy machine delayed it by 55 s.
 """
 
 from __future__ import annotations
@@ -107,36 +109,29 @@ async def queue_call(db: AsyncSession, call_id: str, reason: str, frustration: f
                               frustration = :f, summary = :s WHERE id = :id"""),
         {"r": reason, "u": urg, "f": f, "s": summary, "id": call_id},
     )
-    return await repo.get_call(db, call_id)
+    queued = await repo.get_call(db, call_id)
+    await emit(
+        db, "call.handoff_requested", {"call": queued, "reason": reason, "summary": summary, "transcript": transcript}
+    )
+    from app.agents.stats import emit_stats
+
+    await emit_stats(db)
+    return queued
 
 
 async def finish_handoff(call_id: str, reason: str) -> None:
-    from app.agents.stats import emit_stats
-
+    """Replaces the code summary with the AI summary when the model answers in time (no event)."""
     s = get_settings()
     async with db_session() as db:
         transcript = await repo.get_transcript(db, call_id)
     summary = await ai_summary(transcript, reason, s.agent_dashboard_lang)
+    if not summary:
+        return
     async with db_session() as db:
-        if summary:
-            await db.execute(
-                text("UPDATE calls SET summary = :s WHERE id = :id AND status IN ('queued', 'with_agent')"),
-                {"s": summary, "id": call_id},
-            )
-        call = await repo.get_call(db, call_id)
-        if call is None:
-            return
-        await emit(
-            db,
-            "call.handoff_requested",
-            {
-                "call": call,
-                "reason": reason,
-                "summary": call["summary"] or "",
-                "transcript": await repo.get_transcript(db, call_id),
-            },
+        await db.execute(
+            text("UPDATE calls SET summary = :s WHERE id = :id AND status IN ('queued', 'with_agent')"),
+            {"s": summary, "id": call_id},
         )
-        await emit_stats(db)
         await db.commit()
 
 
