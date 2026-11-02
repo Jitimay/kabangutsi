@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 
 import pytest
 
@@ -330,3 +331,32 @@ async def test_model_no_answer_becomes_dont_know(client, fake_llm):
 )
 def test_keyword_rules_from_live_eval(text, intent):
     assert keywords.keyword_intent(text)["intent"] == intent
+
+
+async def test_make_room_unloads_other_chat_models(monkeypatch):
+    """One chat model at a time; the embedding model stays loaded."""
+    import httpx
+
+    from app.clients.ollama import OllamaClient
+
+    unloaded: list[str] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        if req.url.path == "/api/ps":
+            return httpx.Response(
+                200,
+                json={"models": [{"name": "gemma:2b"}, {"name": "nomic-embed-text:latest"}, {"name": "gemma4:e2b"}]},
+            )
+        if req.url.path == "/api/generate":
+            unloaded.append(json.loads(req.content)["model"])
+            return httpx.Response(200, json={})
+        return httpx.Response(404)
+
+    c = OllamaClient(base_url="http://ollama")
+    monkeypatch.setattr(
+        c,
+        "_client",
+        lambda timeout=None: httpx.AsyncClient(base_url="http://ollama", transport=httpx.MockTransport(handler)),
+    )
+    await c.make_room("gemma4:e2b")
+    assert unloaded == ["gemma:2b"]

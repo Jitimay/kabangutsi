@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     model_preference: Annotated[list[str], NoDecode] = ["gemma4:e4b", "gemma4:e2b", "gemma:2b"]
     embed_model: str = "nomic-embed-text"
     ollama_keep_alive: str = "30m"
+    # One chat model loaded at a time (the embedding model stays): see OllamaClient.make_room
+    ollama_exclusive: bool = True
     models_cache_seconds: float = 30.0
     llm_timeout_seconds: float = 120.0
     embed_on_startup: bool = True
