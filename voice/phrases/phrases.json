@@ -1,0 +1,27 @@
+{
+  "greeting": {
+    "fr": "Bienvenue chez BancoBu. Comment puis-je vous aider ?",
+    "en": "Welcome to BancoBu. How can I help you?",
+    "rn": "Murakaza neza kuri BancoBu. Nobafasha iki?"
+  },
+  "please_wait": {
+    "fr": "Un instant, s'il vous plaît.",
+    "en": "One moment, please.",
+    "rn": "Mutegereze gato."
+  },
+  "transferring": {
+    "fr": "Je vous transfère à un conseiller.",
+    "en": "I am transferring you to an agent.",
+    "rn": "Ndabahuza n'umukozi wa banki."
+  },
+  "repeat": {
+    "fr": "Je n'ai pas bien compris. Pouvez-vous répéter ?",
+    "en": "I did not understand. Could you repeat, please?",
+    "rn": "Sinumvise neza. Mwosubiramwo?"
+  },
+  "goodbye": {
+    "fr": "Merci d'avoir appelé BancoBu. Au revoir.",
+    "en": "Thank you for calling BancoBu. Goodbye.",
+    "rn": "Murakoze guhamagara BancoBu. Mugire amahoro."
+  }
+}
