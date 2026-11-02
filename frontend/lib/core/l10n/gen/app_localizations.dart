@@ -1648,6 +1648,30 @@ abstract class AppLocalizations {
   /// **'no model (rules)'**
   String get chatNoModel;
 
+  /// No description provided for @chatCallNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get chatCallNumber;
+
+  /// No description provided for @chatCopyNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy number'**
+  String get chatCopyNumber;
+
+  /// No description provided for @chatNumberCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Number copied'**
+  String get chatNumberCopied;
+
+  /// No description provided for @chatCannotCall.
+  ///
+  /// In en, this message translates to:
+  /// **'This device cannot place calls: the number was copied.'**
+  String get chatCannotCall;
+
   /// No description provided for @appTitleCustomer.
   ///
   /// In en, this message translates to:

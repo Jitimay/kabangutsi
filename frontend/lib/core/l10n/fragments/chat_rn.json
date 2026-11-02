@@ -67,5 +67,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "chatCallNumber": "Hamagara",
+  "chatCopyNumber": "Kopiya inomero",
+  "chatNumberCopied": "Inomero yakopiwe",
+  "chatCannotCall": "Iki gikoresho ntigishobora guhamagara: inomero yakopiwe."
 }

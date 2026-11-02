@@ -299,6 +299,10 @@
       }
     }
   },
+  "chatCallNumber": "Appeler",
+  "chatCopyNumber": "Copier le numéro",
+  "chatNumberCopied": "Numéro copié",
+  "chatCannotCall": "Cet appareil ne peut pas appeler : le numéro a été copié.",
   "appTitleCustomer": "Kabangutsi",
   "appTitleAgent": "Kabangutsi Agent",
   "welcome": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",

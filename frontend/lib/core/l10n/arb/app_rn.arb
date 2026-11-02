@@ -299,6 +299,10 @@
       }
     }
   },
+  "chatCallNumber": "Hamagara",
+  "chatCopyNumber": "Kopiya inomero",
+  "chatNumberCopied": "Inomero yakopiwe",
+  "chatCannotCall": "Iki gikoresho ntigishobora guhamagara: inomero yakopiwe.",
   "appTitleCustomer": "Kabangutsi",
   "appTitleAgent": "Kabangutsi Umukozi",
   "welcome": "Bwakeye! Nobafasha iki uyu musi?",

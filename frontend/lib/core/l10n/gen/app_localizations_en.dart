@@ -829,6 +829,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatNoModel => 'no model (rules)';
 
   @override
+  String get chatCallNumber => 'Call';
+
+  @override
+  String get chatCopyNumber => 'Copy number';
+
+  @override
+  String get chatNumberCopied => 'Number copied';
+
+  @override
+  String get chatCannotCall =>
+      'This device cannot place calls: the number was copied.';
+
+  @override
   String get appTitleCustomer => 'Kabangutsi';
 
   @override

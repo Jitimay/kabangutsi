@@ -830,6 +830,19 @@ class AppLocalizationsRn extends AppLocalizations {
   String get chatNoModel => 'ata modeli (amategeko)';
 
   @override
+  String get chatCallNumber => 'Hamagara';
+
+  @override
+  String get chatCopyNumber => 'Kopiya inomero';
+
+  @override
+  String get chatNumberCopied => 'Inomero yakopiwe';
+
+  @override
+  String get chatCannotCall =>
+      'Iki gikoresho ntigishobora guhamagara: inomero yakopiwe.';
+
+  @override
   String get appTitleCustomer => 'Kabangutsi';
 
   @override
