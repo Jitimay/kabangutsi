@@ -1,0 +1,48 @@
+{
+  "chatStarting": "Connexion…",
+  "chatStartFailed": "Impossible de démarrer la conversation.",
+  "chatRetry": "Réessayer",
+  "chatNewConversation": "Nouvelle conversation",
+  "chatSessionEnded": "Cette conversation est terminée.",
+  "chatWaitingAgent": "En attente d'un conseiller…",
+  "chatWithAgent": "Vous parlez avec un conseiller",
+  "chatAgentJoined": "{name} a rejoint la conversation",
+  "chatAgentLabel": "Conseiller",
+  "chatAssistantLabel": "Kabangutsi",
+  "chatPinHint": "Saisissez votre code PIN à 4 chiffres (masqué)",
+  "chatDobHint": "Date de naissance AAAA-MM-JJ (masquée)",
+  "chatErrorGeneric": "Une erreur est survenue. Veuillez réessayer.",
+  "chatErrorNetwork": "Le serveur est injoignable.",
+  "chatModelInUse": "Modèle : {model}",
+  "chatModelDefault": "Modèle par défaut",
+  "chatLinkCopied": "Lien copié",
+  "chatImageTooLarge": "L'image est trop lourde (10 Mo max).",
+  "chatHandoffConfirm": "Parler à un conseiller ?",
+  "chatCancel": "Annuler",
+  "chatConfirm": "Oui",
+  "modelPickerRefresh": "Actualiser",
+  "modelDefaultBadge": "Par défaut",
+  "modelCapCompletion": "Texte",
+  "modelCapVision": "Images",
+  "modelCapAudio": "Audio",
+  "modelCapTools": "Outils",
+  "modelCapThinking": "Raisonnement",
+  "modelCapEmbedding": "Recherche",
+  "modelNotSelectable": "Non disponible pour la discussion",
+  "modelLoadFailed": "Impossible de charger les modèles.",
+  "modelNone": "Aucun modèle installé.",
+  "@chatAgentJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatModelInUse": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      }
+    }
+  }
+}
