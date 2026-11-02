@@ -1,0 +1,77 @@
+[
+ {
+  "text": "Ishami rya Ngozi ryugurura ryari?",
+  "output": {
+   "intent": "branch_info",
+   "lang": "rn",
+   "entities": {
+    "province": "Ngozi",
+    "topic": "amasaha y'ishami"
+   },
+   "confidence": 0.91,
+   "frustration": 0.05
+  }
+ },
+ {
+  "text": "Ikarata yanje yatakaye, nimuyihagarike",
+  "output": {
+   "intent": "card_block",
+   "lang": "rn",
+   "entities": {
+    "card_issue": "lost"
+   },
+   "confidence": 0.94,
+   "frustration": 0.3
+  }
+ },
+ {
+  "text": "Ndashaka ingurane y'uburimyi ya miliyoni 2 mu mezi 12",
+  "output": {
+   "intent": "loan_info",
+   "lang": "rn",
+   "entities": {
+    "product": "agri_loan",
+    "loan_amount": 2000000,
+    "term_months": 12
+   },
+   "confidence": 0.88,
+   "frustration": 0.0
+  }
+ },
+ {
+  "text": "Ndarakaye cane! Bankuyeko amafaranga atazwi",
+  "output": {
+   "intent": "complaint",
+   "lang": "rn",
+   "entities": {
+    "complaint_category": "fees",
+    "urgency": "high",
+    "topic": "amafaranga yakuweko atazwi"
+   },
+   "confidence": 0.82,
+   "frustration": 0.86
+  }
+ },
+ {
+  "text": "Ni ivyangombwa ibihe bisabwa kugira nugurure konti?",
+  "output": {
+   "intent": "account_opening",
+   "lang": "rn",
+   "entities": {
+    "topic": "ivyangombwa vyo kwugurura konti"
+   },
+   "confidence": 0.9,
+   "frustration": 0.0
+  }
+ },
+ {
+  "text": "Ndashaka kuvugana n'umukozi",
+  "output": {
+   "intent": "handoff",
+   "lang": "rn",
+   "entities": {},
+   "confidence": 0.95,
+   "frustration": 0.3
+  }
+ }
+]

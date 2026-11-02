@@ -1,0 +1,81 @@
+[
+ {
+  "text": "Quels sont les horaires de l'agence de Gitega ?",
+  "output": {
+   "intent": "branch_info",
+   "lang": "fr",
+   "entities": {
+    "province": "Gitega",
+    "topic": "horaires agence"
+   },
+   "confidence": 0.93,
+   "frustration": 0.0
+  }
+ },
+ {
+  "text": "Je voudrais un crédit commerce de 5 millions sur 24 mois",
+  "output": {
+   "intent": "loan_info",
+   "lang": "fr",
+   "entities": {
+    "product": "business_loan",
+    "loan_amount": 5000000,
+    "term_months": 24
+   },
+   "confidence": 0.9,
+   "frustration": 0.05
+  }
+ },
+ {
+  "text": "J'ai perdu ma carte, il faut la bloquer",
+  "output": {
+   "intent": "card_block",
+   "lang": "fr",
+   "entities": {
+    "card_issue": "lost"
+   },
+   "confidence": 0.95,
+   "frustration": 0.3
+  }
+ },
+ {
+  "text": "C'est inadmissible, on m'a prélevé des frais deux fois !",
+  "output": {
+   "intent": "complaint",
+   "lang": "fr",
+   "entities": {
+    "complaint_category": "fees",
+    "urgency": "high",
+    "topic": "frais prélevés deux fois"
+   },
+   "confidence": 0.9,
+   "frustration": 0.85
+  }
+ },
+ {
+  "text": "Quels documents pour ouvrir un compte épargne ?",
+  "output": {
+   "intent": "account_opening",
+   "lang": "fr",
+   "entities": {
+    "product": "savings_account",
+    "topic": "documents ouverture compte"
+   },
+   "confidence": 0.92,
+   "frustration": 0.0
+  }
+ },
+ {
+  "text": "Combien coûte la carte Visa par an ?",
+  "output": {
+   "intent": "product_info",
+   "lang": "fr",
+   "entities": {
+    "product": "debit_card",
+    "topic": "frais annuels carte Visa"
+   },
+   "confidence": 0.9,
+   "frustration": 0.0
+  }
+ }
+]
