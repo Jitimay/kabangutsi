@@ -1,0 +1,30 @@
+{
+  "callStatusIdle": "Kanda guhamagara kugira uvugane na Kabangutsi",
+  "callStatusConnecting": "Turiko turahuza…",
+  "callStatusReady": "Kanda kuri mikoro uvuge",
+  "callStatusListening": "Ndiko ndabumviriza…",
+  "callStatusThinking": "Ndiko ndiyumvira…",
+  "callStatusSpeaking": "Kabangutsi ariko aravuga",
+  "callStatusHandedOff": "Murindire umukozi",
+  "callStatusEnded": "Ihamagara ryarangiye",
+  "callStatusError": "Ihamagara ntiryashoboye guhuzwa",
+  "callAgentJoined": "{name} yinjiye mu ihamagara",
+  "callTapToTalk": "Kanda uvuge",
+  "callTapToSend": "Kanda urungike",
+  "callCancelRecording": "Hagarika",
+  "callNewCall": "Ihamagara rishasha",
+  "callRetry": "Subira ugerageze",
+  "callMicDenied": "Mikoro irakenewe kugira ngo muhamagare",
+  "callTurnFailed": "Ubutumwa bwanyu ntibwarungitswe. Subira ugerageze.",
+  "callTranscriptEmpty": "Ikiganiro kizoboneka ngaha",
+  "callSpeakerYou": "Mwebwe",
+  "callSpeakerAgent": "Umukozi",
+  "callSpeakerSystem": "Amakuru",
+  "@callAgentJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}

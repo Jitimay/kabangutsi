@@ -41,3 +41,6 @@ whatsapp/session/
 .DS_Store
 .vscode/
 *.log
+
+# Evaluation outputs
+scripts/eval/results/

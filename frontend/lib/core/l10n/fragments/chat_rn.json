@@ -1,0 +1,48 @@
+{
+  "chatStarting": "Turiko turahuza…",
+  "chatStartFailed": "Ntivyakunze gutangura ikiganiro.",
+  "chatRetry": "Subira ugerageze",
+  "chatNewConversation": "Ikiganiro gishasha",
+  "chatSessionEnded": "Iki kiganiro carangiye.",
+  "chatWaitingAgent": "Turindiriye umukozi…",
+  "chatWithAgent": "Muriko muravugana n'umukozi",
+  "chatAgentJoined": "{name} yinjiye mu kiganiro",
+  "chatAgentLabel": "Umukozi",
+  "chatAssistantLabel": "Kabangutsi",
+  "chatPinHint": "Andika PIN yawe y'ibiharuro 4 (inyegeje)",
+  "chatDobHint": "Itariki y'amavuko UUUU-AA-II (inyegeje)",
+  "chatErrorGeneric": "Hari ikitagenze neza. Subira ugerageze.",
+  "chatErrorNetwork": "Ntitushoboye gushika ku mashini nkuru.",
+  "chatModelInUse": "Modeli: {model}",
+  "chatModelDefault": "Modeli isanzwe",
+  "chatLinkCopied": "Umurongo wakopowe",
+  "chatImageTooLarge": "Ifoto ni nini cane (ntirenze 10 MB).",
+  "chatHandoffConfirm": "Murashaka kuvugana n'umukozi?",
+  "chatCancel": "Reka",
+  "chatConfirm": "Ego",
+  "modelPickerRefresh": "Vugurura",
+  "modelDefaultBadge": "Isanzwe",
+  "modelCapCompletion": "Inyandiko",
+  "modelCapVision": "Amafoto",
+  "modelCapAudio": "Ijwi",
+  "modelCapTools": "Ibikoresho",
+  "modelCapThinking": "Iciyumviro",
+  "modelCapEmbedding": "Kurondera",
+  "modelNotSelectable": "Ntikoreshwa mu kiganiro",
+  "modelLoadFailed": "Ntivyakunze kuzana amamodeli.",
+  "modelNone": "Nta modeli yashizwemwo.",
+  "@chatAgentJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@chatModelInUse": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+.test-files/
+data/
+.pytest_cache/
+.ruff_cache/
