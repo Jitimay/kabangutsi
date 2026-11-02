@@ -7,6 +7,7 @@ import '../../../core/di/injection.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/repositories/repositories.dart';
 import '../bloc/chat_message.dart';
+import 'phone_link_text.dart';
 
 /// One chat bubble. Customer on the right, assistant / agent on the left,
 /// notices (model switch, agent joined) centred.
@@ -106,10 +107,16 @@ class MessageBubble extends StatelessWidget {
                         height: 16,
                         child: LinearProgressIndicator(color: fg, backgroundColor: bg),
                       )
-                    : SelectableText(
-                        message.text + (message.streaming ? ' ▍' : ''),
-                        style: theme.textTheme.bodyMedium?.copyWith(color: fg),
-                      ),
+                    : message.streaming
+                        ? SelectableText(
+                            '${message.text} ▍',
+                            style: theme.textTheme.bodyMedium?.copyWith(color: fg),
+                          )
+                        : PhoneLinkText(
+                            message.text,
+                            style: theme.textTheme.bodyMedium?.copyWith(color: fg),
+                            linkColor: mine ? fg : scheme.primary,
+                          ),
               if (message.references.isNotEmpty || message.attachments.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
