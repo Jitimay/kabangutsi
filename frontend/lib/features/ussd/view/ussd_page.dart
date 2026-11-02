@@ -97,7 +97,7 @@ class _UssdViewState extends State<UssdView> {
                         if (state.phase == UssdPhase.loading) const LinearProgressIndicator(minHeight: 2),
                         Text(
                           screen,
-                          style: const TextStyle(fontFamily: 'monospace', fontSize: 15, color: Colors.black87),
+                          style: const TextStyle(fontFamily: 'LiberationMono', fontSize: 15, color: Colors.black87),
                         ),
                         const SizedBox(height: 12),
                         TextField(
@@ -105,7 +105,7 @@ class _UssdViewState extends State<UssdView> {
                           controller: _input,
                           keyboardType: TextInputType.phone,
                           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9*#]'))],
-                          style: const TextStyle(fontFamily: 'monospace', fontSize: 18, color: Colors.black),
+                          style: const TextStyle(fontFamily: 'LiberationMono', fontSize: 18, color: Colors.black),
                           decoration: InputDecoration(
                             isDense: true,
                             filled: true,
