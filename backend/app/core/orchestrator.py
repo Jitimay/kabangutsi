@@ -542,7 +542,8 @@ async def _turn(
         call=call,
         state=state,
         context={k: v for k, v in sctx.items() if not k.startswith("_")},
-        text=txt,
+        # handlers also see what the image shows (KB search, complaint text); flows never get images
+        text=f"{txt} {med.image_text}".strip() if med.image_text and not owned else txt,
         lang=lang,
         intent=intent,
         model=llm_for_turn,
@@ -647,31 +648,34 @@ async def _turn(
             await sink("token", {"delta": (" " if idx else "") + sent})
             await sink("sentence", {"index": idx, "text": sent, "audio_url": audio["url"] if audio else None})
 
+    # The customer sent an image: first say what was seen on it (their own image, not a bank fact)
+    if med.image_text and not owned:
+        await send_sentence(t("image_seen", lang, desc=med.image_text.rstrip(". ")))
+    pre = len(sentences)
+    limit = s.max_answer_sentences + pre
+
     if res.stream is not None:
         buf = SentenceBuffer()
         try:
             async for delta in res.stream:
                 for sent in buf.feed(delta):
-                    if len(sentences) < s.max_answer_sentences and (res.sentence_ok is None or res.sentence_ok(sent)):
+                    if len(sentences) < limit and (res.sentence_ok is None or res.sentence_ok(sent)):
                         await send_sentence(sent)
-                if len(sentences) >= s.max_answer_sentences:
+                if len(sentences) >= limit:
                     break
             for sent in buf.flush():
-                if len(sentences) < s.max_answer_sentences and (res.sentence_ok is None or res.sentence_ok(sent)):
+                if len(sentences) < limit and (res.sentence_ok is None or res.sentence_ok(sent)):
                     await send_sentence(sent)
         except Exception as e:  # noqa: BLE001 — model failed mid-answer: grounded fallback below
             log.warning("answer stream failed: %s", e)
-        if sentences:
-            reply_text = " ".join(sentences)
-        else:
-            reply_text = res.fallback_text or t("dont_know", lang)
+        if len(sentences) == pre:  # nothing grounded survived
             res.model_used = None
-            for sent in split_sentences(reply_text):
+            for sent in split_sentences(res.fallback_text or t("dont_know", lang)):
                 await send_sentence(sent)
     else:
-        reply_text = res.text
-        for sent in split_sentences(reply_text):
+        for sent in split_sentences(res.text):
             await send_sentence(sent)
+    reply_text = " ".join(sentences)
 
     # ---------- call row first (the handoff summary reads language, intent and frustration from it)
     upd = {

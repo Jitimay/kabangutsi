@@ -340,6 +340,11 @@ T: dict[str, dict[str, str]] = {
         "en": "Your request has already been passed on. An agent will answer you.",
         "rn": "Ivyo musaba vyamaze gushikirizwa. Umukozi agiye kubishura.",
     },
+    "image_seen": {
+        "fr": "Sur votre image : {desc}.",
+        "en": "On your image: {desc}.",
+        "rn": "Ku ifoto yanyu: {desc}.",
+    },
     "stray_digits": {
         "fr": "Pour votre sécurité, n'envoyez jamais votre code PIN dans un message. Que puis-je faire pour vous ?",
         "en": "For your security, never send your PIN in a message. What can I do for you?",

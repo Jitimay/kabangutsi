@@ -71,6 +71,7 @@ async def test_image_with_text_model_switches_and_logs(client, contract, fake_ll
     contract.validate(reply, "message.schema.json#/$defs/OutgoingReply")
     assert reply["model_notice"] and "gemma4:e4b" in reply["model_notice"]
     assert reply["model_used"] == "gemma4:e4b"
+    assert reply["text"].startswith("On your image: A photo of an ATM screen")
     vision_calls = [c for c in fake_llm.calls if c.get("messages") and c["messages"][-1].get("images")]
     assert vision_calls and vision_calls[0]["model"] == "gemma4:e4b"
     detail = (await client.get(f"/v1/conversations/{conv['id']}")).json()
