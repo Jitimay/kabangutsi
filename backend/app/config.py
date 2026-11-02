@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     # takes ~15 s on CPU). Other channels follow the capability router (F20) with STT as fallback (F21).
     stt_first_channels: Annotated[list[str], NoDecode] = ["phone"]
     audio_llm_timeout: float = 60.0
-    vision_timeout: float = 90.0
+    vision_timeout: float = 150.0  # gemma4:e4b on this CPU: ~25 s image prompt + ~1.7 tokens/s
     # Handoff: queue at once with a code summary, then replace it with the AI summary in the background
     summary_in_background: bool = True
     # Backend URL as seen by adapters (attachments /v1/files/... are relative to it)

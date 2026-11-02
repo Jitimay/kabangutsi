@@ -92,7 +92,7 @@ async def _llm_describe(model: str, image: bytes, question: str, lang: str) -> s
             "images": [base64.b64encode(image).decode()],
         }
     ]
-    out = await get_llm().chat(model, msgs, temperature=0.1, num_predict=160, think=False, timeout=s.vision_timeout)
+    out = await get_llm().chat(model, msgs, temperature=0.1, num_predict=60, think=False, timeout=s.vision_timeout)
     return " ".join(out.split())
 
 
