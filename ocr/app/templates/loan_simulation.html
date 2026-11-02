@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ t.loan_title }}{% endblock %}
+{% block heading %}{{ t.loan_title }}{% endblock %}
+{% block content %}
+<table>
+  <tr><td class="k">{{ t.product }}</td><td class="v">{{ d.product_name }}</td></tr>
+  <tr><td class="k">{{ t.amount }}</td><td class="v">{{ d.amount | fbu }}</td></tr>
+  <tr><td class="k">{{ t.term }}</td><td class="v">{{ d.term_months }} {{ t.months }}</td></tr>
+  <tr><td class="k">{{ t.rate }}</td><td class="v">{{ rate }}</td></tr>
+  <tr class="hl"><td class="k">{{ t.monthly }}</td><td class="v">{{ d.monthly_payment | fbu }}</td></tr>
+  <tr><td class="k">{{ t.total_payment }}</td><td class="v">{{ d.total_payment | fbu }}</td></tr>
+  <tr><td class="k">{{ t.total_interest }}</td><td class="v">{{ d.total_interest | fbu }}</td></tr>
+</table>
+{% if d.explanation %}<div class="box">{{ d.explanation }}</div>{% endif %}
+<p class="note">{{ t.loan_note }}</p>
+{% endblock %}

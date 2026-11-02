@@ -1,0 +1,9 @@
+{
+  "doc_type": "loan_application",
+  "fields": {
+    "applicant_name": "Jean-Claude Testeur",
+    "amount": 5000000,
+    "term_months": 24,
+    "product": "Crédit agricole"
+  }
+}

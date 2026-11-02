@@ -1,0 +1,9 @@
+{
+  "doc_type": "coffee_receipt",
+  "fields": {
+    "farmer_name": "Pascal Exemple",
+    "weight_kg": 312.0,
+    "amount": 374400,
+    "date": "2026-10-21"
+  }
+}

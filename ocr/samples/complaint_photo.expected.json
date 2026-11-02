@@ -1,0 +1,9 @@
+{
+  "doc_type": "complaint_photo",
+  "fields": {
+    "visible_text": [
+      "TRANSACTION ECHOUEE",
+      "Erreur 51"
+    ]
+  }
+}

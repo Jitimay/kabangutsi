@@ -1,0 +1,6 @@
+# Kabangutsi OCR + PDF service - tests (cd ocr && pytest; pytest -m slow for real OCR)
+-r requirements.txt
+pytest==9.2.0
+httpx==0.28.1
+jsonschema==4.26.0
+referencing==0.37.0
