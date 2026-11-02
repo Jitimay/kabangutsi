@@ -103,8 +103,11 @@ class _UssdViewState extends State<UssdView> {
                         TextField(
                           key: const Key('ussd_input'),
                           controller: _input,
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9*#]'))],
+                          // A free question ("Écrivez votre question") needs letters; menus and codes only digits.
+                          keyboardType: state.expectsText ? TextInputType.text : TextInputType.phone,
+                          inputFormatters: state.expectsText
+                              ? const <TextInputFormatter>[]
+                              : [FilteringTextInputFormatter.allow(RegExp(r'[0-9*#]'))],
                           style: const TextStyle(fontFamily: 'LiberationMono', fontSize: 18, color: Colors.black),
                           decoration: InputDecoration(
                             isDense: true,
