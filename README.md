@@ -45,7 +45,8 @@ Then type (or say) in the customer app, in any of the three languages:
 | `Je veux un crédit de 5 000 000 FBu sur 24 mois` | Loan simulation: **244 816 FBu / month** (16 %, computed in code) |
 | `Ndashaka gutanga ikirego` (I want to file a complaint) | Complaint ticket `TCK-…`, number read back |
 | `I want to talk to a human` or an angry message | Call appears **immediately** in the agent dashboard queue with an AI summary; an agent claims it and replies to the customer |
-| Send a photo of a document | The app switches automatically to a vision model and tells the user which model answered |
+| Services → *Scan a document*, pick the fictional ID card `ocr/samples/cni.jpg` | Name, ID number, date and place of birth read in ~2 s, each field marked *to be checked* if unsure; unsure documents go to an agent |
+| Send a photo in the chat | The app switches automatically to a vision model and tells the user which model answered |
 
 Under each answer the app shows **which model answered and how long it took** (or "no model (rules)" when a
 rule answered instantly), so you can see where AI is used and where plain code is used.
@@ -132,7 +133,8 @@ taken from the knowledge base.
 |---|---|---|
 | Understanding the request (intent, language, frustration) | Keywords first, local LLM when unsure | Fast and reliable; small models sometimes guess wrong with high confidence |
 | Answers about products, fees, account opening | **Extractive search**: best sentences of the knowledge base, as written | Guarantees no invented bank facts |
-| Reading an image or document | Vision model (gemma4:e2b), OCR as backup | Auto-switch when the chosen model cannot see images |
+| Reading a document (ID card, loan form, coffee receipt) | **OCR** (PaddleOCR, Tesseract backup) + rules from one YAML file per document type — no LLM, ~2–6 s |
+| Describing a photo in the chat | Vision model (gemma4:e2b) | Auto-switch when the chosen model cannot see images |
 | Handoff summary and agent suggestions | Larger model (gemma4:e4b), time-boxed | Quality matters, the customer does not wait for it |
 | PIN, identity, card blocking, loan maths, ticket numbers | **Plain code only** | Security and exact numbers must never depend on an AI guess |
 | Speech ↔ text | Whisper (fr/en), MMS (Kirundi), Piper / MMS-TTS voices | All run offline on CPU |
@@ -213,11 +215,6 @@ scripts/offline_check.sh             # proves: images and models present, no con
 Optional parts are Docker Compose profiles: `--profile voice`, `--profile ocr`, `--profile whatsapp`,
 `--profile hardware` (SMS with a USB GSM modem), or `--profile full`.
 
-Known build issue: `frontend/Dockerfile` points to a Flutter image tag that does not exist yet
-(`cirruslabs/flutter:3.44.9`). Until it is fixed, build the web app on the host
-(`flutter build web --no-web-resources-cdn -t lib/main_customer.dart` and `-t lib/main_agent.dart --base-href /agent/`)
-and serve `build/` with nginx using `frontend/nginx.conf`.
-
 ### Tests
 
 ```bash
@@ -239,6 +236,7 @@ Measured on the demo laptop (CPU only, 16 GB RAM) with the real local models:
 | Typical answer time (median) | **0.33 s** (rules / extractive search) |
 | Slow answers (95th percentile) | ~24 s, when the local LLM must decide |
 | Image question, warm model | 13–14 s |
+| Document reading (3 fictional samples, through the backend) | 2.1–6.1 s, all fields correct |
 | Loan simulation 5 000 000 FBu / 24 months / 16 % | 244 816 FBu — matches hand calculation |
 
 Honest note: those intent scores were measured after improving keywords using the same sentences, so they
@@ -246,7 +244,9 @@ flatter the system; a fresh, unseen test set is the next step.
 
 ## 10. Limits and next steps
 
-- Voice (T3) and SMS / WhatsApp / OCR (T4) are built and tested on their branches, and are being merged into `main` (gate G2).
+- Document reading (OCR + PDF) and the USSD / SMS / WhatsApp adapters are merged into `main`; voice (T3) is built and tested on its branch and is the last part to merge (gate G2).
+- Documents must be **photos** (jpeg / png / webp, up to 10 MB); PDF files are not read yet.
+- Real SMS needs the GSM modem plugged in; WhatsApp needs a dedicated test number.
 - Kirundi wording needs a native-speaker review.
 - Image questions are slow on a CPU laptop with little free memory.
 - For a real pilot, the fictional knowledge base would be replaced by documents approved by the bank.
