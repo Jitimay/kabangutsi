@@ -18,6 +18,9 @@ class ChatMessage extends Equatable {
     this.references = const [],
     this.attachments = const [],
     this.image,
+    this.workingModel,
+    this.startedAt,
+    this.elapsed,
   });
 
   factory ChatMessage.fromReply(OutgoingReply r) => ChatMessage(
@@ -51,7 +54,18 @@ class ChatMessage extends Equatable {
   /// Preview of an image sent by the customer.
   final Uint8List? image;
 
-  ChatMessage copyWith({String? text, bool? streaming}) => ChatMessage(
+  /// Pending reply: the model expected to answer (the session's choice; the switched model after
+  /// `model.switched`). Null = the backend default, named by the UI.
+  final String? workingModel;
+
+  /// Pending reply: when the customer sent the turn (drives the live timer).
+  final DateTime? startedAt;
+
+  /// Finished reply: time from sending to the full answer, measured in the app.
+  final Duration? elapsed;
+
+  ChatMessage copyWith({String? text, bool? streaming, String? Function()? workingModel, Duration? elapsed}) =>
+      ChatMessage(
         id: id,
         author: author,
         text: text ?? this.text,
@@ -61,8 +75,12 @@ class ChatMessage extends Equatable {
         references: references,
         attachments: attachments,
         image: image,
+        workingModel: workingModel != null ? workingModel() : this.workingModel,
+        startedAt: startedAt,
+        elapsed: elapsed ?? this.elapsed,
       );
 
   @override
-  List<Object?> get props => [id, author, text, streaming, masked, modelUsed, references, attachments, image?.length];
+  List<Object?> get props =>
+      [id, author, text, streaming, masked, modelUsed, references, attachments, image?.length, workingModel, startedAt, elapsed];
 }

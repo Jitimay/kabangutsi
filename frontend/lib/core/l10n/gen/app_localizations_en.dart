@@ -816,6 +816,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modelNone => 'No model installed.';
 
   @override
+  String chatWorking(String model, String seconds) {
+    return '$model is working… $seconds s';
+  }
+
+  @override
+  String chatAnsweredBy(String model, String seconds) {
+    return '$model · $seconds s';
+  }
+
+  @override
+  String get chatNoModel => 'no model (rules)';
+
+  @override
   String get appTitleCustomer => 'Kabangutsi';
 
   @override

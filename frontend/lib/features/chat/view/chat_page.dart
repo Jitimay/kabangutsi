@@ -147,6 +147,7 @@ class _ChatViewState extends State<ChatView> {
         body: BlocBuilder<ChatBloc, ChatState>(
           builder: (context, s) {
             final lang = context.read<LanguageCubit>().state.languageCode;
+            final fallbackModel = context.select((ModelPickerCubit c) => c.state.effective);
             if (s.status == ChatStatus.initial || s.status == ChatStatus.starting) {
               return Center(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -189,7 +190,10 @@ class _ChatViewState extends State<ChatView> {
                     controller: _scroll,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     itemCount: s.messages.length,
-                    itemBuilder: (_, i) => MessageBubble(message: s.messages[i]),
+                    itemBuilder: (_, i) => MessageBubble(
+                      message: s.messages[i],
+                      fallbackModel: fallbackModel,
+                    ),
                   ),
                 ),
                 if (s.ended)

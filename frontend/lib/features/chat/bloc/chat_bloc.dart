@@ -18,7 +18,9 @@ const kMaskedText = '••••';
 /// Customer chat (Wave 1): conversation, streamed replies (SSE), model switch
 /// notices (F20), masked PIN input, handoff to a human agent.
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  ChatBloc(this._conversations) : super(const ChatState()) {
+  ChatBloc(this._conversations, {DateTime Function()? clock})
+      : _now = clock ?? DateTime.now,
+        super(const ChatState()) {
     on<ChatStarted>(_onStarted);
     on<ChatRestarted>(_onRestarted);
     on<ChatTextSent>(_onText);
@@ -29,6 +31,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   final ConversationRepository _conversations;
+  final DateTime Function() _now;
   StreamSubscription<WsEvent>? _live;
   int _seq = 0;
 
@@ -90,7 +93,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _pendingId = _localId('p');
     _noticeShown = false;
     _gotTokens = false;
-    final pending = ChatMessage(id: _pendingId!, author: ChatAuthor.ai, text: '', streaming: true);
+    final pending = ChatMessage(
+      id: _pendingId!,
+      author: ChatAuthor.ai,
+      text: '',
+      streaming: true,
+      workingModel: state.model,
+      startedAt: _now(),
+    );
     emit(state.copyWith(messages: [...state.messages, customer, pending], sending: true, error: () => null));
     try {
       await emit.forEach<ChatStreamEvent>(_conversations.sendMessage(id, input), onData: _apply);
@@ -123,7 +133,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ]);
       case StreamModelSwitched(:final change):
         _noticeShown = true;
-        return s.copyWith(messages: _insertBeforePending(s.messages, _notice(change.notice)));
+        final switched = [
+          for (final m in s.messages)
+            if (m.id == _pendingId && change.usedModel != null) m.copyWith(workingModel: () => change.usedModel) else m,
+        ];
+        return s.copyWith(messages: _insertBeforePending(switched, _notice(change.notice)));
       case StreamToken(:final delta):
         _gotTokens = true;
         return _appendPending(s, delta);
@@ -134,7 +148,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       case StreamDone(:final reply):
         var messages = [
           for (final m in s.messages)
-            if (m.id == _pendingId) ChatMessage.fromReply(reply) else m,
+            if (m.id == _pendingId)
+              ChatMessage.fromReply(reply).copyWith(elapsed: m.startedAt == null ? null : _now().difference(m.startedAt!))
+            else
+              m,
         ];
         if (reply.modelNotice != null && !_noticeShown) {
           final i = messages.indexWhere((m) => m.id == reply.id);
