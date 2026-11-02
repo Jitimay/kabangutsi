@@ -17,6 +17,7 @@ class ChatInputBar extends StatefulWidget {
     required this.expectedInput,
     required this.onSend,
     required this.onImage,
+    this.onScanDocument,
   });
 
   final bool enabled;
@@ -24,6 +25,9 @@ class ChatInputBar extends StatefulWidget {
   final String expectedInput;
   final ValueChanged<String> onSend;
   final void Function(FileUpload image, String? text) onImage;
+
+  /// Opens the document scanner (F17) for this conversation.
+  final VoidCallback? onScanDocument;
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -95,6 +99,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
               icon: const Icon(Icons.image_outlined),
               onPressed: widget.enabled && !widget.secret ? _pickImage : null,
             ),
+            if (widget.onScanDocument != null)
+              IconButton(
+                key: const Key('chat_scan_document'),
+                tooltip: l10n.docScanTitle,
+                icon: const Icon(Icons.document_scanner_outlined),
+                onPressed: widget.enabled && !widget.secret ? widget.onScanDocument : null,
+              ),
             Expanded(
               child: TextField(
                 key: const Key('chat_input'),

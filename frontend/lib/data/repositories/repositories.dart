@@ -56,6 +56,12 @@ abstract interface class FileRepository {
   String resolve(String url);
 }
 
+abstract interface class DocumentRepository {
+  /// `POST /v1/documents/extract` (multipart). [docType] null = auto-detect.
+  /// With [conversationId] and a field to check, the backend hands the call to an agent.
+  Future<ExtractResult> extract({required FileUpload image, String? docType, required String lang, String? conversationId});
+}
+
 abstract interface class CardRepository {
   Future<CardBlockPending> verify(CardBlockRequest request);
   Future<CardBlockResult> confirm(String confirmationId);

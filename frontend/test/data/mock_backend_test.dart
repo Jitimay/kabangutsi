@@ -94,4 +94,33 @@ void main() {
     expect(s.aiResolutionRate, closeTo(s.resolvedByAi / (s.resolvedByAi + s.resolvedByAgent), 1e-9));
     expect(s.queueLength, b.queue().length);
   });
+
+  group('documents (F17)', () {
+    final jpg = FileUpload(bytes: Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0]), filename: 'cni.jpg', mime: 'image/jpeg');
+
+    test('CNI: one field to check → needs_review, handed to an agent when in a conversation', () {
+      final c = b.createConversation(channel: 'web', lang: 'fr');
+      final r = b.extractDocument(image: jpg, docType: 'cni', conversationId: c.id);
+      expect(r.needsReview, isTrue);
+      expect(r.fields.singleWhere((f) => f.needsReview).name, 'id_number');
+      final d = b.detail(c.id);
+      expect(d.call.status, 'queued');
+      expect(d.call.handoffReason, 'agent_review');
+    });
+
+    test('auto-detect from the file name; no review → no handoff', () {
+      final c = b.createConversation(channel: 'web', lang: 'en');
+      final r = b.extractDocument(image: FileUpload(bytes: jpg.bytes, filename: 'loan_form.jpg', mime: 'image/jpeg'), conversationId: c.id);
+      expect(r.docType, 'loan_application');
+      expect(r.needsReview, isFalse);
+      expect(b.detail(c.id).call.status, 'active');
+    });
+
+    test('errors: 415 PDF, 503 OCR down', () {
+      expect(() => b.extractDocument(image: FileUpload(bytes: jpg.bytes, filename: 'a.pdf', mime: 'application/pdf')),
+          throwsA(isA<ApiError>().having((e) => e.status, 'status', 415)));
+      expect(() => b.extractDocument(image: FileUpload(bytes: jpg.bytes, filename: 'ocr-down.jpg', mime: 'image/jpeg')),
+          throwsA(isA<ApiError>().having((e) => e.status, 'status', 503)));
+    });
+  });
 }

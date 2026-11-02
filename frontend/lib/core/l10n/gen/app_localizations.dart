@@ -1857,6 +1857,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Statistics'**
   String get statsTitle;
+
+  /// No description provided for @docScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a document'**
+  String get docScanTitle;
+
+  /// No description provided for @docScanIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo of a bank document: we read the details for you.'**
+  String get docScanIntro;
+
+  /// No description provided for @docScanType.
+  ///
+  /// In en, this message translates to:
+  /// **'Document type'**
+  String get docScanType;
+
+  /// No description provided for @docTypeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Detect automatically'**
+  String get docTypeAuto;
+
+  /// No description provided for @docTypeCni.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID card'**
+  String get docTypeCni;
+
+  /// No description provided for @docTypeLoanApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan application'**
+  String get docTypeLoanApplication;
+
+  /// No description provided for @docTypeCoffeeReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee delivery receipt'**
+  String get docTypeCoffeeReceipt;
+
+  /// No description provided for @docTypeComplaintPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint photo'**
+  String get docTypeComplaintPhoto;
+
+  /// No description provided for @docScanTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get docScanTakePhoto;
+
+  /// No description provided for @docScanChooseFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a file'**
+  String get docScanChooseFile;
+
+  /// No description provided for @docScanFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos only: JPEG, PNG or WebP, 10 MB maximum.'**
+  String get docScanFormats;
+
+  /// No description provided for @docScanSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the document'**
+  String get docScanSend;
+
+  /// No description provided for @docScanReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the document…'**
+  String get docScanReading;
+
+  /// No description provided for @docScanResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Details read'**
+  String get docScanResultTitle;
+
+  /// No description provided for @docScanDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected type: {type}'**
+  String docScanDetected(Object type);
+
+  /// No description provided for @docScanToCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'To be checked'**
+  String get docScanToCheck;
+
+  /// No description provided for @docScanNotRead.
+  ///
+  /// In en, this message translates to:
+  /// **'(not read)'**
+  String get docScanNotRead;
+
+  /// No description provided for @docScanNoFields.
+  ///
+  /// In en, this message translates to:
+  /// **'No details could be read.'**
+  String get docScanNoFields;
+
+  /// No description provided for @docScanTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Read in {seconds} s'**
+  String docScanTime(Object seconds);
+
+  /// No description provided for @docScanAgentReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Some details must be checked: an agent will review this document and reply in this chat.'**
+  String get docScanAgentReview;
+
+  /// No description provided for @docScanNeedsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Some details could not be read with certainty. Check them before using them.'**
+  String get docScanNeedsReview;
+
+  /// No description provided for @docScanAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan another document'**
+  String get docScanAnother;
+
+  /// No description provided for @docScanErrPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Only photos of documents can be read for now. Take a photo of the page or choose a JPEG, PNG or WebP image.'**
+  String get docScanErrPdf;
+
+  /// No description provided for @docScanErrUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This file type cannot be read. Choose a JPEG, PNG or WebP photo.'**
+  String get docScanErrUnsupported;
+
+  /// No description provided for @docScanErrTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'The photo is larger than 10 MB. Take it again at a smaller size.'**
+  String get docScanErrTooLarge;
+
+  /// No description provided for @docScanErrInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The photo could not be read. Try again with a clear photo of the document.'**
+  String get docScanErrInvalid;
+
+  /// No description provided for @docScanErrUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Document reading is not available right now.'**
+  String get docScanErrUnavailable;
+
+  /// No description provided for @docScanErrNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection problem. Please try again.'**
+  String get docScanErrNetwork;
+
+  /// No description provided for @docScanErrGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get docScanErrGeneric;
+
+  /// No description provided for @docFieldFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get docFieldFullName;
+
+  /// No description provided for @docFieldIdNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'ID number'**
+  String get docFieldIdNumber;
+
+  /// No description provided for @docFieldDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get docFieldDateOfBirth;
+
+  /// No description provided for @docFieldPlaceOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Place of birth'**
+  String get docFieldPlaceOfBirth;
+
+  /// No description provided for @docFieldApplicantName.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicant name'**
+  String get docFieldApplicantName;
+
+  /// No description provided for @docFieldAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get docFieldAmount;
+
+  /// No description provided for @docFieldTermMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Term (months)'**
+  String get docFieldTermMonths;
+
+  /// No description provided for @docFieldProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get docFieldProduct;
+
+  /// No description provided for @docFieldFarmerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer name'**
+  String get docFieldFarmerName;
+
+  /// No description provided for @docFieldWeightKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get docFieldWeightKg;
+
+  /// No description provided for @docFieldDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get docFieldDate;
+
+  /// No description provided for @docFieldVisibleText.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible text'**
+  String get docFieldVisibleText;
 }
 
 class _AppLocalizationsDelegate

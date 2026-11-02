@@ -38,6 +38,13 @@ class ChatModelChanged extends ChatEvent {
   final String? model;
 }
 
+/// A scanned document has fields to check: the backend handed the conversation
+/// to an agent. [notice] (UI language) is shown in the chat.
+class ChatAgentReviewStarted extends ChatEvent {
+  const ChatAgentReviewStarted(this.notice);
+  final String notice;
+}
+
 class ChatHandoffRequested extends ChatEvent {
   const ChatHandoffRequested();
 }

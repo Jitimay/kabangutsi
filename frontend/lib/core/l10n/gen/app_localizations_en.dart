@@ -933,4 +933,139 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statsTitle => 'Statistics';
+
+  @override
+  String get docScanTitle => 'Scan a document';
+
+  @override
+  String get docScanIntro =>
+      'Take a photo of a bank document: we read the details for you.';
+
+  @override
+  String get docScanType => 'Document type';
+
+  @override
+  String get docTypeAuto => 'Detect automatically';
+
+  @override
+  String get docTypeCni => 'National ID card';
+
+  @override
+  String get docTypeLoanApplication => 'Loan application';
+
+  @override
+  String get docTypeCoffeeReceipt => 'Coffee delivery receipt';
+
+  @override
+  String get docTypeComplaintPhoto => 'Complaint photo';
+
+  @override
+  String get docScanTakePhoto => 'Take a photo';
+
+  @override
+  String get docScanChooseFile => 'Choose a file';
+
+  @override
+  String get docScanFormats => 'Photos only: JPEG, PNG or WebP, 10 MB maximum.';
+
+  @override
+  String get docScanSend => 'Read the document';
+
+  @override
+  String get docScanReading => 'Reading the document…';
+
+  @override
+  String get docScanResultTitle => 'Details read';
+
+  @override
+  String docScanDetected(Object type) {
+    return 'Detected type: $type';
+  }
+
+  @override
+  String get docScanToCheck => 'To be checked';
+
+  @override
+  String get docScanNotRead => '(not read)';
+
+  @override
+  String get docScanNoFields => 'No details could be read.';
+
+  @override
+  String docScanTime(Object seconds) {
+    return 'Read in $seconds s';
+  }
+
+  @override
+  String get docScanAgentReview =>
+      'Some details must be checked: an agent will review this document and reply in this chat.';
+
+  @override
+  String get docScanNeedsReview =>
+      'Some details could not be read with certainty. Check them before using them.';
+
+  @override
+  String get docScanAnother => 'Scan another document';
+
+  @override
+  String get docScanErrPdf =>
+      'Only photos of documents can be read for now. Take a photo of the page or choose a JPEG, PNG or WebP image.';
+
+  @override
+  String get docScanErrUnsupported =>
+      'This file type cannot be read. Choose a JPEG, PNG or WebP photo.';
+
+  @override
+  String get docScanErrTooLarge =>
+      'The photo is larger than 10 MB. Take it again at a smaller size.';
+
+  @override
+  String get docScanErrInvalid =>
+      'The photo could not be read. Try again with a clear photo of the document.';
+
+  @override
+  String get docScanErrUnavailable =>
+      'Document reading is not available right now.';
+
+  @override
+  String get docScanErrNetwork => 'Connection problem. Please try again.';
+
+  @override
+  String get docScanErrGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get docFieldFullName => 'Full name';
+
+  @override
+  String get docFieldIdNumber => 'ID number';
+
+  @override
+  String get docFieldDateOfBirth => 'Date of birth';
+
+  @override
+  String get docFieldPlaceOfBirth => 'Place of birth';
+
+  @override
+  String get docFieldApplicantName => 'Applicant name';
+
+  @override
+  String get docFieldAmount => 'Amount';
+
+  @override
+  String get docFieldTermMonths => 'Term (months)';
+
+  @override
+  String get docFieldProduct => 'Product';
+
+  @override
+  String get docFieldFarmerName => 'Farmer name';
+
+  @override
+  String get docFieldWeightKg => 'Weight (kg)';
+
+  @override
+  String get docFieldDate => 'Date';
+
+  @override
+  String get docFieldVisibleText => 'Visible text';
 }

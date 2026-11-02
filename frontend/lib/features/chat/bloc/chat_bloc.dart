@@ -27,6 +27,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ChatImageSent>(_onImage);
     on<ChatModelChanged>((e, emit) => emit(state.copyWith(model: () => e.model)));
     on<ChatHandoffRequested>(_onHandoff);
+    on<ChatAgentReviewStarted>(_onAgentReview);
     on<_ChatLiveEvent>(_onLive);
   }
 
@@ -227,6 +228,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         return;
       }
     }
+    _listen(id);
+  }
+
+  void _onAgentReview(ChatAgentReviewStarted e, Emitter<ChatState> emit) {
+    final id = state.conversationId;
+    if (id == null || state.ended) return;
+    emit(state.copyWith(
+      messages: [...state.messages, _notice(e.notice)],
+      handoff: state.handoff == HandoffStatus.none ? HandoffStatus.waiting : null,
+    ));
     _listen(id);
   }
 

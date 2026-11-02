@@ -3,6 +3,7 @@ export 'attachment.dart';
 export 'banking.dart';
 export 'call.dart';
 export 'conversation.dart';
+export 'document.dart';
 export 'events.dart';
 export 'json.dart';
 export 'llm_model.dart';

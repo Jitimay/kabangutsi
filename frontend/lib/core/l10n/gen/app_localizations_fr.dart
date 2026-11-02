@@ -938,4 +938,141 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get statsTitle => 'Statistiques';
+
+  @override
+  String get docScanTitle => 'Scanner un document';
+
+  @override
+  String get docScanIntro =>
+      'Prenez en photo un document de la banque : nous lisons les informations pour vous.';
+
+  @override
+  String get docScanType => 'Type de document';
+
+  @override
+  String get docTypeAuto => 'Détection automatique';
+
+  @override
+  String get docTypeCni => 'Carte nationale d\'identité';
+
+  @override
+  String get docTypeLoanApplication => 'Demande de crédit';
+
+  @override
+  String get docTypeCoffeeReceipt => 'Reçu de livraison de café';
+
+  @override
+  String get docTypeComplaintPhoto => 'Photo jointe à une réclamation';
+
+  @override
+  String get docScanTakePhoto => 'Prendre une photo';
+
+  @override
+  String get docScanChooseFile => 'Choisir un fichier';
+
+  @override
+  String get docScanFormats =>
+      'Photos uniquement : JPEG, PNG ou WebP, 10 Mo maximum.';
+
+  @override
+  String get docScanSend => 'Lire le document';
+
+  @override
+  String get docScanReading => 'Lecture du document…';
+
+  @override
+  String get docScanResultTitle => 'Informations lues';
+
+  @override
+  String docScanDetected(Object type) {
+    return 'Type détecté : $type';
+  }
+
+  @override
+  String get docScanToCheck => 'À vérifier';
+
+  @override
+  String get docScanNotRead => '(non lu)';
+
+  @override
+  String get docScanNoFields => 'Aucune information n\'a pu être lue.';
+
+  @override
+  String docScanTime(Object seconds) {
+    return 'Lu en $seconds s';
+  }
+
+  @override
+  String get docScanAgentReview =>
+      'Certaines informations doivent être vérifiées : un conseiller va examiner ce document et vous répondre dans cette discussion.';
+
+  @override
+  String get docScanNeedsReview =>
+      'Certaines informations n\'ont pas pu être lues avec certitude. Vérifiez-les avant de les utiliser.';
+
+  @override
+  String get docScanAnother => 'Scanner un autre document';
+
+  @override
+  String get docScanErrPdf =>
+      'Seules les photos de documents peuvent être lues pour l\'instant. Prenez la page en photo ou choisissez une image JPEG, PNG ou WebP.';
+
+  @override
+  String get docScanErrUnsupported =>
+      'Ce type de fichier ne peut pas être lu. Choisissez une photo JPEG, PNG ou WebP.';
+
+  @override
+  String get docScanErrTooLarge =>
+      'La photo dépasse 10 Mo. Reprenez-la en plus petite taille.';
+
+  @override
+  String get docScanErrInvalid =>
+      'La photo n\'a pas pu être lue. Réessayez avec une photo nette du document.';
+
+  @override
+  String get docScanErrUnavailable =>
+      'La lecture de documents n\'est pas disponible pour le moment.';
+
+  @override
+  String get docScanErrNetwork => 'Problème de connexion. Veuillez réessayer.';
+
+  @override
+  String get docScanErrGeneric =>
+      'Une erreur s\'est produite. Veuillez réessayer.';
+
+  @override
+  String get docFieldFullName => 'Nom complet';
+
+  @override
+  String get docFieldIdNumber => 'Numéro de la carte';
+
+  @override
+  String get docFieldDateOfBirth => 'Date de naissance';
+
+  @override
+  String get docFieldPlaceOfBirth => 'Lieu de naissance';
+
+  @override
+  String get docFieldApplicantName => 'Nom du demandeur';
+
+  @override
+  String get docFieldAmount => 'Montant';
+
+  @override
+  String get docFieldTermMonths => 'Durée (mois)';
+
+  @override
+  String get docFieldProduct => 'Produit';
+
+  @override
+  String get docFieldFarmerName => 'Nom du producteur';
+
+  @override
+  String get docFieldWeightKg => 'Poids (kg)';
+
+  @override
+  String get docFieldDate => 'Date';
+
+  @override
+  String get docFieldVisibleText => 'Texte visible';
 }

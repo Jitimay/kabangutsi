@@ -5,6 +5,7 @@ import '../../data/api/ws_client.dart';
 import '../../data/mock/mock_backend.dart';
 import '../../data/repositories/api_repositories.dart';
 import '../../data/repositories/repositories.dart';
+import '../../features/document_scan/services/document_picker.dart';
 import '../env/env.dart';
 import '../locale/language_cubit.dart';
 import '../session/agent_session_cubit.dart';
@@ -38,11 +39,14 @@ Future<void> configureDependencies({Env? env, void Function(GetIt sl)? registerR
       ..registerLazySingleton<ConversationRepository>(() => ApiConversationRepository(api, ws))
       ..registerLazySingleton<FileRepository>(() => ApiFileRepository(api))
       ..registerLazySingleton<CardRepository>(() => ApiCardRepository(api))
+      ..registerLazySingleton<DocumentRepository>(() => ApiDocumentRepository(api))
       ..registerLazySingleton<LoanRepository>(() => ApiLoanRepository(api))
       ..registerLazySingleton<TicketRepository>(() => ApiTicketRepository(api))
       ..registerLazySingleton<BranchRepository>(() => ApiBranchRepository(api))
       ..registerLazySingleton<UssdRepository>(() => ApiUssdRepository(api))
       ..registerLazySingleton<AgentRepository>(() => ApiAgentRepository(api, ws));
   }
-  sl.registerLazySingleton<AgentSessionCubit>(() => AgentSessionCubit(sl<AgentRepository>()));
+  sl
+    ..registerLazySingleton<AgentSessionCubit>(() => AgentSessionCubit(sl<AgentRepository>()))
+    ..registerLazySingleton<DocumentPicker>(() => const PlatformDocumentPicker());
 }

@@ -8,6 +8,7 @@ import '../../../core/locale/language_cubit.dart';
 import '../../../core/widgets/language_menu.dart';
 import '../../../data/models/models.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../document_scan/view/document_scan_page.dart';
 import '../bloc/complaint_cubit.dart';
 import '../widgets/complaint_labels.dart';
 
@@ -155,6 +156,16 @@ class _ComplaintViewState extends State<ComplaintView> {
                           tooltip: l10n.complaintAddPhoto,
                           onPressed: busy ? null : () => _pickPhoto(ImageSource.camera),
                           icon: const Icon(Icons.photo_camera_outlined),
+                        ),
+                        OutlinedButton.icon(
+                          key: const Key('complaint_scan_document'),
+                          onPressed: busy
+                              ? null
+                              : () => Navigator.of(context).push(MaterialPageRoute<void>(
+                                    builder: (_) => const DocumentScanPage(initialDocType: 'complaint_photo'),
+                                  )),
+                          icon: const Icon(Icons.document_scanner_outlined),
+                          label: Text(l10n.docScanTitle),
                         ),
                       ],
                     )
