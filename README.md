@@ -9,6 +9,13 @@ Simple requests are answered at once by the AI, so human agents keep their time 
 > **All customers, accounts, cards, branches, products, fees and rates in this repository are fictional.**
 > No real BancoBu data is used. Demo PINs exist only for the demo.
 
+## 🎬 Demo videos
+
+| Part 1 | Part 2 |
+|---|---|
+| [![Kabangutsi demo — part 1](https://img.youtube.com/vi/PMoI99A-rsk/hqdefault.jpg)](https://youtu.be/PMoI99A-rsk) | [![Kabangutsi demo — part 2](https://img.youtube.com/vi/qQjfrWEEtbc/hqdefault.jpg)](https://youtu.be/qQjfrWEEtbc) |
+| ▶ https://youtu.be/PMoI99A-rsk | ▶ https://youtu.be/qQjfrWEEtbc |
+
 ---
 
 ## 1. The problem and our answer
